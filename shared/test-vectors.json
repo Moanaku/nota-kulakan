@@ -1,0 +1,170 @@
+{
+  "keterangan": "Vektor uji bersama. Dijalankan oleh backend/tests/test_vectors.py (Python) dan app/src/test/.../VektorUjiTest.kt (Kotlin). Hasil yang diharapkan ditulis tangan, bukan dihasilkan oleh salah satu implementasi. Bila menambah kasus, tambahkan di sini agar kedua bahasa ikut teruji.",
+  "rupiah": [
+    {"teks": "60.000", "hasil": 60000},
+    {"teks": "Rp 60.000,-", "hasil": 60000},
+    {"teks": "Rp. 1.250.000", "hasil": 1250000},
+    {"teks": "1.250.000,00", "hasil": 1250000},
+    {"teks": "1,250,000.00", "hasil": 1250000},
+    {"teks": "60,000", "hasil": 60000},
+    {"teks": "60,00", "hasil": 60},
+    {"teks": "60", "hasil": 60},
+    {"teks": "60000", "hasil": 60000},
+    {"teks": "(5.000)", "hasil": -5000},
+    {"teks": "-5.000", "hasil": -5000},
+    {"teks": "Rp -5.000", "hasil": -5000},
+    {"teks": "IDR 7.500", "hasil": 7500},
+    {"teks": "  12.000  ", "hasil": 12000},
+    {"teks": "0", "hasil": 0},
+    {"teks": "abc", "galat": true},
+    {"teks": "", "galat": true},
+    {"teks": "12.5", "galat": true},
+    {"teks": "1.25.000", "galat": true},
+    {"teks": "0.500", "galat": true},
+    {"teks": "1,5", "galat": true},
+    {"teks": "Rp", "galat": true},
+    {"teks": "5.000-", "galat": true},
+    {"teks": "1.250,000", "galat": true},
+    {"teks": "6 0.000", "galat": true},
+    {"teks": "1.5,5", "galat": true},
+    {"teks": "6O.000", "galat": true}
+  ],
+  "qty": [
+    {"teks": "2", "hasil": "2"},
+    {"teks": " 2 ", "hasil": "2"},
+    {"teks": "1,5", "hasil": "1.5"},
+    {"teks": "0.25", "hasil": "0.25"},
+    {"teks": "0,125", "hasil": "0.125"},
+    {"teks": "3x", "hasil": "3"},
+    {"teks": "1.000", "hasil": "1000"},
+    {"teks": "2.5", "hasil": "2.5"},
+    {"teks": "0", "galat": true},
+    {"teks": "0,0", "galat": true},
+    {"teks": "-1", "galat": true},
+    {"teks": "1/2", "galat": true},
+    {"teks": "abc", "galat": true},
+    {"teks": "", "galat": true},
+    {"teks": "1,2,3", "galat": true},
+    {"teks": "0,0001", "galat": true},
+    {"teks": "1.5.5", "galat": true},
+    {"teks": "1,5.000", "galat": true}
+  ],
+  "validasi": [
+    {
+      "nama": "konsisten",
+      "nota": {"items": [
+        {"nama": "Mie Goreng", "qty": "2", "harga_satuan": 110000, "jumlah": 220000},
+        {"nama": "Air Mineral", "qty": "1", "harga_satuan": 45000, "jumlah": 45000}
+      ], "subtotal": 265000, "total": 265000},
+      "harapan": {"lolos": true, "isu": []}
+    },
+    {
+      "nama": "harga 60.000 terbaca 60",
+      "nota": {"items": [
+        {"nama": "Gula Pasir", "qty": "2", "harga_satuan": 60, "jumlah": 120000}
+      ], "total": 120000},
+      "harapan": {"lolos": false, "isu": [
+        {"kode": "baris_tidak_cocok", "baris": 0, "diharapkan": 120, "ditemukan": 120000, "tingkat": "galat"}
+      ]}
+    },
+    {
+      "nama": "total salah, baris benar",
+      "nota": {"items": [
+        {"nama": "A", "qty": "1", "harga_satuan": 1000, "jumlah": 1000},
+        {"nama": "B", "qty": "2", "harga_satuan": 500, "jumlah": 1000}
+      ], "subtotal": 2000, "total": 2500},
+      "harapan": {"lolos": false, "isu": [
+        {"kode": "total_tidak_cocok", "baris": null, "diharapkan": 2000, "ditemukan": 2500, "tingkat": "galat"}
+      ]}
+    },
+    {
+      "nama": "subtotal salah, total benar",
+      "nota": {"items": [
+        {"nama": "A", "qty": "1", "harga_satuan": 1000, "jumlah": 1000},
+        {"nama": "B", "qty": "2", "harga_satuan": 500, "jumlah": 1000}
+      ], "subtotal": 2100, "total": 2000},
+      "harapan": {"lolos": false, "isu": [
+        {"kode": "subtotal_tidak_cocok", "baris": null, "diharapkan": 2000, "ditemukan": 2100, "tingkat": "galat"}
+      ]}
+    },
+    {
+      "nama": "field kosong",
+      "nota": {"items": [
+        {"nama": "A", "qty": "1", "harga_satuan": 1000, "jumlah": 1000},
+        {"nama": "B", "qty": null, "harga_satuan": 500, "jumlah": null}
+      ], "total": 1500},
+      "harapan": {"lolos": false, "isu": [
+        {"kode": "field_kosong", "baris": 1, "diharapkan": null, "ditemukan": null, "tingkat": "galat"},
+        {"kode": "total_tidak_bisa_dihitung", "baris": null, "diharapkan": null, "ditemukan": null, "tingkat": "galat"}
+      ]}
+    },
+    {
+      "nama": "diskon, pajak, biaya lain, pembulatan, qty pecahan",
+      "nota": {"items": [
+        {"nama": "Beras Curah", "qty": "1.5", "harga_satuan": 14000, "jumlah": 21000},
+        {"nama": "Minyak", "qty": "3", "harga_satuan": 18000, "jumlah": 52000, "diskon_baris": 2000}
+      ], "diskon": 3000, "pajak": 7300, "biaya_lain": 5000, "pembulatan": -300, "total": 82000},
+      "harapan": {"lolos": true, "isu": []}
+    },
+    {
+      "nama": "nota kosong",
+      "nota": {"items": [], "total": null},
+      "harapan": {"lolos": false, "isu": [
+        {"kode": "tidak_ada_item", "baris": null, "diharapkan": null, "ditemukan": null, "tingkat": "galat"},
+        {"kode": "field_kosong", "baris": null, "diharapkan": null, "ditemukan": null, "tingkat": "galat"}
+      ]}
+    },
+    {
+      "nama": "qty nol",
+      "nota": {"items": [
+        {"nama": "A", "qty": "0", "harga_satuan": 1000, "jumlah": 0}
+      ], "total": 0},
+      "harapan": {"lolos": false, "isu": [
+        {"kode": "qty_tidak_valid", "baris": 0, "diharapkan": null, "ditemukan": null, "tingkat": "galat"}
+      ]}
+    },
+    {
+      "nama": "harga dihitung dari jumlah dibagi qty",
+      "nota": {"items": [
+        {"nama": "Air Mineral", "qty": "3", "harga_satuan": 45000, "jumlah": 135000, "harga_dihitung": true}
+      ], "total": 135000},
+      "harapan": {"lolos": true, "isu": [
+        {"kode": "harga_dihitung", "baris": 0, "diharapkan": null, "ditemukan": null, "tingkat": "info"}
+      ]}
+    },
+    {
+      "nama": "pembulatan setengah ke atas",
+      "nota": {"items": [
+        {"nama": "Curah", "qty": "0.5", "harga_satuan": 1001, "jumlah": 501}
+      ], "total": 501},
+      "harapan": {"lolos": true, "isu": []}
+    },
+    {
+      "nama": "qty tiga desimal",
+      "nota": {"items": [
+        {"nama": "Curah", "qty": "1.333", "harga_satuan": 1500, "jumlah": 2000}
+      ], "total": 2000},
+      "harapan": {"lolos": true, "isu": []}
+    },
+    {
+      "nama": "total kosong",
+      "nota": {"items": [
+        {"nama": "A", "qty": "1", "harga_satuan": 1000, "jumlah": 1000}
+      ], "total": null},
+      "harapan": {"lolos": false, "isu": [
+        {"kode": "field_kosong", "baris": null, "diharapkan": null, "ditemukan": null, "tingkat": "galat"}
+      ]}
+    },
+    {
+      "nama": "baris harga dihitung tetap ikut total",
+      "nota": {"items": [
+        {"nama": "A", "qty": "2", "harga_satuan": 500, "jumlah": 1000, "harga_dihitung": true},
+        {"nama": "B", "qty": "1", "harga_satuan": 300, "jumlah": 300}
+      ], "total": 1400},
+      "harapan": {"lolos": false, "isu": [
+        {"kode": "harga_dihitung", "baris": 0, "diharapkan": null, "ditemukan": null, "tingkat": "info"},
+        {"kode": "total_tidak_cocok", "baris": null, "diharapkan": 1300, "ditemukan": 1400, "tingkat": "galat"}
+      ]}
+    }
+  ]
+}

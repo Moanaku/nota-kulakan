@@ -1,0 +1,8 @@
+-r requirements.txt
+pytest==9.1.1
+httpx==0.28.1
+httpx2==2.13.1  # dipakai TestClient Starlette versi baru
+ruff==0.16.8
+# Hanya untuk evaluasi (mengecilkan foto, membaca parquet CORD)
+pillow==12.3.0
+pyarrow==26.0.0
