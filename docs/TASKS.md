@@ -4,6 +4,11 @@ Pemilik: **C** = Claude (sesi cloud), **A** = agen lokal (Claude Code / Antigrav
 **D** = Dani. Centang hanya bila kriteria "selesai kalau" terpenuhi.
 Langkah operasional rinci (perintah, urutan) ada di `docs/RUNBOOK.md`.
 
+> **Status 12 Okt 2026: rilis ditunda.** Fokus sekarang membaca nota asli secara lokal (D3, lalu E).
+> Tugas bertanda **(DITUNDA)** adalah jalur rilis Play Store (Firebase, Cloud Run, Play Console,
+> tester) dan tidak dikerjakan sampai Dani membukanya lagi. Cara menjalankan aplikasi di HP terhadap
+> backend lokal ada di `docs/HANDOFF-AGENT.md` bagian "Menjalankan lagi".
+
 ## A. Dokumen dan fondasi
 - [x] A1 (C) Kerangka repo, CLAUDE.md, parser rupiah dan qty, skema, validator.
 - [x] A2 (C) PRD, daftar tugas, catatan keputusan, runbook, bahan rilis.
@@ -18,10 +23,11 @@ Langkah operasional rinci (perintah, urutan) ada di `docs/RUNBOOK.md`.
 - [x] B2 (D) Prototipe disetujui ("cocok").
 
 ## C. Akun dan data (Dani, paralel)
-- [ ] C1 (D) Play Console personal + verifikasi identitas. (RUNBOOK 2.1)
-- [ ] C2 (D) Project Google Cloud = project Firebase, billing, budget alert. (2.2-2.4)
+- [ ] C1 (D) **(DITUNDA)** Play Console personal + verifikasi identitas. (RUNBOOK 2.1)
+- [ ] C2 (D) Project Google Cloud dengan billing dan budget alert (2.2), wajib untuk C3.
+  Bagian Firebase (2.3-2.4) **(DITUNDA)**.
 - [ ] C3 (D) API key Gemini di `backend/.env` (tidak di-commit). (2.5)
-- [ ] C4 (D) 15-20 calon tester. (2.6)
+- [ ] C4 (D) **(DITUNDA)** 15-20 calon tester. (2.6)
 - [ ] C5 (D) 5 foto nota beragam, lalu ~50 untuk evaluasi, di `data/private/toko/`. (3.1, 5.1)
 - [ ] C6 (D) Android Studio, Python 3.11+, Git, Claude Code/Antigravity terpasang. (1.3)
 - [ ] C7 (D) Repo di GitHub, CI hijau. (1.2, 1.5)
@@ -32,7 +38,7 @@ Langkah operasional rinci (perintah, urutan) ada di `docs/RUNBOOK.md`.
 - [x] D2 (C) Endpoint `/v1/ekstrak`, App Check sekali pakai, kode galat, mode tiruan, Dockerfile.
 - [ ] D3 (A) Uji panggilan Gemini sungguhan pada 5 nota. Selesai kalau: JSON tiap nota dibandingkan
   dengan fotonya oleh Dani. (RUNBOOK Fase 3)
-- [ ] D4 (D+A) Deploy Cloud Run + Secret Manager + peran IAM. Selesai kalau: `/healthz` ok dan
+- [ ] D4 (D+A) **(DITUNDA)** Deploy Cloud Run + Secret Manager + peran IAM. Selesai kalau: `/healthz` ok dan
   permintaan tanpa token ditolak 401. (Fase 4)
 
 ## E. Evaluasi
@@ -56,15 +62,16 @@ Langkah operasional rinci (perintah, urutan) ada di `docs/RUNBOOK.md`.
   Dijalankan di HP asli (Android 14, API 34) lewat `adb reverse tcp:8080 tcp:8080` dan
   `nota.api.url.debug=http://127.0.0.1:8080/` di `local.properties`, karena emulator tidak stabil di laptop.
   Semua poin lolos setelah perbaikan `FotoKompresor` (semua foto sebelumnya ditolak).
-- [ ] F8 (D) Uji di HP asli dengan nota dari laci terhadap backend Cloud Run. Selesai kalau: daftar bug dikirim.
+- [ ] F8 (D) Uji di HP asli dengan nota dari laci terhadap backend Cloud Run. **(DITUNDA)** bersama D4;
+  sementara itu nota asli bisa diuji lewat backend lokal (`NOTA_KLIEN=gemini`) dengan cara di HANDOFF. Selesai kalau: daftar bug dikirim.
 
 ## G. Rilis
 - [x] G1 (C) Signing dari `keystore.properties`, R8, target SDK 36, Crashlytics/Analytics bersyarat,
   draf kebijakan privasi, Data Safety, listing, pesan tester, panduan kuesioner.
-- [ ] G2 (D) Kunci upload, kebijakan privasi di URL publik, formulir Play. (Fase 6)
-- [ ] G3 (D) Internal testing, tautan Play Integrity, SHA-256 ke Firebase App Check. (6.5)
-- [ ] G4 (D) Closed test 12+ tester selama 14 hari berturut-turut, isi `docs/LOG-CLOSED-TEST.md`.
-- [ ] G5 (D+A) Perbaiki masukan tester, ajukan akses produksi.
+- [ ] G2 (D) **(DITUNDA)** Kunci upload, kebijakan privasi di URL publik, formulir Play. (Fase 6)
+- [ ] G3 (D) **(DITUNDA)** Internal testing, tautan Play Integrity, SHA-256 ke Firebase App Check. (6.5)
+- [ ] G4 (D) **(DITUNDA)** Closed test 12+ tester selama 14 hari berturut-turut, isi `docs/LOG-CLOSED-TEST.md`.
+- [ ] G5 (D+A) **(DITUNDA)** Perbaiki masukan tester, ajukan akses produksi.
 
 ## H. Studi kasus
 - [ ] H1 (D) Ukur waktu dan kesalahan: 20 nota manual vs aplikasi.
