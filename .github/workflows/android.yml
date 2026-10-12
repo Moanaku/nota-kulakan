@@ -5,6 +5,7 @@ on:
     paths: ["app/**", "gradle/**", "*.gradle.kts", "gradle.properties", "shared/**", ".github/workflows/android.yml"]
   pull_request:
     paths: ["app/**", "gradle/**", "*.gradle.kts", "gradle.properties", "shared/**", ".github/workflows/android.yml"]
+  workflow_dispatch:
 
 permissions:
   contents: read
