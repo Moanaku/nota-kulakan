@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+: hanya database (stok dan harga modal) yang dicadangkan ke akun Google pengguna.
+     Foto nota tidak ikut cadangan cloud karena bisa melewati batas 25 MB Auto Backup dan
+     menghentikan seluruh cadangan. Saat pindah HP lewat kabel/Wi-Fi, foto ikut dipindah. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="database" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="database" path="." />
+        <include domain="file" path="nota/" />
+    </device-transfer>
+</data-extraction-rules>

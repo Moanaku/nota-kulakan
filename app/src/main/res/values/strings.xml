@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Nota Kulakan</string>
+
+    <!-- Umum -->
+    <string name="kembali">Kembali</string>
+    <string name="batal">Batal</string>
+    <string name="hapus">Hapus</string>
+
+    <!-- Navigasi bawah -->
+    <string name="tab_stok">Stok</string>
+    <string name="tab_riwayat">Riwayat</string>
+    <string name="catat_nota">Catat nota</string>
+
+    <!-- Stok -->
+    <string name="stok_judul">Barang masuk &amp; harga modal</string>
+    <string name="stok_penjelasan">Jumlah dihitung dari nota kulakan yang dicatat. Penjualan belum dikurangi.</string>
+    <string name="stok_kosong_judul">Belum ada nota</string>
+    <string name="stok_kosong_isi">Foto nota dari grosir atau sales. Barang dan harga modalnya tercatat di sini.</string>
+    <string name="stok_nota_terakhir">Nota terakhir</string>
+    <string name="stok_total_masuk">Total masuk %1$s</string>
+    <string name="stok_per_satuan">per %1$s</string>
+
+    <!-- Selisih harga -->
+    <string name="harga_naik">naik %1$s</string>
+    <string name="harga_turun">turun %1$s</string>
+    <string name="harga_tetap">tetap</string>
+    <string name="harga_baru">baru</string>
+
+    <!-- Foto -->
+    <string name="foto_judul">Foto nota dari grosir</string>
+    <string name="foto_isi">Nota cetak maupun tulisan tangan. Satu foto untuk satu nota.</string>
+    <string name="foto_bingkai">Seluruh nota harus masuk bingkai</string>
+    <string name="foto_tips_1">Taruh nota di permukaan rata</string>
+    <string name="foto_tips_2">Cahaya cukup dan tanpa bayangan</string>
+    <string name="foto_tips_3">Angka di kolom harga harus terlihat jelas</string>
+    <string name="foto_ambil">Ambil foto</string>
+    <string name="foto_galeri">Pilih dari galeri</string>
+    <string name="foto_manual">Isi manual tanpa foto</string>
+    <string name="foto_privasi">Foto dikecilkan dulu, lalu dikirim ke server dan layanan AI untuk dibaca. Foto disimpan hanya di HP ini.</string>
+    <string name="foto_tidak_ada_kamera">Tidak ada aplikasi kamera di HP ini</string>
+
+    <!-- Hasil: memproses dan gagal -->
+    <string name="hasil_memproses">Membaca nota…</string>
+    <string name="hasil_memproses_isi">Biasanya beberapa detik. Pastikan internet aktif.</string>
+    <string name="gagal_judul">Nota belum terbaca</string>
+    <string name="gagal_tanpa_jaringan">Tidak ada koneksi internet. Periksa data seluler atau Wi-Fi, lalu coba lagi.</string>
+    <string name="gagal_waktu_habis">Server terlalu lama menjawab. Coba lagi sebentar lagi.</string>
+    <string name="gagal_layanan_sibuk">Layanan AI sedang sibuk. Tunggu sekitar 10 detik, lalu coba lagi.</string>
+    <string name="gagal_bukan_nota">Foto ini tidak terbaca sebagai nota. Coba foto ulang dengan cahaya lebih terang dan seluruh nota masuk bingkai.</string>
+    <string name="gagal_foto_tidak_valid">File ini tidak bisa dibaca sebagai foto. Pilih foto lain.</string>
+    <string name="gagal_foto_terlalu_besar">Foto terlalu besar untuk dikirim. Pilih foto lain.</string>
+    <string name="gagal_aplikasi_ditolak">Server menolak aplikasi ini. Pastikan memakai versi dari Play Store.</string>
+    <string name="gagal_server">Terjadi gangguan di server. Coba lagi, atau isi manual.</string>
+    <string name="coba_lagi">Coba lagi</string>
+    <string name="ganti_foto">Ganti foto</string>
+    <string name="isi_manual">Isi manual</string>
+
+    <!-- Hasil: draf -->
+    <string name="periksa_judul">Periksa nota</string>
+    <string name="status_cocok">Semua hitungan cocok</string>
+    <string name="status_perlu_cek">%1$d hal perlu dicek</string>
+    <string name="status_isi_manual">Isi baris sesuai nota</string>
+    <string name="lihat_foto">Lihat foto nota</string>
+    <string name="sembunyikan_foto">Sembunyikan foto</string>
+    <string name="supplier">Supplier</string>
+    <string name="supplier_kosong">Supplier belum diisi</string>
+    <string name="tanpa_nama">(nama belum diisi)</string>
+    <string name="produk_ada">Masuk ke: %1$s</string>
+    <string name="produk_baru">Produk baru: %1$s</string>
+    <string name="ganti_produk">Ganti produk</string>
+    <string name="tambah_baris">Tambah baris</string>
+    <string name="ringkasan_total">Ringkasan total</string>
+    <string name="jumlah_semua_baris">Jumlah semua baris</string>
+    <string name="subtotal_tertulis">Subtotal tertulis</string>
+    <string name="diskon">Diskon</string>
+    <string name="pajak">Pajak</string>
+    <string name="biaya_lain">Biaya lain (ongkir, dll.)</string>
+    <string name="total_tertulis">Total tertulis di nota</string>
+    <string name="belum_diisi">belum diisi</string>
+    <string name="ubah_total">Ubah total</string>
+    <string name="catatan_ai">Catatan dari pembaca nota: %1$s</string>
+    <string name="simpan_ke_stok">Simpan ke stok</string>
+    <string name="konfirmasi_tidak_cocok">Angka sudah saya cocokkan dengan nota fisik. Hitungan di nota memang tidak cocok.</string>
+    <string name="terhalang_lengkapi">Lengkapi baris yang ditandai merah dulu</string>
+    <string name="terhalang_nama">Setiap baris harus punya nama barang</string>
+    <string name="galat_simpan">Gagal menyimpan. Coba lagi.</string>
+
+    <!-- Lembar edit baris -->
+    <string name="edit_baris_judul">Perbaiki baris %1$d</string>
+    <string name="nama_barang">Nama barang</string>
+    <string name="qty">Jumlah barang</string>
+    <string name="satuan">Satuan</string>
+    <string name="harga_satuan">Harga satuan (Rp)</string>
+    <string name="jumlah_rp">Jumlah tertulis di nota (Rp)</string>
+    <string name="diskon_baris">Diskon baris (Rp)</string>
+    <string name="bukan_angka">Bukan angka yang dikenali</string>
+    <string name="sebelumnya_terbaca">Tadinya terbaca %1$s</string>
+    <string name="cocok_baris">%1$s × %2$s = %3$s. Cocok dengan jumlah tertulis.</string>
+    <string name="hapus_baris">Hapus baris</string>
+    <string name="selesai">Selesai</string>
+
+    <!-- Lembar total -->
+    <string name="edit_total_judul">Total dan supplier</string>
+    <string name="subtotal_opsional">Subtotal (opsional, Rp)</string>
+    <string name="total_rp">Total (Rp)</string>
+
+    <!-- Lembar produk -->
+    <string name="pilih_produk_judul">Masuk ke produk apa?</string>
+    <string name="pilih_produk_isi">Tertulis di nota: %1$s. Pilihan ini diingat untuk nota berikutnya.</string>
+    <string name="cari_produk">Cari produk</string>
+    <string name="buat_produk_baru">Buat produk baru: %1$s</string>
+
+    <!-- Duplikat -->
+    <string name="duplikat_judul">Nota ini mungkin sudah dicatat</string>
+    <string name="duplikat_isi">Ada nota dengan total %1$s dan %2$d baris yang dicatat %3$s. Menyimpan lagi akan menghitung stoknya dua kali.</string>
+    <string name="tetap_simpan">Tetap simpan</string>
+
+    <!-- Tersimpan -->
+    <string name="tersimpan_judul">Nota tersimpan</string>
+    <string name="tersimpan_isi">%1$d baris masuk ke stok · %2$s</string>
+    <string name="tersimpan_perubahan">Perubahan harga modal dari nota sebelumnya</string>
+    <string name="lihat_stok">Lihat stok</string>
+    <string name="catat_nota_lain">Catat nota lain</string>
+
+    <!-- Riwayat -->
+    <string name="riwayat_judul">Riwayat nota</string>
+    <string name="riwayat_kosong">Nota yang sudah disimpan muncul di sini.</string>
+    <string name="riwayat_baris">%1$d baris</string>
+    <string name="detail_judul">Detail nota</string>
+    <string name="detail_dikonfirmasi">Disimpan meski hitungan di nota tidak cocok</string>
+    <string name="hapus_nota">Hapus nota</string>
+    <string name="hapus_nota_judul">Hapus nota ini?</string>
+    <string name="hapus_nota_isi">Barang dari nota ini akan dikurangi dari total masuk. Tidak bisa dibatalkan.</string>
+    <string name="foto_tidak_tersedia">Foto tidak tersedia</string>
+</resources>

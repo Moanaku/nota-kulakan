@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Foto dari kamera ditulis ke cache, lalu dikompres sebelum diunggah. -->
+    <cache-path name="foto" path="foto/" />
+</paths>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ikon orisinal: lembar nota dengan tanda centang. Isi berada di zona aman 66dp. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M38,30h26l8,8v40l-4,-3 -4,3 -4,-3 -4,3 -4,-3 -4,3 -4,-3 -4,3z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FF1F6F54"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M45,44h18M45,51h18M45,58h10" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FF1F6F54"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M57,64l4,4 8,-9" />
+</vector>

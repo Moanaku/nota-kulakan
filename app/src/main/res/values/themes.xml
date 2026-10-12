@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tema jendela saja; warna dan tipografi aplikasi diatur di Compose (ui/tema/Tema.kt). -->
+    <style name="Theme.NotaKulakan" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/latar_awal</item>
+    </style>
+</resources>
