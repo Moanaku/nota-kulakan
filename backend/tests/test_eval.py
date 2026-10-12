@@ -7,11 +7,12 @@ from decimal import Decimal
 import pytest
 
 from conftest import nota_json
+from nota.extraction import EkstraksiGagal, ModelGagal, ModelSibuk
 from nota.schema import ItemBaris, Nota
 from nota.serialize import nota_ke_dict
 from nota_eval.cord import CordTidakBisa, petakan_cord
 from nota_eval.dataset import Kasus, baca_manifest, bagi_split, tulis_manifest
-from nota_eval.jalankan import Konfigurasi, jalankan_evaluasi, pralabel, siapkan_gambar
+from nota_eval.jalankan import Konfigurasi, ekstrak_tahan_kuota, jalankan_evaluasi, pralabel, siapkan_gambar
 from nota_eval.metrik import konsisten, nilai_kasus, ringkas, sejajarkan, tabel_markdown, wilson
 
 
@@ -217,3 +218,62 @@ def test_pralabel_ditandai_dan_ditolak_saat_evaluasi(tmp_path, klien_skrip):
         jalankan_evaluasi(
             kasus, [Konfigurasi("m", 0)], tmp_path / "k", buat_klien=lambda _: None, cetak=lambda _: None
         )
+
+
+# --- kuota tier gratis -------------------------------------------------------------
+
+_GULA = nota_json(
+    [{"nama": "Gula", "qty": "2", "harga_satuan": "60.000", "jumlah": "120.000"}], total="120.000"
+)
+
+
+def test_kuota_sibuk_ditunggu_berlipat_lalu_berhasil(klien_skrip):
+    klien = klien_skrip([ModelSibuk("429"), ModelSibuk("429"), _GULA])
+    tidur: list[float] = []
+    hasil = ekstrak_tahan_kuota(b"x", "image/jpeg", klien, 3, 30.0, tidur.append, lambda _: None)
+    assert hasil.lolos and klien.panggilan == 3
+    assert tidur == [30.0, 60.0]
+
+
+def test_kuota_tetap_habis_menghentikan_proses(klien_skrip):
+    klien = klien_skrip([ModelSibuk("429")] * 3)
+    with pytest.raises(SystemExit, match="kuota"):
+        ekstrak_tahan_kuota(b"x", "image/jpeg", klien, 2, 1.0, lambda _: None, lambda _: None)
+    assert klien.panggilan == 3
+
+
+def test_galat_selain_kuota_tidak_diulang(klien_skrip):
+    klien = klien_skrip([ModelGagal("400")])
+    with pytest.raises(EkstraksiGagal):
+        ekstrak_tahan_kuota(b"x", "image/jpeg", klien, 3, 1.0, lambda _: None, lambda _: None)
+    assert klien.panggilan == 1
+
+
+def test_pralabel_kuota_habis_tidak_menulis_templat_kosong(tmp_path, klien_skrip):
+    kasus = _set_kasus(tmp_path, None)
+    with pytest.raises(SystemExit):
+        pralabel(
+            kasus,
+            Konfigurasi("m", 0),
+            buat_klien=lambda _: klien_skrip([ModelSibuk("429")] * 2),
+            cetak=lambda _: None,
+            ulang_sibuk=1,
+            tidur=lambda _: None,
+        )
+    assert not (tmp_path / "a.json").exists()
+
+
+def test_jeda_dipakai_antar_kasus(tmp_path, klien_skrip):
+    benar = Nota(items=(_item("Gula", "2", 60000, 120000),), total=120000)
+    kasus = _set_kasus(tmp_path, nota_ke_dict(benar))
+    tidur: list[float] = []
+    jalankan_evaluasi(
+        kasus,
+        [Konfigurasi("gemini-3.1-flash-lite", 1600)],
+        tmp_path / "keluar",
+        buat_klien=lambda _: klien_skrip([ModelSibuk("429"), _GULA]),
+        jeda_detik=5.0,
+        cetak=lambda _: None,
+        tidur=tidur.append,
+    )
+    assert tidur == [30.0, 5.0]

@@ -36,6 +36,7 @@ def _parser() -> argparse.ArgumentParser:
     j.add_argument("--jenis", action="append", help="batasi jenis: cetak, tulis, campuran, cord")
     j.add_argument("--batas", type=int, help="hanya N kasus pertama (uji coba)")
     j.add_argument("--jeda", type=float, default=0.0, help="detik antar panggilan (hindari batas kuota)")
+    _argumen_kuota(j)
     j.add_argument("--kurs-idr", type=float, help="kurs USD->IDR untuk kolom biaya; tulis sumber kursnya")
     j.add_argument("--keluar", type=Path)
 
@@ -43,6 +44,8 @@ def _parser() -> argparse.ArgumentParser:
     pl.add_argument("--manifest", type=Path, required=True)
     pl.add_argument("--model", default="gemini-3.8-flash")
     pl.add_argument("--timpa", action="store_true")
+    pl.add_argument("--jeda", type=float, default=0.0, help="detik antar panggilan (hindari batas kuota)")
+    _argumen_kuota(pl)
 
     b = sub.add_parser("bagi", help="bagi kasus tanpa split menjadi dev/uji")
     b.add_argument("--manifest", type=Path, required=True)
@@ -55,6 +58,13 @@ def _parser() -> argparse.ArgumentParser:
     c.add_argument("--split", choices=["dev", "uji"], required=True)
     c.add_argument("--n", type=int, default=50)
     return p
+
+
+def _argumen_kuota(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--ulang-sibuk", type=int, default=3, help="coba ulang saat kuota/sibuk (429, 5xx)")
+    p.add_argument(
+        "--tunggu-sibuk", type=float, default=30.0, help="detik tunggu pertama, berlipat dua tiap ulang"
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -77,7 +87,13 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.perintah == "pralabel":
-        n = pralabel(kasus, Konfigurasi(model=args.model, max_sisi=0))
+        n = pralabel(
+            kasus,
+            Konfigurasi(model=args.model, max_sisi=0),
+            jeda_detik=args.jeda,
+            ulang_sibuk=args.ulang_sibuk,
+            tunggu_sibuk_detik=args.tunggu_sibuk,
+        )
         print(f"{n} draf ditulis. Periksa setiap angka terhadap foto sebelum dipakai.")
         return 0
 
@@ -99,7 +115,15 @@ def main(argv: list[str] | None = None) -> int:
         for s in max_sisi
     ]
     keluar = args.keluar or FOLDER_BACKEND / "eval-hasil" / datetime.now().strftime("%Y%m%d-%H%M%S")
-    jalankan_evaluasi(kasus, konfigurasi, keluar, jeda_detik=args.jeda, kurs_idr=args.kurs_idr)
+    jalankan_evaluasi(
+        kasus,
+        konfigurasi,
+        keluar,
+        jeda_detik=args.jeda,
+        kurs_idr=args.kurs_idr,
+        ulang_sibuk=args.ulang_sibuk,
+        tunggu_sibuk_detik=args.tunggu_sibuk,
+    )
     print(f"\nHasil lengkap: {keluar}")
     return 0
 

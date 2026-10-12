@@ -13,7 +13,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from nota.api import deteksi_mime
-from nota.extraction import EkstraksiGagal, KlienGemini, KlienModel, ekstrak
+from nota.extraction import EkstraksiGagal, HasilEkstraksi, JenisGagal, KlienGemini, KlienModel, ekstrak
 from nota.pricing import SUMBER_HARGA, TANGGAL_HARGA, biaya_usd
 from nota.prompt import VERSI_PROMPT
 from nota.serialize import isu_ke_dict, nota_ke_dict
@@ -83,6 +83,38 @@ def klien_gemini(konfig: Konfigurasi) -> KlienModel:
     )
 
 
+def ekstrak_tahan_kuota(
+    gambar: bytes,
+    mime: str,
+    klien: KlienModel,
+    ulang_sibuk: int,
+    tunggu_sibuk_detik: float,
+    tidur: Callable[[float], None] = time.sleep,
+    cetak: Callable[[str], None] = print,
+) -> HasilEkstraksi:
+    """`ekstrak`, tetapi galat kuota atau layanan sibuk (429, 5xx) ditunggu lalu diulang.
+
+    Tier gratis Gemini membatasi permintaan per menit dan per hari. Kasus yang gagal karena kuota
+    bukan ukuran akurasi model, jadi tidak boleh tercatat sebagai kegagalan ekstraksi. Bila setelah
+    `ulang_sibuk` kali masih sibuk (kemungkinan kuota harian habis), evaluasi dihentikan.
+    """
+    for ke in range(ulang_sibuk + 1):
+        try:
+            return ekstrak(gambar, mime, klien)
+        except EkstraksiGagal as e:
+            if e.jenis is not JenisGagal.LAYANAN_SIBUK:
+                raise
+            if ke == ulang_sibuk:
+                raise SystemExit(
+                    f"Layanan AI masih sibuk atau kuota habis setelah {ulang_sibuk} kali coba ulang. "
+                    "Cek batas kuota di AI Studio, lalu jalankan lagi nanti."
+                ) from e
+            tunggu = tunggu_sibuk_detik * 2**ke
+            cetak(f"  kuota/sibuk, tunggu {tunggu:.0f} detik lalu coba lagi ({ke + 1}/{ulang_sibuk})")
+            tidur(tunggu)
+    raise AssertionError("tidak terjangkau")
+
+
 def periksa_kebenaran_siap(kasus: list[Kasus]) -> None:
     belum: list[str] = []
     for k in kasus:
@@ -104,6 +136,9 @@ def jalankan_evaluasi(
     jeda_detik: float = 0.0,
     kurs_idr: float | None = None,
     cetak: Callable[[str], None] = print,
+    ulang_sibuk: int = 3,
+    tunggu_sibuk_detik: float = 30.0,
+    tidur: Callable[[float], None] = time.sleep,
 ) -> list[HasilKasus]:
     periksa_kebenaran_siap(kasus)
     keluar.mkdir(parents=True, exist_ok=True)
@@ -117,7 +152,9 @@ def jalankan_evaluasi(
             benar = k.baca_kebenaran()
             gambar, mime = siapkan_gambar(k.gambar, konfig.max_sisi, konfig.kualitas)
             try:
-                hasil = ekstrak(gambar, mime, klien)
+                hasil = ekstrak_tahan_kuota(
+                    gambar, mime, klien, ulang_sibuk, tunggu_sibuk_detik, tidur, cetak
+                )
                 h = nilai_kasus(
                     k.id, k.jenis, konfig.label, benar, hasil.nota, hasil.lolos, None,
                     hasil.biaya_usd, hasil.latensi_ms, len(gambar),
@@ -142,7 +179,7 @@ def jalankan_evaluasi(
             status = "GAGAL " + h.gagal if h.gagal else ("sempurna" if h.sempurna else "ada salah")
             cetak(f"[{konfig.label}] {nomor}/{len(kasus)} {k.id}: {status}")
             if jeda_detik:
-                time.sleep(jeda_detik)
+                tidur(jeda_detik)
 
     _tulis_csv(keluar / "hasil.csv", semua)
     ringkasan = ringkas(semua)
@@ -177,11 +214,17 @@ def pralabel(
     timpa: bool = False,
     buat_klien: Callable[[Konfigurasi], KlienModel] = klien_gemini,
     cetak: Callable[[str], None] = print,
+    jeda_detik: float = 0.0,
+    ulang_sibuk: int = 3,
+    tunggu_sibuk_detik: float = 30.0,
+    tidur: Callable[[float], None] = time.sleep,
 ) -> int:
     """Tulis draf kebenaran dari hasil model, ditandai BELUM DIPERIKSA.
 
     Mempercepat pelabelan, tapi berisiko bias jangkar: setiap angka WAJIB dicocokkan dengan
     foto. `jalankan` menolak file yang masih bertanda pra-label.
+    Galat kuota tidak menulis templat kosong (kasus itu akan terlewati saat dijalankan ulang);
+    `ekstrak_tahan_kuota` menunggu, atau menghentikan proses bila kuota tetap habis.
     """
     klien = buat_klien(konfig)
     ditulis = 0
@@ -190,7 +233,8 @@ def pralabel(
             continue
         gambar, mime = siapkan_gambar(k.gambar, konfig.max_sisi, konfig.kualitas)
         try:
-            data = nota_ke_dict(ekstrak(gambar, mime, klien).nota)
+            hasil = ekstrak_tahan_kuota(gambar, mime, klien, ulang_sibuk, tunggu_sibuk_detik, tidur, cetak)
+            data = nota_ke_dict(hasil.nota)
         except EkstraksiGagal as e:
             cetak(f"{k.id}: ekstraksi gagal ({e.jenis.value}), templat kosong ditulis")
             data = {"items": [], "total": None}
@@ -201,4 +245,6 @@ def pralabel(
         k.kebenaran.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
         ditulis += 1
         cetak(f"{k.id}: draf ditulis ke {k.kebenaran}")
+        if jeda_detik:
+            tidur(jeda_detik)
     return ditulis
