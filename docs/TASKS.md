@@ -50,9 +50,12 @@ Langkah operasional rinci (perintah, urutan) ada di `docs/RUNBOOK.md`.
 - [x] F4 (C) Layar periksa dan koreksi, validasi lokal seketika, aturan simpan, pemetaan produk + alias,
   deteksi nota ganda.
 - [x] F5 (C) Room (stok dari SUM baris), riwayat, detail, hapus nota, tampilan selisih harga modal.
-- [ ] F6 (A) **Build pertama.** Kode Android belum pernah dikompilasi. Selesai kalau:
+- [x] F6 (A) **Build pertama.** Kode Android belum pernah dikompilasi. Selesai kalau:
   `./gradlew assembleDebug testDebugUnitTest lintDebug` hijau. (`docs/HANDOFF-AGENT.md`)
-- [ ] F7 (A) Uji ujung ke ujung di emulator dengan backend tiruan, sesuai skenario di HANDOFF.
+- [x] F7 (A) Uji ujung ke ujung di emulator dengan backend tiruan, sesuai skenario di HANDOFF.
+  Dijalankan di HP asli (Android 14, API 34) lewat `adb reverse tcp:8080 tcp:8080` dan
+  `nota.api.url.debug=http://127.0.0.1:8080/` di `local.properties`, karena emulator tidak stabil di laptop.
+  Semua poin lolos setelah perbaikan `FotoKompresor` (semua foto sebelumnya ditolak).
 - [ ] F8 (D) Uji di HP asli dengan nota dari laci terhadap backend Cloud Run. Selesai kalau: daftar bug dikirim.
 
 ## G. Rilis
