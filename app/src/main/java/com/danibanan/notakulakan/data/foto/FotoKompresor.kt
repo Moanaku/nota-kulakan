@@ -38,8 +38,9 @@ class FotoKompresor @Inject constructor(
         val resolver = ctx.contentResolver
 
         val ukuran = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, ukuran) }
-            ?: throw IOException("foto tidak bisa dibuka")
+        // Dengan inJustDecodeBounds, decodeStream selalu mengembalikan null; yang diperiksa streamnya.
+        val aliran = resolver.openInputStream(uri) ?: throw IOException("foto tidak bisa dibuka")
+        aliran.use { BitmapFactory.decodeStream(it, null, ukuran) }
         if (ukuran.outWidth <= 0 || ukuran.outHeight <= 0) throw IOException("bukan foto")
 
         val opsi = BitmapFactory.Options().apply {
