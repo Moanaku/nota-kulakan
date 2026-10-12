@@ -1,5 +1,6 @@
 package com.danibanan.notakulakan.ui.hasil
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -111,6 +112,9 @@ class HasilViewModel @Inject constructor(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
+                // Tanpa log, penyebab galat foto tidak terlihat sama sekali. Hanya jenisnya yang dicatat:
+                // pesan exception dari ContentResolver/berkas bisa memuat URI atau path foto.
+                Log.w("FotoNota", "foto gagal disiapkan: ${e.javaClass.simpleName}")
                 analitik.ekstraksiGagal(JenisGagal.FOTO_TIDAK_VALID)
                 _ui.value = HasilUi.Gagal(JenisGagal.FOTO_TIDAK_VALID, bisaUlang = false)
                 return@launch
