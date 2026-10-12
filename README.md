@@ -1,12 +1,12 @@
 # Nota Kulakan
 
 Foto nota dari grosir, barang masuk dan harga modal tercatat, dan hitungannya diperiksa otomatis.
-Aplikasi Android (Kotlin, Jetpack Compose) dengan backend Python di Cloud Run dan Gemini.
+Aplikasi Android (Kotlin, Jetpack Compose) dengan backend Python (FastAPI) dan Gemini.
 
 > Status: Lapisan 1 dalam pengerjaan. Semua angka bertanda **[BELUM DIUKUR]** diisi dari evaluasi
 > dan pengukuran nyata; tidak ada angka yang ditulis sebelum diukur.
-
-**[VIDEO DEMO]** · **[TAUTAN PLAY STORE]** · **[APK]**
+> Backend saat ini dijalankan lokal. Deploy ke Cloud Run dengan App Check masih **rencana**,
+> belum dilakukan.
 
 ## Masalah
 
@@ -17,11 +17,12 @@ tercatat, sehingga kenaikan harga modal tidak terlihat.
 ## Cara kerja
 
 ```mermaid
-flowchart LR
+flowchart TD
   A[Foto nota] --> B[Kompres di HP<br/>1600 px, JPEG 85]
-  B --> C[Backend Cloud Run<br/>App Check]
+  B --> C[Backend FastAPI<br/>saat ini lokal]
+  C -.-> R[Rencana, belum dideploy:<br/>Cloud Run + App Check]
   C --> D[Gemini<br/>menyalin teks nota]
-  D --> E[parse_rupiah / parse_qty<br/>menafsirkan angka]
+  D --> E[parse_rupiah, parse_qty<br/>menafsirkan angka]
   E --> F[Validator<br/>qty x harga = jumlah<br/>jumlah baris = total]
   F --> G[Layar periksa<br/>baris salah disorot]
   G --> H[Room: stok dan<br/>harga modal]
