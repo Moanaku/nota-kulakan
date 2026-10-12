@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.env
+*.jks
+*.keystore
+local.properties
+.gradle/
+build/
+data/private/*
+!data/private/.gitkeep
+eval-hasil/
+backend/eval-hasil/
+.ruff_cache/
+data/eval/

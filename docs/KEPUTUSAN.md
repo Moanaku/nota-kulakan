@@ -1,0 +1,94 @@
+# Catatan keputusan
+
+Setiap keputusan teknis penting, alternatifnya, dan alasannya. Ditulis supaya bisa dijelaskan di
+interview dan ditinjau ulang bila datanya berubah. Format: keputusan, alternatif, alasan, cara menguji.
+
+## 1. Masalah: nota kulakan toko sembako
+- **Alternatif:** struk restoran patungan, pengingat kedaluwarsa, pesanan WhatsApp, meteran kos.
+- **Alasan:** pengguna nyata (satu toko sembako), hasil AI paling bisa diperiksa otomatis (aritmetika),
+  data publik untuk separuh evaluasi (CORD), dan nota memang menumpuk di laci tanpa dipakai.
+- **Uji:** Fase 3 runbook. Bila nota tulis tangan tidak terbaca, keputusan ini ditinjau ulang.
+
+## 2. Kotlin native + Compose, bukan Flutter
+- **Alasan:** lowongan Android perbankan yang ditemukan meminta Kotlin, Compose, MVVM, Clean
+  Architecture, DI, Room. Akses langsung ke ML Kit untuk jalur OCR di HP pada Lapisan 2. Pengalaman
+  Flutter tetap ada di CV.
+
+## 3. Backend tipis Python, bukan Firebase AI Logic
+- **Alternatif:** Firebase AI Logic memanggil Gemini langsung dari aplikasi lewat proxy terkelola.
+- **Alasan:** prompt, parser, dan validator harus satu kode yang sama dengan harness evaluasi. Dengan
+  AI Logic, validator tinggal di Kotlin dan evaluasi Python mengukur kode lain. Kunci API juga tetap
+  hanya di server.
+- **Biaya keputusan:** satu layanan lagi untuk dideploy (Cloud Run) dan latensi satu lompatan.
+
+## 4. Lapisan 1: ekstraksi di cloud untuk semua nota
+- **Alternatif:** OCR di HP (ML Kit) untuk nota cetak, Gemini Nano di HP.
+- **Alasan:** setengah nota ditulis tangan; ML Kit untuk tulisan tangan dirancang untuk tinta digital,
+  bukan foto kertas; Gemini Nano hanya ada di HP flagship. Jalur hybrid baru dibangun bila evaluasi
+  per jenis nota menunjukkan nota cetak cukup akurat dengan OCR di HP.
+
+## 5. Model menyalin angka, kode yang menafsirkan
+- **Alternatif:** minta model mengembalikan bilangan.
+- **Alasan:** kesalahan klasik "60.000" terbaca 60 terjadi saat model menafsirkan pemisah ribuan.
+  Penafsiran dipindah ke `parse_rupiah` yang teruji. Model juga dilarang membetulkan hitungan, agar
+  ketidakcocokan asli di nota tetap terlihat oleh validator.
+
+## 6. Validator deterministik, dicerminkan di Kotlin, dijaga vektor uji bersama
+- **Alternatif:** validasi ulang lewat panggilan server setiap kali pengguna mengedit.
+- **Alasan:** sorotan merah harus berubah seketika saat mengetik, juga tanpa sinyal. Risiko dua
+  implementasi menyimpang ditutup oleh `shared/test-vectors.json` yang dijalankan Pytest dan JUnit;
+  hasil harapan ditulis tangan, bukan dihasilkan salah satu implementasi.
+- **Batas yang diakui:** lolos validator = konsisten, bukan benar. Nama barang tidak diperiksa.
+
+## 7. Aturan simpan: terhalang vs konfirmasi
+- Data tidak lengkap (field kosong, qty tidak sah, angka tak terbaca) **terhalang**: stok tidak boleh
+  berisi angka kosong.
+- Ketidakcocokan hitungan boleh disimpan setelah pengguna mencentang bahwa angkanya sudah sesuai nota
+  fisik, karena nota grosir asli kadang memang salah hitung. Nota seperti itu ditandai di riwayat.
+
+## 8. Representasi angka
+- Uang `int`/`Long` rupiah, tidak pernah float. Qty `Decimal`/`BigDecimal`.
+- Stok tidak disimpan sebagai angka yang diperbarui, tetapi dijumlahkan dari baris nota (qty x 1000
+  sebagai bilangan bulat). Menghapus nota otomatis membatalkan stoknya; tidak ada angka yang bisa
+  melenceng dari riwayat.
+
+## 9. App Check dengan token sekali pakai
+- **Alasan:** tanpa App Check siapa pun yang tahu URL bisa menghabiskan kuota Gemini. Token sekali
+  pakai dikonsumsi saat verifikasi sehingga tidak bisa diputar ulang (didukung `firebase-admin` 7.7.0,
+  dicek langsung di SDK).
+- **Biaya:** satu panggilan jaringan tambahan per permintaan; bisa dimatikan dengan `APP_CHECK_CONSUME=false`.
+- **Risiko terbuka:** APK yang dipasang di luar Play mungkin tidak lolos Play Integrity.
+
+## 10. Foto
+- Dikompres di HP ke sisi 1600 px, JPEG 85, sebelum diunggah. Parameter ini variabel evaluasi; harness
+  meniru kompresi yang sama.
+- Kamera lewat aplikasi kamera sistem dan galeri lewat Photo Picker: tanpa izin CAMERA dan izin
+  penyimpanan.
+- Server tidak menyimpan foto. Di HP, foto disimpan bersama nota untuk audit, tetapi tidak ikut cadangan
+  cloud (batas 25 MB Auto Backup).
+
+## 11. Pemetaan nama nota ke produk: alias persis, bukan AI
+- **Alternatif:** minta model mencocokkan nama ke katalog.
+- **Alasan:** pencocokan persis atas nama yang dinormalkan tidak pernah salah tebak; pengguna memetakan
+  sekali, nota berikutnya otomatis. Pencocokan kabur dengan AI masuk backlog bila datanya menunjukkan
+  banyak variasi ejaan.
+
+## 12. Deteksi nota ganda
+- Total sama, jumlah baris sama, dalam 14 hari = peringatan, bukan larangan. Heuristik sederhana yang
+  bisa dijelaskan, mencegah stok terhitung dua kali.
+
+## 13. Versi dependensi
+- Satu set rilis stabil 2025 yang saling kompatibel (AGP 8.13, Kotlin 2.2.20, Compose BOM 2025.09),
+  bukan yang terbaru, karena penulis tidak bisa me-resolve dependensi di lingkungannya. Upgrade besar
+  dikerjakan terpisah setelah Lapisan 1 stabil.
+
+## 14. Evaluasi
+- Set dev untuk menyetel, set uji untuk melapor; uji tidak pernah dipindah.
+- Interval Wilson karena n kecil. Validator dinilai dengan matriks kebingungan hanya pada nota yang
+  kebenarannya konsisten.
+- Pra-label oleh model diberi penanda dan ditolak harness sampai diperiksa manual, untuk menekan bias jangkar.
+
+## 15. Analitik hanya angka
+- Peristiwa `nota_diekstrak`, `nota_gagal`, `nota_disimpan` dengan jumlah baris, baris dikoreksi, dan
+  durasi. Ini alat ukur hipotesis nilai (waktu per nota, tingkat koreksi), bukan pelacakan isi nota.
+  Build debug tidak mengirim analitik.
