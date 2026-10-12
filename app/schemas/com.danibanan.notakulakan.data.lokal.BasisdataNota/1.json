@@ -1,0 +1,324 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "cd922f22ce1b8bfb365e76e1aeafe018",
+    "entities": [
+      {
+        "tableName": "produk",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nama` TEXT NOT NULL, `kunci` TEXT NOT NULL, `dibuatPada` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nama",
+            "columnName": "nama",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kunci",
+            "columnName": "kunci",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dibuatPada",
+            "columnName": "dibuatPada",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_produk_kunci",
+            "unique": true,
+            "columnNames": [
+              "kunci"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_produk_kunci` ON `${TABLE_NAME}` (`kunci`)"
+          }
+        ]
+      },
+      {
+        "tableName": "alias_produk",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`kunci` TEXT NOT NULL, `produkId` INTEGER NOT NULL, PRIMARY KEY(`kunci`), FOREIGN KEY(`produkId`) REFERENCES `produk`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "kunci",
+            "columnName": "kunci",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "produkId",
+            "columnName": "produkId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "kunci"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_alias_produk_produkId",
+            "unique": false,
+            "columnNames": [
+              "produkId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_alias_produk_produkId` ON `${TABLE_NAME}` (`produkId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "produk",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "produkId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "nota",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `supplier` TEXT, `tanggalTertulis` TEXT, `total` INTEGER NOT NULL, `subtotal` INTEGER, `diskon` INTEGER NOT NULL, `pajak` INTEGER NOT NULL, `biayaLain` INTEGER NOT NULL, `pembulatan` INTEGER NOT NULL, `dibuatPada` INTEGER NOT NULL, `fotoPath` TEXT, `dikonfirmasiMeskiTidakCocok` INTEGER NOT NULL, `model` TEXT, `versiPrompt` TEXT, `biayaUsd` REAL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplier",
+            "columnName": "supplier",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "tanggalTertulis",
+            "columnName": "tanggalTertulis",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "total",
+            "columnName": "total",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subtotal",
+            "columnName": "subtotal",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "diskon",
+            "columnName": "diskon",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pajak",
+            "columnName": "pajak",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "biayaLain",
+            "columnName": "biayaLain",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pembulatan",
+            "columnName": "pembulatan",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dibuatPada",
+            "columnName": "dibuatPada",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fotoPath",
+            "columnName": "fotoPath",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "dikonfirmasiMeskiTidakCocok",
+            "columnName": "dikonfirmasiMeskiTidakCocok",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "model",
+            "columnName": "model",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "versiPrompt",
+            "columnName": "versiPrompt",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "biayaUsd",
+            "columnName": "biayaUsd",
+            "affinity": "REAL"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "baris_nota",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `notaId` INTEGER NOT NULL, `produkId` INTEGER NOT NULL, `urutan` INTEGER NOT NULL, `namaDiNota` TEXT NOT NULL, `qtyMilli` INTEGER NOT NULL, `satuan` TEXT, `hargaSatuan` INTEGER NOT NULL, `jumlah` INTEGER NOT NULL, `diskonBaris` INTEGER NOT NULL, `hargaDihitung` INTEGER NOT NULL, FOREIGN KEY(`notaId`) REFERENCES `nota`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`produkId`) REFERENCES `produk`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notaId",
+            "columnName": "notaId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "produkId",
+            "columnName": "produkId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "urutan",
+            "columnName": "urutan",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "namaDiNota",
+            "columnName": "namaDiNota",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "qtyMilli",
+            "columnName": "qtyMilli",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "satuan",
+            "columnName": "satuan",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "hargaSatuan",
+            "columnName": "hargaSatuan",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jumlah",
+            "columnName": "jumlah",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "diskonBaris",
+            "columnName": "diskonBaris",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hargaDihitung",
+            "columnName": "hargaDihitung",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_baris_nota_notaId",
+            "unique": false,
+            "columnNames": [
+              "notaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_baris_nota_notaId` ON `${TABLE_NAME}` (`notaId`)"
+          },
+          {
+            "name": "index_baris_nota_produkId",
+            "unique": false,
+            "columnNames": [
+              "produkId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_baris_nota_produkId` ON `${TABLE_NAME}` (`produkId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "nota",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "notaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "produk",
+            "onDelete": "RESTRICT",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "produkId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cd922f22ce1b8bfb365e76e1aeafe018')"
+    ]
+  }
+}
