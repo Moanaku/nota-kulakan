@@ -14,3 +14,5 @@ eval-hasil/
 backend/eval-hasil/
 .ruff_cache/
 data/eval/
+.idea/
+*.egg-info/
