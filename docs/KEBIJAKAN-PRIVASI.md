@@ -16,6 +16,8 @@ menjelaskan data apa yang diproses aplikasi dan untuk apa.
 - Server meneruskan foto ke layanan Google Gemini API untuk dibaca, lalu mengembalikan hasilnya ke HP.
 - Server aplikasi **tidak menyimpan** foto dan tidak mencatat isinya di log. Log server hanya berisi
   angka teknis (jumlah baris, waktu proses, pemakaian token).
+- [CATATAN 12 Okt 2026: pengembangan memakai tier gratis; kalimat berikut baru benar setelah pindah ke
+  tier berbayar sebelum rilis. Lihat `docs/KEPUTUSAN.md` 16.]
 - Pemrosesan oleh Gemini API tunduk pada ketentuan Google untuk layanan berbayar: [CEK DAN RINGKAS
   KETENTUAN PENGGUNAAN DATA DAN RETENSI GEMINI API YANG BERLAKU].
 - Anda bisa memakai aplikasi tanpa mengirim foto dengan memilih "Isi manual".

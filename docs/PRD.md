@@ -122,7 +122,7 @@ Urut menurut nilai per usaha, menunggu Lapisan 1 terukur:
 - Prompt bisa overfit ke set evaluasi, sehingga pemisahan dev dan uji wajib.
 - Perlindungan replay App Check tidak tersedia untuk Python. Tulis sebagai batasan.
 - Harga dan daftar model berubah. Catat tanggal pengukuran biaya.
-- Foto nota dikirim ke server dan layanan AI. Kebijakan privasi dan formulir Data Safety harus menyebutnya. Foto asli hanya lewat akun dengan billing aktif.
+- Foto nota dikirim ke server dan layanan AI. Kebijakan privasi dan formulir Data Safety harus menyebutnya. Selama memakai tier gratis Gemini (Google boleh memakai isinya untuk memperbaiki produk), nota yang dikirim hanya yang memuat nama toko, nama toko penerima, daftar barang, dan harga; nomor telepon, alamat pribadi, dan nomor rekening dipotong atau ditutup dulu.
 
 ## 9. Definisi selesai Lapisan 1
 

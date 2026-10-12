@@ -24,11 +24,14 @@ Langkah operasional rinci (perintah, urutan) ada di `docs/RUNBOOK.md`.
 
 ## C. Akun dan data (Dani, paralel)
 - [ ] C1 (D) **(DITUNDA)** Play Console personal + verifikasi identitas. (RUNBOOK 2.1)
-- [ ] C2 (D) Project Google Cloud dengan billing dan budget alert (2.2), wajib untuk C3.
-  Bagian Firebase (2.3-2.4) **(DITUNDA)**.
-- [ ] C3 (D) API key Gemini di `backend/.env` (tidak di-commit). (2.5)
+- [ ] C2 (D) **(DILEWATI)** Project Google Cloud dengan billing dan budget alert (2.2): Gemini
+  memakai tier gratis tanpa billing. Bagian Firebase (2.3-2.4) **(DITUNDA)**.
+- [ ] C3 (D) API key Gemini tier gratis dari AI Studio di `backend/.env` (tidak di-commit). (2.5)
 - [ ] C4 (D) **(DITUNDA)** 15-20 calon tester. (2.6)
 - [ ] C5 (D) 5 foto nota beragam, lalu ~50 untuk evaluasi, di `data/private/toko/`. (3.1, 5.1)
+  Nota yang boleh dikirim ke Gemini hanya yang memuat nama toko, nama toko penerima, daftar barang,
+  dan harga. Nota yang memuat nomor telepon, alamat pribadi, atau nomor rekening harus dipotong atau
+  ditutup dulu (crop, atau tutup dengan kertas saat memfoto).
 - [ ] C6 (D) Android Studio, Python 3.11+, Git, Claude Code/Antigravity terpasang. (1.3)
 - [ ] C7 (D) Repo di GitHub, CI hijau. (1.2, 1.5)
 

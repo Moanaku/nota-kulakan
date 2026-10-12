@@ -14,7 +14,7 @@ definisi di bawah saat interview; ubah yang tidak disetujui sebelum angka pertam
 
 | Set | Isi | Sumber | Lisensi / izin |
 |---|---|---|---|
-| toko | ~50 nota kulakan dari toko pengguna, cetak dan tulis | difoto Dani | data pribadi; foto tidak di-commit, tidak dipublikasikan |
+| toko | ~50 nota kulakan dari toko pengguna, cetak dan tulis | difoto Dani | data pribadi; foto tidak di-commit, tidak dipublikasikan; telepon, alamat pribadi, dan rekening ditutup sebelum dikirim ke Gemini tier gratis (KEPUTUSAN 16) |
 | cord | ~50 struk dari CORD v2 split validation (dev) dan test (uji) | `python -m nota_eval cord` | CC BY 4.0, atribusi di README |
 
 Catatan jujur:

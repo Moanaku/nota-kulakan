@@ -106,6 +106,13 @@ kabel USB. HP memanggil `127.0.0.1:8080`, lalu `adb reverse` meneruskannya ke la
 **Rilis ditunda** (keputusan Dani, 12 Okt 2026). Jangan kerjakan Firebase (RUNBOOK 2.3-2.4), deploy
 Cloud Run (Fase 4), maupun Play Store (Fase 6) sampai Dani membukanya lagi; di TASKS bertanda (DITUNDA).
 
-Yang berikutnya adalah membaca nota asli secara lokal: RUNBOOK 2.2 (billing dan budget alert) dan 2.5
-(API key), lalu Fase 3 (D3), lalu Fase 5 (evaluasi). Minta agen mengikuti langkah demi langkah dan
+Gemini memakai **tier gratis** AI Studio tanpa billing (RUNBOOK 2.2 dilewati). Aturan data nota:
+  Nota yang boleh dikirim ke Gemini hanya yang memuat nama toko, nama toko penerima, daftar barang,
+  dan harga. Nota yang memuat nomor telepon, alamat pribadi, atau nomor rekening harus dipotong atau
+  ditutup dulu (crop, atau tutup dengan kertas saat memfoto).
+Jangan mengirim foto yang belum memenuhi aturan ini, termasuk lewat aplikasi ke backend lokal.
+
+Yang berikutnya adalah membaca nota asli secara lokal: RUNBOOK 2.5 (API key), lalu Fase 3 (D3), lalu
+Fase 5 (evaluasi). Pakai `--jeda` di `pralabel` dan `jalankan` karena kuota tier gratis terbatas.
+Minta agen mengikuti langkah demi langkah dan
 berhenti di setiap langkah yang membutuhkan akun, pembayaran, atau persetujuanmu.

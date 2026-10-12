@@ -92,3 +92,16 @@ interview dan ditinjau ulang bila datanya berubah. Format: keputusan, alternatif
 - Peristiwa `nota_diekstrak`, `nota_gagal`, `nota_disimpan` dengan jumlah baris, baris dikoreksi, dan
   durasi. Ini alat ukur hipotesis nilai (waktu per nota, tingkat koreksi), bukan pelacakan isi nota.
   Build debug tidak mengirim analitik.
+
+## 16. Gemini tier gratis, dengan aturan isi nota
+- **Keputusan (12 Okt 2026):** API key Gemini dari AI Studio tier gratis, tanpa billing. Nota yang
+  boleh dikirim hanya yang memuat nama toko, nama toko penerima, daftar barang, dan harga. Nomor
+  telepon, alamat pribadi, dan nomor rekening dipotong atau ditutup sebelum dikirim.
+- **Alternatif:** tier berbayar (aturan sebelumnya: foto asli hanya lewat billing aktif).
+- **Alasan:** Proyek ini memutuskan memakai tier gratis tanpa billing. Di tier gratis Google boleh memakai isi permintaan
+  untuk memperbaiki produknya, jadi yang dikirim dibatasi pada data dagang, bukan data pribadi.
+- **Akibat:** kuota per menit dan per hari terbatas; harness evaluasi memberi jeda dan menunggu saat 429.
+  Ketentuan ini tidak cocok untuk rilis ke pengguna lain (mereka tidak menyensor fotonya), jadi rilis
+  butuh tier berbayar; kebijakan privasi masih menulis layanan berbayar.
+- **Cara menguji:** sebelum `pralabel` atau `jalankan`, buka setiap foto di `data/private/toko/` dan
+  pastikan tidak ada nomor telepon, alamat pribadi, atau nomor rekening yang terbaca.
