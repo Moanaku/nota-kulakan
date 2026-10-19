@@ -35,3 +35,4 @@ Studi kasus produk dan rekayasa, bukan pesaing aplikasi kasir.
     nomor telepon, alamat pribadi, dan nomor rekening dipotong atau ditutup dulu (`docs/KEPUTUSAN.md` 16).
 11. Jangan mulai Lapisan 2 (`docs/PRD.md` 7b) sebelum Lapisan 1 berjalan, terukur, dan terdokumentasi.
 12. Tanya dulu sebelum mengubah `applicationId`, skema database (butuh migrasi), atau format API.
+13. Pesan commit dan deskripsi PR tanpa atribusi Claude/AI (tanpa Co-Authored-By, tanpa tautan sesi).
