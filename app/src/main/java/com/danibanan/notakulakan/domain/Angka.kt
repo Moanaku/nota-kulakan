@@ -73,12 +73,17 @@ object Rupiah {
         if (digits.isEmpty() || !digits.all { it.isDigit() }) {
             throw AngkaTidakValid("bukan angka rupiah: '$teks'")
         }
-        if (pecahan.isNotEmpty() &&
-            (!pecahan.all { it.isDigit() } || pecahan.length > 2 || pecahan.toInt() != 0)
-        ) {
+        if (pecahan.isNotEmpty() && (!pecahan.all { it.isDigit() } || pecahan.length > 2)) {
             throw AngkaTidakValid("bukan bilangan bulat rupiah: '$teks'")
         }
-        val nilai = digits.toLongOrNull() ?: throw AngkaTidakValid("angka terlalu besar: '$teks'")
+        var nilai = digits.toLongOrNull() ?: throw AngkaTidakValid("angka terlalu besar: '$teks'")
+        // Sen dibulatkan hanya untuk "1.250,50" (dua pemisah, tepat 2 digit). Lihat money.py.
+        if (pecahan.isNotEmpty() && pecahan.toInt() != 0) {
+            if (!(adaTitik && adaKoma && pecahan.length == 2)) {
+                throw AngkaTidakValid("bukan bilangan bulat rupiah: '$teks'")
+            }
+            if (pecahan.toInt() >= 50) nilai += 1
+        }
         return if (negatif) -nilai else nilai
     }
 

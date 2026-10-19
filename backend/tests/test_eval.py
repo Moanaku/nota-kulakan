@@ -220,6 +220,23 @@ def test_pralabel_ditandai_dan_ditolak_saat_evaluasi(tmp_path, klien_skrip):
         )
 
 
+def test_pralabel_mencetak_angka_tidak_terbaca_tanpa_mengubah_draf(tmp_path, klien_skrip):
+    kasus = _set_kasus(tmp_path, None)
+    keluaran = nota_json(
+        [{"nama": "Gula", "qty": "2", "harga_satuan": "60.000", "jumlah": "120.000"}],
+        pajak="13.2,5",
+        total="120.000",
+    )
+    baris: list[str] = []
+    pralabel(kasus, Konfigurasi("m", 0), buat_klien=lambda _: klien_skrip([keluaran]), cetak=baris.append)
+    tak_terbaca = [b for b in baris if "13.2,5" in b]
+    assert len(tak_terbaca) == 2  # per nota, lalu di ringkasan akhir
+    assert tak_terbaca[0].startswith("a: angka tidak terbaca:") and "pajak" in tak_terbaca[0]
+    assert any(b.startswith("Angka tidak terbaca di 1 nota") for b in baris)
+    draf = json.loads((tmp_path / "a.json").read_text())
+    assert draf["pajak"] == 0 and "isu" not in draf
+
+
 # --- kuota tier gratis -------------------------------------------------------------
 
 _GULA = nota_json(

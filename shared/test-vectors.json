@@ -27,7 +27,18 @@
     {"teks": "1.250,000", "galat": true},
     {"teks": "6 0.000", "galat": true},
     {"teks": "1.5,5", "galat": true},
-    {"teks": "6O.000", "galat": true}
+    {"teks": "6O.000", "galat": true},
+    {"teks": "446.441,16", "hasil": 446441},
+    {"teks": "4.504.997,16", "hasil": 4504997},
+    {"teks": "1.250,50", "hasil": 1251},
+    {"teks": "1.250,49", "hasil": 1250},
+    {"teks": "1.250,99", "hasil": 1251},
+    {"teks": "1.250,00", "hasil": 1250},
+    {"teks": "(1.250,50)", "hasil": -1251},
+    {"teks": "1.250,5", "galat": true},
+    {"teks": "60,50", "galat": true},
+    {"teks": "60.50", "galat": true},
+    {"teks": "1.250,499", "galat": true}
   ],
   "qty": [
     {"teks": "2", "hasil": "2"},

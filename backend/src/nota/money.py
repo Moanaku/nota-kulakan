@@ -52,6 +52,11 @@ def parse_rupiah(teks: str) -> int:
     - Satu pemisah muncul sekali dan diikuti tepat 3 digit: ribuan ("60.000", "60,000").
     - Satu pemisah muncul sekali dan diikuti 1-2 digit: desimal, harus bernilai nol ("60,00").
     - Selain itu ditolak.
+
+    Sen bukan nol hanya diterima bila titik dan koma sama-sama muncul DAN pecahannya tepat 2 digit
+    ("446.441,16"): dibulatkan ke rupiah terdekat, sen 00-49 turun dan 50-99 naik, menurut besarnya
+    (negatif: sen 50 menjauhi nol). Pecahan 1 digit ("1.250,5", "12.5") atau satu jenis pemisah saja
+    ("60,50") tetap ditolak karena bisa berarti ribuan yang salah tulis.
     Angka negatif ditulis "-5.000" atau "(5.000)" (umum untuk diskon).
     """
     if not isinstance(teks, str):
@@ -99,10 +104,15 @@ def parse_rupiah(teks: str) -> int:
 
     if not digits.isdigit():
         raise RupiahParseError(f"bukan angka rupiah: {teks!r}")
-    if pecahan and (not pecahan.isdigit() or len(pecahan) > 2 or int(pecahan) != 0):
+    if pecahan and (not pecahan.isdigit() or len(pecahan) > 2):
         raise RupiahParseError(f"bukan bilangan bulat rupiah: {teks!r}")
 
     nilai = int(digits)
+    if pecahan and int(pecahan) != 0:
+        if not (ada_titik and ada_koma and len(pecahan) == 2):
+            raise RupiahParseError(f"bukan bilangan bulat rupiah: {teks!r}")
+        if int(pecahan) >= 50:
+            nilai += 1
     return -nilai if negatif else nilai
 
 

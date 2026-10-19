@@ -154,3 +154,33 @@ class UkuranFotoTest {
         assertTrue(8160 / s >= 1600)
     }
 }
+
+/** Cermin backend/tests/test_validator_sen.py: validator tanpa toleransi pembulatan sen. */
+class ValidatorSenTest {
+    private fun nota(jumlah: Long, pajak: String, total: String) = Nota(
+        items = listOf(ItemBaris("Minyak goreng", BigDecimal.ONE, "drm", jumlah, jumlah)),
+        total = Rupiah.parse(total),
+        subtotal = jumlah,
+        pajak = Rupiah.parse(pajak),
+    )
+
+    private fun ringkas(h: HasilValidasi) = h.isu.map { Triple(it.kode, it.diharapkan, it.ditemukan) }
+
+    @Test
+    fun totalBersenDibulatkanNaikSelisihSatuRupiahDitandai() {
+        val h = Validator.validasi(nota(4058556, "446.441,16", "4.504.997,56"))
+        assertEquals(listOf(Triple(KodeIsu.TOTAL_TIDAK_COCOK, 4504997L, 4504998L)), ringkas(h))
+        assertTrue(!h.lolos)
+    }
+
+    @Test
+    fun duaFieldSen50DibulatkanNaikTerpisahDitandai() {
+        val h = Validator.validasi(nota(Rupiah.parse("1.000,50"), "1.100,50", "2.101,00"))
+        assertEquals(listOf(Triple(KodeIsu.TOTAL_TIDAK_COCOK, 2102L, 2101L)), ringkas(h))
+    }
+
+    @Test
+    fun pembulatanYangSelarasLolos() {
+        assertTrue(Validator.validasi(nota(4058556, "446.441,16", "4.504.997,16")).lolos)
+    }
+}

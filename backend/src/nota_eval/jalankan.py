@@ -17,6 +17,7 @@ from nota.extraction import EkstraksiGagal, HasilEkstraksi, JenisGagal, KlienGem
 from nota.pricing import SUMBER_HARGA, TANGGAL_HARGA, biaya_usd
 from nota.prompt import VERSI_PROMPT
 from nota.serialize import isu_ke_dict, nota_ke_dict
+from nota.validator import Kode
 
 from .dataset import Kasus
 from .metrik import HasilKasus, nilai_kasus, ringkas, tabel_markdown
@@ -225,26 +226,48 @@ def pralabel(
     foto. `jalankan` menolak file yang masih bertanda pra-label.
     Galat kuota tidak menulis templat kosong (kasus itu akan terlewati saat dijalankan ulang);
     `ekstrak_tahan_kuota` menunggu, atau menghentikan proses bila kuota tetap habis.
+    Angka yang tidak terbaca (FORMAT_TIDAK_DIKENALI) tidak tersimpan di draf: nilainya null, atau 0
+    untuk diskon/pajak/biaya_lain. Karena itu dicetak per nota dan diringkas di akhir.
     """
     klien = buat_klien(konfig)
     ditulis = 0
-    for k in kasus:
-        if k.kebenaran.exists() and not timpa:
-            continue
-        gambar, mime = siapkan_gambar(k.gambar, konfig.max_sisi, konfig.kualitas)
-        try:
-            hasil = ekstrak_tahan_kuota(gambar, mime, klien, ulang_sibuk, tunggu_sibuk_detik, tidur, cetak)
-            data = nota_ke_dict(hasil.nota)
-        except EkstraksiGagal as e:
-            cetak(f"{k.id}: ekstraksi gagal ({e.jenis.value}), templat kosong ditulis")
-            data = {"items": [], "total": None}
-        data[PENANDA_PRALABEL] = (
-            "pralabel - BELUM DIPERIKSA. Cocokkan tiap angka dengan foto, lalu hapus baris ini."
-        )
-        k.kebenaran.parent.mkdir(parents=True, exist_ok=True)
-        k.kebenaran.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-        ditulis += 1
-        cetak(f"{k.id}: draf ditulis ke {k.kebenaran}")
-        if jeda_detik:
-            tidur(jeda_detik)
+    tak_terbaca: dict[str, list[str]] = {}
+    try:
+        for k in kasus:
+            if k.kebenaran.exists() and not timpa:
+                continue
+            gambar, mime = siapkan_gambar(k.gambar, konfig.max_sisi, konfig.kualitas)
+            try:
+                hasil = ekstrak_tahan_kuota(
+                    gambar, mime, klien, ulang_sibuk, tunggu_sibuk_detik, tidur, cetak
+                )
+                data = nota_ke_dict(hasil.nota)
+                pesan = [i.pesan for i in hasil.isu if i.kode is Kode.FORMAT_TIDAK_DIKENALI]
+                for p in pesan:
+                    cetak(f"{k.id}: angka tidak terbaca: {p}")
+                if pesan:
+                    tak_terbaca[k.id] = pesan
+            except EkstraksiGagal as e:
+                cetak(f"{k.id}: ekstraksi gagal ({e.jenis.value}), templat kosong ditulis")
+                data = {"items": [], "total": None}
+            data[PENANDA_PRALABEL] = (
+                "pralabel - BELUM DIPERIKSA. Cocokkan tiap angka dengan foto, lalu hapus baris ini."
+            )
+            k.kebenaran.parent.mkdir(parents=True, exist_ok=True)
+            k.kebenaran.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            ditulis += 1
+            cetak(f"{k.id}: draf ditulis ke {k.kebenaran}")
+            if jeda_detik:
+                tidur(jeda_detik)
+    finally:
+        # Tetap dicetak bila proses berhenti karena kuota, untuk draf yang sudah ditulis.
+        if tak_terbaca:
+            cetak(
+                f"Angka tidak terbaca di {len(tak_terbaca)} nota (null, atau 0 untuk diskon/pajak/biaya_lain):"
+            )
+            for id_kasus, daftar in tak_terbaca.items():
+                for p in daftar:
+                    cetak(f"  {id_kasus}: {p}")
+        else:
+            cetak("Angka tidak terbaca: tidak ada.")
     return ditulis
