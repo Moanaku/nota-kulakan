@@ -75,6 +75,15 @@ Aturan pelabelan:
 - Kuantitas dua kolom (besar + kecil) ditulis dalam satuan harga. Contoh: 0 karton + 5 buah dengan
   isi 40 per karton, harga per karton -> qty `"0.125"`.
 - Dokumen di luar cakupan (bukan nota pembelian, mis. retur) -> set ketahanan, tidak masuk set utama.
+- Transaksi yang sama (salinan Surat Jalan/Faktur dengan nomor, tanggal, barang, dan total sama)
+  hanya satu di set utama: simpan yang bernomor file lebih kecil; salinannya ke set ketahanan.
+- Kuantitas multi-satuan yang tidak habis dibagi (mis. 6 buah dari isi 72) dibulatkan 3 desimal
+  (`"0.083"`). Selisih qty x harga dengan jumlah tertulis dicatat, dan nota itu dilaporkan terpisah
+  dari matriks validator.
+- Bila nota mencetak harga daftar dan harga netto, `harga_satuan` = harga daftar dan `diskon_baris` =
+  selisihnya. Diskon nota = 0 bila total diskon yang tercetak hanya jumlah potongan baris.
+- Angka tulisan tangan di atas nota (penjumlahan manual, pembulatan) tidak dipakai; kunci memakai
+  angka cetak.
 
 ## 5. Alur kerja
 
