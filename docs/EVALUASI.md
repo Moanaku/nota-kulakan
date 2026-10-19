@@ -68,6 +68,13 @@ Aturan pelabelan:
   (`manifest-ketahanan.jsonl`) dan laporkan terpisah dari angka akurasi. Alasannya: field null di
   kunci jawaban membuat validator selalu melapor `field_kosong`, yang merusak matriks kebingungan
   validator (bagian 6).
+- `pajak` = pajak yang **ditambahkan di atas** jumlah baris ("+PPN", "PPN Exclude"). PPN yang sudah
+  termasuk harga ("Harga sudah termasuk PPN", walau nominal PPN-nya dicetak) -> `pajak` 0.
+- Diskon persen per baris -> `diskon_baris` = qty x harga - netto, dalam rupiah. Nilainya diturunkan
+  dari selisih yang dijelaskan oleh persen tertulis di baris itu, bukan ditebak.
+- Kuantitas dua kolom (besar + kecil) ditulis dalam satuan harga. Contoh: 0 karton + 5 buah dengan
+  isi 40 per karton, harga per karton -> qty `"0.125"`.
+- Dokumen di luar cakupan (bukan nota pembelian, mis. retur) -> set ketahanan, tidak masuk set utama.
 
 ## 5. Alur kerja
 
