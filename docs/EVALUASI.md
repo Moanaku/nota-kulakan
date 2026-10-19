@@ -139,11 +139,19 @@ tanpa pra-label dan bandingkan hasilnya; tulis selisihnya di README.
 
 - **Penyejajaran baris**: pasangan prediksi dan kebenaran berdasarkan kemiripan nama
   (SequenceMatcher, greedy, ambang 0,5). Baris kebenaran tanpa pasangan = terlewat.
-- **Akurasi field** qty, harga satuan, jumlah: nilai sama persis / baris kebenaran yang punya
-  nilai itu. Baris terlewat dihitung salah.
-- **Nota sempurna**: tidak gagal, jumlah baris sama, semua baris cocok persis di semua field
-  angka, total sama. Dilaporkan dengan interval kepercayaan 95% Wilson, karena n kecil.
-- **Validator** (hanya nota yang kebenarannya konsisten secara aritmetika):
+- **Akurasi field per baris** qty, harga satuan, diskon baris, jumlah: nilai sama persis / baris
+  kebenaran yang punya nilai itu. Baris terlewat dihitung salah. **Pajak** dinilai per nota
+  (nota gagal dihitung salah).
+- **Nota sempurna**: tidak gagal, jumlah baris sama, dan setiap baris cocok persis di qty,
+  harga_satuan, diskon_baris, dan jumlah; serta diskon, pajak, biaya_lain, pembulatan, dan total
+  tingkat nota sama persis (tanpa toleransi). Subtotal **tidak** dibandingkan: kunci sering null
+  karena nota tidak mencetaknya, dan model yang mengisinya tidak salah. Dilaporkan dengan interval
+  kepercayaan 95% Wilson, karena n kecil.
+  - Definisi diperketat pada 2026-10-19 setelah putaran dev baseline, sebelum split uji dijalankan;
+    hasil uji belum pernah dilihat. Alasan: definisi lama tidak menilai diskon_baris dan pajak
+    sehingga nota dengan diskon bergeser tercatat sempurna.
+- **Validator** (hanya nota yang kebenarannya konsisten secara aritmetika; "salah" = tidak sempurna
+  menurut definisi di atas):
   - menangkap = tidak sempurna DAN ditandai / semua yang tidak sempurna
   - alarm palsu = sempurna TAPI ditandai / semua yang sempurna
   - "terlewat" (salah tapi lolos) adalah angka paling penting: data salah masuk ke stok tanpa

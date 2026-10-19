@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import json
+from dataclasses import replace
 from decimal import Decimal
 
 import pytest
@@ -75,6 +76,59 @@ def test_kebenaran_tanpa_harga_satuan_tetap_konsisten():
 def test_kasus_gagal():
     h = nilai_kasus("a", "cetak", "k", BENAR, None, None, "waktu_habis", None, None, 1)
     assert not h.sempurna and h.baris_terlewat == 2 and h.kategori_validator is None
+
+
+# --- definisi nota sempurna (diperketat 2026-10-19) ------------------------------
+
+DISKON_PAJAK = Nota(
+    items=(
+        ItemBaris("Indomie Goreng", Decimal("2"), "dus", 110000, 219000, diskon_baris=1000),
+        _item("Aqua 600ml", "1", 45000, 45000),
+    ),
+    pajak=26400,
+    total=290400,
+)
+
+
+def _nilai(benar, prediksi):
+    return nilai_kasus("a", "cetak", "k", benar, prediksi, True, None, None, None, 1)
+
+
+def test_sempurna_a_dua_nota_sama_persis():
+    h = _nilai(DISKON_PAJAK, DISKON_PAJAK)
+    assert h.sempurna and h.pajak_benar
+    assert (h.diskon_baris_benar, h.diskon_baris_n) == (2, 2)
+    tabel = tabel_markdown(ringkas([h]))
+    assert "| Diskon baris | Pajak |" in tabel and "| 100% (2/2) | 100% (1/1) |" in tabel
+
+
+def test_sempurna_b_beda_hanya_diskon_baris_satu_baris():
+    geser = replace(
+        DISKON_PAJAK, items=(replace(DISKON_PAJAK.items[0], diskon_baris=0), DISKON_PAJAK.items[1])
+    )
+    h = _nilai(DISKON_PAJAK, geser)
+    assert not h.sempurna and h.diskon_baris_benar == 1
+    assert (h.qty_benar, h.harga_benar, h.jumlah_benar) == (2, 2, 2) and h.total_benar
+
+
+def test_sempurna_c_beda_hanya_pajak():
+    h = _nilai(DISKON_PAJAK, replace(DISKON_PAJAK, pajak=0))
+    assert not h.sempurna and not h.pajak_benar and h.total_benar
+
+
+def test_sempurna_d_kunci_subtotal_null_model_mengisi():
+    assert DISKON_PAJAK.subtotal is None
+    assert _nilai(DISKON_PAJAK, replace(DISKON_PAJAK, subtotal=264000)).sempurna
+
+
+def test_sempurna_e_subtotal_beda_tidak_dibandingkan():
+    benar = replace(DISKON_PAJAK, subtotal=264000)
+    assert _nilai(benar, replace(benar, subtotal=999)).sempurna
+
+
+def test_sempurna_f_jumlah_baris_beda():
+    h = _nilai(DISKON_PAJAK, replace(DISKON_PAJAK, items=DISKON_PAJAK.items[:1]))
+    assert not h.sempurna and h.baris_terlewat == 1
 
 
 def test_wilson_masuk_akal():
