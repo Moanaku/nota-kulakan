@@ -4,14 +4,15 @@ Pemilik: **C** = Claude (sesi cloud), **A** = agen lokal (Claude Code / Antigrav
 **D** = Dani. Centang hanya bila kriteria "selesai kalau" terpenuhi.
 Langkah operasional rinci (perintah, urutan) ada di `docs/RUNBOOK.md`.
 
-> **Status 12 Okt 2026: rilis ditunda.** Fokus sekarang membaca nota asli secara lokal (D3, lalu E).
-> Tugas bertanda **(DITUNDA)** adalah jalur rilis Play Store (Firebase, Cloud Run, Play Console,
-> tester) dan tidak dikerjakan sampai Dani membukanya lagi. Cara menjalankan aplikasi di HP terhadap
+> **Status 19 Okt 2026:** tidak ada rilis ke Play Store, tidak ada tester, dan tidak ada closed test.
+> APK dibagikan lewat GitHub Releases (`docs/KEPUTUSAN.md` 17, RUNBOOK Fase 6). D3 selesai; fokus
+> berikutnya evaluasi (E). Tugas bertanda **(DITUNDA)** (Firebase, Cloud Run) tidak dikerjakan sampai
+> Dani membukanya lagi. Cara menjalankan aplikasi di HP terhadap
 > backend lokal ada di `docs/HANDOFF-AGENT.md` bagian "Menjalankan lagi".
 
 ## A. Dokumen dan fondasi
 - [x] A1 (C) Kerangka repo, CLAUDE.md, parser rupiah dan qty, skema, validator.
-- [x] A2 (C) PRD, daftar tugas, catatan keputusan, runbook, bahan rilis.
+- [x] A2 (C) PRD, daftar tugas, catatan keputusan, runbook, bahan rilis (bahan Play kini di `docs/arsip/`).
 - [ ] A3 (D) Tinjau `backend/src/nota/schema.py`, `docs/EVALUASI.md`, dan `docs/KEPUTUSAN.md`.
   Selesai kalau: setiap keputusan bisa dijelaskan dengan kata sendiri, atau revisinya dikirim.
 - [x] A4 (C) Unit test backend (78) dan domain Kotlin (19), termasuk vektor uji bersama. Lolos di
@@ -23,11 +24,10 @@ Langkah operasional rinci (perintah, urutan) ada di `docs/RUNBOOK.md`.
 - [x] B2 (D) Prototipe disetujui ("cocok").
 
 ## C. Akun dan data (Dani, paralel)
-- [ ] C1 (D) **(DITUNDA)** Play Console personal + verifikasi identitas. (RUNBOOK 2.1)
 - [ ] C2 (D) **(DILEWATI)** Project Google Cloud dengan billing dan budget alert (2.2): Gemini
   memakai tier gratis tanpa billing. Bagian Firebase (2.3-2.4) **(DITUNDA)**.
-- [ ] C3 (D) API key Gemini tier gratis dari AI Studio di `backend/.env` (tidak di-commit). (2.5)
-- [ ] C4 (D) **(DITUNDA)** 15-20 calon tester. (2.6)
+- [ ] C3 (D) API key Gemini tier gratis dari AI Studio di `backend/.env` (tidak di-commit), data pribadi
+  di foto ditutup. (2.5)
 - [ ] C5 (D) 5 foto nota beragam, lalu ~50 untuk evaluasi, di `data/private/toko/`. (3.1, 5.1)
   Nota yang boleh dikirim ke Gemini hanya yang memuat nama toko, nama toko penerima, daftar barang,
   dan harga. Nota yang memuat nomor telepon, alamat pribadi, atau nomor rekening harus dipotong atau
@@ -39,8 +39,10 @@ Langkah operasional rinci (perintah, urutan) ada di `docs/RUNBOOK.md`.
 - [x] D1 (C) Prompt, skema keluaran, klien Gemini (timeout, retry SDK, satu ulang untuk JSON rusak),
   pemetaan ke `Nota`, biaya dari token. Diuji dengan klien palsu.
 - [x] D2 (C) Endpoint `/v1/ekstrak`, App Check sekali pakai, kode galat, mode tiruan, Dockerfile.
-- [ ] D3 (A) Uji panggilan Gemini sungguhan pada 5 nota. Selesai kalau: JSON tiap nota dibandingkan
+- [x] D3 (A) Uji panggilan Gemini sungguhan pada 5 nota. Selesai kalau: JSON tiap nota dibandingkan
   dengan fotonya oleh Dani. (RUNBOOK Fase 3)
+  Hasil (19 Okt 2026): 6 nota dengan `gemini-3.1-flash-lite`, 5 sesuai, 1 punya bagian null.
+  Nota 007 (dua nota dalam satu foto, di luar angka akurasi) digabung tanpa peringatan: batasan.
 - [ ] D4 (D+A) **(DITUNDA)** Deploy Cloud Run + Secret Manager + peran IAM. Selesai kalau: `/healthz` ok dan
   permintaan tanpa token ditolak 401. (Fase 4)
 
@@ -68,13 +70,13 @@ Langkah operasional rinci (perintah, urutan) ada di `docs/RUNBOOK.md`.
 - [ ] F8 (D) Uji di HP asli dengan nota dari laci terhadap backend Cloud Run. **(DITUNDA)** bersama D4;
   sementara itu nota asli bisa diuji lewat backend lokal (`NOTA_KLIEN=gemini`) dengan cara di HANDOFF. Selesai kalau: daftar bug dikirim.
 
-## G. Rilis
+## G. Rilis (GitHub Releases, tanpa Play Store)
 - [x] G1 (C) Signing dari `keystore.properties`, R8, target SDK 36, Crashlytics/Analytics bersyarat,
-  draf kebijakan privasi, Data Safety, listing, pesan tester, panduan kuesioner.
-- [ ] G2 (D) **(DITUNDA)** Kunci upload, kebijakan privasi di URL publik, formulir Play. (Fase 6)
-- [ ] G3 (D) **(DITUNDA)** Internal testing, tautan Play Integrity, SHA-256 ke Firebase App Check. (6.5)
-- [ ] G4 (D) **(DITUNDA)** Closed test 12+ tester selama 14 hari berturut-turut, isi `docs/LOG-CLOSED-TEST.md`.
-- [ ] G5 (D+A) **(DITUNDA)** Perbaiki masukan tester, ajukan akses produksi.
+  draf kebijakan privasi, Data Safety, listing, pesan tester, panduan kuesioner. Bahan khusus Play
+  diarsipkan di `docs/arsip/`.
+- [ ] G2 (D) Kunci tanda tangan rilis di luar repo, `keystore.properties` tidak di-commit. (6.1)
+- [ ] G3 (D+A) `assembleRelease` dan `gh release create` dengan APK terlampir. Selesai kalau: APK dari
+  halaman rilis terpasang di HP Dani dan membaca satu nota asli. Butuh backend yang bisa dihubungi (D4). (6.2-6.4)
 
 ## H. Studi kasus
 - [ ] H1 (D) Ukur waktu dan kesalahan: 20 nota manual vs aplikasi.

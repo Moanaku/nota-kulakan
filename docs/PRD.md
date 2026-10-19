@@ -85,11 +85,13 @@ Sudah diputuskan (alasan di `docs/KEPUTUSAN.md`):
 1. Validasi ulang saat koreksi: aturan hitungan dicerminkan di Kotlin, dijaga
    `shared/test-vectors.json` yang dijalankan Pytest dan JUnit.
 2. Aturan simpan: terhalang untuk data tidak lengkap, konfirmasi untuk ketidakcocokan hitungan.
+3. Distribusi lewat GitHub Releases, bukan Play Store. Tidak ada tester dan tidak ada closed test.
 
 Masih terbuka:
-3. **Model ekstraksi dan ukuran foto.** Diputuskan dari evaluasi set uji.
-4. **APK demo di luar Play Store vs App Check (Play Integrity).** Diuji di HP asli.
-5. **Skema `Nota` v1** (`backend/src/nota/schema.py`) menunggu tinjauan Dani.
+4. **Model ekstraksi dan ukuran foto.** Diputuskan dari evaluasi set uji.
+5. **Perlindungan backend untuk APK di luar Play.** App Check Play Integrity tidak berlaku
+   (`docs/KEPUTUSAN.md` 17).
+6. **Skema `Nota` v1** (`backend/src/nota/schema.py`) menunggu tinjauan Dani.
 
 ## 7a. Tambahan di dalam Lapisan 1
 
@@ -118,11 +120,12 @@ Urut menurut nilai per usaha, menunggu Lapisan 1 terukur:
 
 ## 8. Risiko
 
-- Hanya 12 tester yang tetap ikut 14 hari berturut-turut yang dihitung untuk akses produksi.
 - Prompt bisa overfit ke set evaluasi, sehingga pemisahan dev dan uji wajib.
 - Perlindungan replay App Check tidak tersedia untuk Python. Tulis sebagai batasan.
+- APK di luar Play tidak lolos App Check Play Integrity, jadi backend publik perlu perlindungan lain.
+- Satu foto berisi dua nota digabung menjadi satu nota tanpa peringatan (nota 007, D3).
 - Harga dan daftar model berubah. Catat tanggal pengukuran biaya.
-- Foto nota dikirim ke server dan layanan AI. Kebijakan privasi dan formulir Data Safety harus menyebutnya. Selama memakai tier gratis Gemini (Google boleh memakai isinya untuk memperbaiki produk), nota yang dikirim hanya yang memuat nama toko, nama toko penerima, daftar barang, dan harga; nomor telepon, alamat pribadi, dan nomor rekening dipotong atau ditutup dulu.
+- Foto nota dikirim ke server dan layanan AI. Catatan rilis di GitHub Releases dan README harus menyebutnya. Selama memakai tier gratis Gemini (Google boleh memakai isinya untuk memperbaiki produk), nota yang dikirim hanya yang memuat nama toko, nama toko penerima, daftar barang, dan harga; nomor telepon, alamat pribadi, dan nomor rekening dipotong atau ditutup dulu.
 
 ## 9. Definisi selesai Lapisan 1
 
@@ -130,5 +133,5 @@ Urut menurut nilai per usaha, menunggu Lapisan 1 terukur:
 - Unit test backend dan Android (ditulis Claude, ditinjau dan dipahami Dani) hijau di CI.
 - Tabel akurasi dari set uji ada di README, per jenis nota dan per model.
 - Biaya per nota terukur dari penggunaan token nyata.
-- APK bisa diunduh, dan aplikasi masuk closed test di Play Store.
+- APK bertanda tangan bisa diunduh dari GitHub Releases.
 - README memuat batas yang diketahui dan prior work (repo receipt-parsing berbasis CORD).

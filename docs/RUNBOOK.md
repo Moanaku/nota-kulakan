@@ -1,15 +1,15 @@
-# Runbook: dari zip sampai Play Store
+# Runbook: dari zip sampai rilis APK
 
 Pemilik langkah: **[D]** = Dani (butuh akun, pembayaran, HP, atau keputusan), **[A]** = agen lokal
 (Claude Code atau Antigravity, lewat `docs/HANDOFF-AGENT.md`), **[D+A]** = Dani mengizinkan, agen
 menjalankan. Centang di sini atau di `docs/TASKS.md`.
 
-> **Status 12 Okt 2026:** rilis ditunda (Firebase 2.3-2.4, Fase 4, Fase 6; lihat `docs/TASKS.md`).
+> **Status 19 Okt 2026:** tidak ada rilis ke Play Store. APK dibagikan lewat GitHub Releases
+> (Fase 6, `docs/KEPUTUSAN.md` 17). Firebase 2.3-2.4 dan Fase 4 masih ditunda (lihat `docs/TASKS.md`).
 > Gemini memakai **tier gratis** AI Studio tanpa billing, jadi 2.2 dilewati dan berlaku aturan data
-> nota di 2.5.
+> nota di 2.5. Fase 3 selesai.
 
-Fase 1 dan 2 bisa berjalan paralel. Fase 2 (akun) sebaiknya dimulai hari ini karena verifikasi
-identitas dan closed test 14 hari adalah jalur terlama, bukan coding.
+Fase 1 dan 2 bisa berjalan paralel.
 
 ---
 
@@ -29,7 +29,6 @@ identitas dan closed test 14 hari adalah jalur terlama, bukan coding.
 
 ## Fase 2. Akun (paralel dengan Fase 1)
 
-- [ ] 2.1 [D] Daftar Google Play Console sebagai **akun personal**. Selesaikan verifikasi identitas.
 - [ ] 2.2 [D] **(DILEWATI: memakai tier gratis tanpa billing.)** Buat satu project di Google Cloud
   Console, aktifkan billing, pasang **budget alert** (misalnya 5 USD per bulan) di Billing > Budgets &
   alerts. Baru diperlukan bila pindah ke tier berbayar atau deploy Cloud Run.
@@ -37,33 +36,36 @@ identitas dan closed test 14 hari adalah jalur terlama, bukan coding.
   untuk Play Integrity). Tambahkan aplikasi Android dengan paket `com.danibanan.notakulakan`.
   Unduh `google-services.json`, taruh di folder `app/` (tidak di-commit).
   - Ganti paket sekarang bila ingin nama lain: `applicationId` dan `namespace` di `app/build.gradle.kts`.
-    Setelah unggahan pertama ke Play, paket tidak bisa diganti.
-- [ ] 2.4 [D] Di Firebase: aktifkan Crashlytics dan Analytics. Di App Check, daftarkan aplikasi dengan
-  provider Play Integrity (SHA-256 diisi di langkah 6.5).
-- [ ] 2.5 [D] Buat API key Gemini di Google AI Studio (tier gratis, tanpa billing).
-  Salin `backend/.env.example` menjadi `backend/.env`, isi `GEMINI_API_KEY`.
-  - Di tier gratis, Google boleh memakai isi permintaan untuk memperbaiki produknya, termasuk dibaca
-    peninjau manusia (cek ketentuan Gemini API yang berlaku). Karena itu **aturan data nota**:
-    Nota yang boleh dikirim ke Gemini hanya yang memuat nama toko, nama toko penerima, daftar barang,
-    dan harga. Nota yang memuat nomor telepon, alamat pribadi, atau nomor rekening harus dipotong atau
-    ditutup dulu (crop, atau tutup dengan kertas saat memfoto).
+    Setelah APK pertama dibagikan, paket jangan diganti: APK dengan paket lain terpasang sebagai aplikasi terpisah.
+- [ ] 2.4 [D] Di Firebase: aktifkan Crashlytics dan Analytics. App Check Play Integrity tidak berlaku
+  untuk APK di luar Play (`docs/KEPUTUSAN.md` 17); cara melindungi backend untuk APK belum diputuskan.
+- [ ] 2.5 [D] Pakai API key Gemini **tier gratis** dari Google AI Studio (tanpa billing), dan tutup data
+  pribadi di foto sebelum dikirim.
+  - Salin `backend/.env.example` menjadi `backend/.env`, isi `GEMINI_API_KEY` (tidak di-commit).
+  - **Aturan data nota:** di tier gratis Google boleh memakai isi permintaan untuk memperbaiki produknya,
+    termasuk dibaca peninjau manusia (cek ketentuan Gemini API yang berlaku). Nota yang boleh dikirim
+    hanya yang memuat nama toko, nama toko penerima, daftar barang, dan harga. Nomor telepon, alamat
+    pribadi, dan nomor rekening dipotong atau ditutup dulu (crop, atau tutup dengan kertas saat memfoto).
   - Tier gratis punya batas permintaan per menit dan per hari (lihat halaman rate limit di AI Studio
     untuk model yang dipakai). Harness evaluasi memakai `--jeda` dan menunggu otomatis saat kena 429.
-- [ ] 2.6 [D] Kumpulkan 15-20 calon tester (HP Android, akun Google masing-masing). Pesan ajakan ada di
-  `docs/RILIS.md` bagian 4.
 
-## Fase 3. Tonggak penentu: Gemini membaca nota asli
+## Fase 3. Tonggak penentu: Gemini membaca nota asli (SELESAI, 19 Okt 2026)
 
-- [ ] 3.1 [D] Foto 5 nota beragam (cetak jelas, cetak buram, tulis rapi, tulis berantakan, campuran)
+> **Hasil D3:** 6 nota diuji dengan `gemini-3.1-flash-lite`; 5 sesuai dan 1 punya bagian bernilai null
+> (diperiksa Dani terhadap foto). Nota 007 (dua nota dalam satu foto, uji ketahanan, di luar angka
+> akurasi) digabung menjadi satu nota tanpa peringatan; dicatat sebagai batasan. Manifest:
+> `data/private/toko/manifest.jsonl` (001-006) dan `manifest-ketahanan.jsonl` (007).
+
+- [x] 3.1 [D] Foto 5 nota beragam (cetak jelas, cetak buram, tulis rapi, tulis berantakan, campuran)
   ke `data/private/toko/`. Ikuti aturan data nota di 2.5: potong atau tutup nomor telepon, alamat
   pribadi, dan nomor rekening sebelum foto dipakai.
-- [ ] 3.2 [A] Buat `data/private/toko/manifest.jsonl` untuk 5 foto itu (format di `docs/EVALUASI.md`),
+- [x] 3.2 [A] Buat `data/private/toko/manifest.jsonl` untuk 5 foto itu (format di `docs/EVALUASI.md`),
   lalu `cd backend && python -m nota_eval pralabel --manifest ../data/private/toko/manifest.jsonl --model gemini-3.1-flash-lite --jeda 10`.
   `--jeda` memberi jarak antar panggilan; saat kuota habis (429), harness menunggu 30, 60, lalu 120 detik
   (`--ulang-sibuk`, `--tunggu-sibuk`), dan berhenti tanpa menulis draf kosong bila tetap habis.
-- [ ] 3.3 [D] Buka 5 file JSON hasil dan bandingkan dengan fotonya. Catat: berapa baris benar, angka
+- [x] 3.3 [D] Buka 5 file JSON hasil dan bandingkan dengan fotonya. Catat: berapa baris benar, angka
   mana yang salah, dan apakah validator menandai yang salah.
-- [ ] 3.4 [D] Keputusan: lanjut, atau ganti arah bila nota tulisan tangan sama sekali tidak terbaca
+- [x] 3.4 [D] Keputusan: lanjut, atau ganti arah bila nota tulisan tangan sama sekali tidak terbaca
   (cadangan: Pesanan WhatsApp). Kirim hasil 3.3 ke Claude untuk dibahas.
 
 ## Fase 4. Deploy backend ke Cloud Run
@@ -107,32 +109,36 @@ Ikuti `docs/EVALUASI.md`. Ringkasnya:
 - [ ] 5.6 [D] Putuskan model dan ukuran foto dari tabel, lalu set `NOTA_MODEL` di Cloud Run dan
   `FOTO_MAX_SISI` di `app/build.gradle.kts` bila berubah.
 
-## Fase 6. Rilis ke Play Store
+## Fase 6. Rilis APK lewat GitHub Releases
 
-- [ ] 6.1 [D] Buat kunci upload (simpan file dan kata sandinya di tempat aman, di luar repo):
+Tidak ada Play Store, tester, atau closed test (`docs/KEPUTUSAN.md` 17). Prasyarat: backend yang bisa
+dihubungi APK (Fase 4) dan `nota.api.url.release` di `local.properties`; tanpa itu build rilis memakai
+`https://contoh.invalid/`.
+
+- [ ] 6.1 [D] Buat kunci tanda tangan. Tanpa Play App Signing, kunci ini **satu-satunya** kunci aplikasi:
+  bila hilang, versi baru tidak bisa dipasang menimpa versi lama. Simpan file dan kata sandinya di
+  tempat aman, di luar repo:
   ```bash
-  keytool -genkeypair -v -keystore upload-nota.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+  keytool -genkeypair -v -keystore nota-rilis.jks -keyalg RSA -keysize 2048 -validity 10000 -alias rilis
   ```
-  Lalu buat `keystore.properties` di akar repo (tidak di-commit):
+  Lalu buat `keystore.properties` di akar repo (jangan di-commit; pastikan `git status` tidak
+  menampilkannya):
   ```
-  storeFile=../upload-nota.jks
+  storeFile=../nota-rilis.jks
   storePassword=...
-  keyAlias=upload
+  keyAlias=rilis
   keyPassword=...
   ```
-- [ ] 6.2 [A] `./gradlew bundleRelease` -> `app/build/outputs/bundle/release/app-release.aab`.
-- [ ] 6.3 [D] Host kebijakan privasi (`docs/KEBIJAKAN-PRIVASI.md`, isi email kontak) di GitHub Pages
-  atau Google Sites, dapatkan URL publik.
-- [ ] 6.4 [D] Play Console > buat aplikasi. Isi listing, Data Safety, rating konten, target audiens
-  (18+), iklan: tidak ada. Semua jawaban ada di `docs/RILIS.md`.
-- [ ] 6.5 [D] Unggah AAB ke **Internal testing** dulu. Di Play Console > Release > App integrity:
-  tautkan project Cloud yang sama untuk Play Integrity, lalu salin SHA-256 **app signing key** ke
-  Firebase App Check. Pasang dari Play di HP sendiri, uji satu nota asli.
-- [ ] 6.6 [D] Buat **Closed testing**, tambahkan email tester (lebih mudah lewat Google Group), bagikan
-  tautan opt-in. Hitungan 14 hari dimulai saat 12 tester sudah opt-in.
-- [ ] 6.7 [D+A] Selama 14 hari: catat setiap masukan di `docs/LOG-CLOSED-TEST.md`, perbaiki bug, unggah
-  versi baru (naikkan `versionCode`). Jangan biarkan tester keluar sebelum 14 hari.
-- [ ] 6.8 [D] Ajukan akses produksi. Jawab kuesioner dari isi `docs/LOG-CLOSED-TEST.md`, bukan karangan.
+- [ ] 6.2 [A] Naikkan `versionCode` dan `versionName` di `app/build.gradle.kts` untuk setiap rilis, lalu
+  `./gradlew assembleRelease` -> `app/build/outputs/apk/release/app-release.apk`.
+  Cek tanda tangannya: `apksigner verify --print-certs app/build/outputs/apk/release/app-release.apk`.
+- [ ] 6.3 [D+A] Buat rilis di GitHub dengan APK sebagai lampiran:
+  ```bash
+  gh release create v0.1.0 app/build/outputs/apk/release/app-release.apk#nota-kulakan-0.1.0.apk     --title "Nota Kulakan 0.1.0" --notes "<perubahan, batasan yang diketahui, cara pasang>"
+  ```
+  Catatan rilis menyebut: foto nota dikirim ke server dan Gemini, aturan data nota (2.5), dan bahwa
+  pemasangan butuh izin "pasang aplikasi dari sumber tidak dikenal".
+- [ ] 6.4 [D] Unduh APK dari halaman rilis ke HP sendiri, pasang, uji satu nota asli.
 
 ## Fase 7. Studi kasus
 
@@ -140,4 +146,4 @@ Ikuti `docs/EVALUASI.md`. Ringkasnya:
 - [ ] 7.2 [D] Bila pemilik toko memakai aplikasi: catat berapa nota dan berapa yang perlu dikoreksi
   (analitik `nota_disimpan` juga mencatat ini, tanpa isi nota).
 - [ ] 7.3 [A] Isi README: tabel evaluasi uji, biaya per nota (tulis tanggal harga), hasil 7.1, batasan.
-- [ ] 7.4 [D] Rekam video demo 30-60 detik, tautkan di README bersama tautan Play Store dan APK.
+- [ ] 7.4 [D] Rekam video demo 30-60 detik, tautkan di README bersama tautan rilis APK di GitHub Releases.

@@ -105,3 +105,20 @@ interview dan ditinjau ulang bila datanya berubah. Format: keputusan, alternatif
   butuh tier berbayar; kebijakan privasi masih menulis layanan berbayar.
 - **Cara menguji:** sebelum `pralabel` atau `jalankan`, buka setiap foto di `data/private/toko/` dan
   pastikan tidak ada nomor telepon, alamat pribadi, atau nomor rekening yang terbaca.
+
+## 17. Distribusi via GitHub Releases, bukan Play Store
+- **Keputusan (19 Okt 2026):** APK bertanda tangan dibagikan lewat GitHub Releases. Tidak ada rilis
+  ke Play Store, tidak ada tester, dan tidak ada closed test.
+- **Alternatif:** Play Store lewat akun Play Console personal (closed test 12 tester selama 14 hari
+  sebelum akses produksi). Bahannya diarsipkan di `docs/arsip/`.
+- **Alasan:** Proyek ini adalah studi kasus, bukan produk untuk pengguna luas. Jalur Play menuntut
+  akun, verifikasi identitas, dan 12 tester aktif 14 hari, yang memakan waktu lebih banyak daripada
+  pembuktian intinya (membaca nota dan memeriksa hitungannya). APK di GitHub Releases cukup untuk
+  demo dan bisa diunduh siapa pun yang membaca README.
+- **Akibat:** App Check Play Integrity tidak berlaku untuk APK yang dipasang di luar Play, jadi
+  backend dengan `APP_CHECK=enforce` akan menolak APK ini; perlindungan backend untuk APK masih
+  terbuka (PRD 7 butir 5). Tanpa Play App Signing, kunci tanda tangan rilis adalah satu-satunya kunci
+  aplikasi: bila hilang, pembaruan tidak bisa dipasang menimpa versi lama. README dan studi kasus
+  tidak boleh memakai label "dipublikasikan di Play Store".
+- **Cara menguji:** APK dari halaman rilis terpasang di HP yang tidak memasang dari Play, lalu
+  membaca satu nota asli terhadap backend (RUNBOOK 6.4).

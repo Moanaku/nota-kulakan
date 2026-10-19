@@ -103,8 +103,9 @@ kabel USB. HP memanggil `127.0.0.1:8080`, lalu `adb reverse` meneruskannya ke la
 
 ## Setelah prompt di atas selesai
 
-**Rilis ditunda** (keputusan Dani, 12 Okt 2026). Jangan kerjakan Firebase (RUNBOOK 2.3-2.4), deploy
-Cloud Run (Fase 4), maupun Play Store (Fase 6) sampai Dani membukanya lagi; di TASKS bertanda (DITUNDA).
+**Rilis ditunda** (keputusan Dani, 12 Okt 2026). Jangan kerjakan Firebase (RUNBOOK 2.3-2.4) maupun deploy
+Cloud Run (Fase 4) sampai Dani membukanya lagi; di TASKS bertanda (DITUNDA). Tidak ada rilis Play Store;
+APK dibagikan lewat GitHub Releases (RUNBOOK Fase 6, keputusan 19 Okt 2026).
 
 Gemini memakai **tier gratis** AI Studio tanpa billing (RUNBOOK 2.2 dilewati). Aturan data nota:
   Nota yang boleh dikirim ke Gemini hanya yang memuat nama toko, nama toko penerima, daftar barang,
