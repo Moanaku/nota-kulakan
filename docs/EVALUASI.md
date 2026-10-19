@@ -63,6 +63,11 @@ Aturan pelabelan:
 - `harga_satuan` = null kalau nota memang tidak menulis harga satuan.
 - Uang = bilangan bulat rupiah. Qty = teks desimal dengan titik (`"1.5"`).
 - Urutan baris mengikuti nota dari atas ke bawah. Baris yang dicoret tidak dilabel.
+- Nota yang kertas fisiknya tidak lengkap sehingga ada field yang tidak bisa dilabel (terpotong,
+  sobek, luntur) **tidak masuk set utama**. Letakkan di manifest ketahanan
+  (`manifest-ketahanan.jsonl`) dan laporkan terpisah dari angka akurasi. Alasannya: field null di
+  kunci jawaban membuat validator selalu melapor `field_kosong`, yang merusak matriks kebingungan
+  validator (bagian 6).
 
 ## 5. Alur kerja
 
