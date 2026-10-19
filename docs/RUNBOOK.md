@@ -106,7 +106,7 @@ Ikuti `docs/EVALUASI.md`. Ringkasnya:
 - [ ] 5.2 [A] Manifest, lalu `pralabel`.
 - [ ] 5.3 [D] Periksa setiap angka draf terhadap foto, hapus baris `_status`. Ini satu-satunya pekerjaan
   evaluasi yang tidak bisa didelegasikan.
-- [ ] 5.4 [A] `bagi --dev 15`, konversi CORD, `jalankan --split dev`, setel prompt bila perlu (naikkan `VERSI_PROMPT`).
+- [ ] 5.4 [A] `bagi --dev 5` (set utama 17 nota: dev 5 untuk mencari pola gagal, 12 untuk uji), konversi CORD, `jalankan --split dev`, setel prompt bila perlu (naikkan `VERSI_PROMPT`).
 - [ ] 5.5 [A] `jalankan --split uji` dengan 2 model dan 2 ukuran foto. Simpan `ringkasan.md`.
   Di tier gratis pakai `--jeda` agar tidak kena batas per menit; 2 model x 2 ukuran x n kasus bisa
   melewati batas harian, jadi bagi per model bila perlu.

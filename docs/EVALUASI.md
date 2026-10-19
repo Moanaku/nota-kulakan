@@ -25,6 +25,22 @@ Catatan jujur:
 - Foto evaluasi dari toko diambil dengan kamera HP, tetapi tidak lewat aplikasi. Kompresi
   aplikasi ditiru dengan parameter yang sama (`--max-sisi`, `--kualitas`).
 
+### Set data
+
+Setiap set punya manifest sendiri di `data/private/toko/` dan dilaporkan terpisah
+(`jalankan --manifest <file> --split semua` untuk set tanpa split).
+
+- **Set utama** (`manifest.jsonl`): nota milik sendiri, dibagi dev/uji dengan `bagi`. Satu-satunya
+  sumber angka utama README.
+- **Set internet** (`manifest-internet.jsonl`, 001-005): foto dari internet, bukan milik sendiri; hak
+  cipta pada pemilik asli, tidak didistribusikan, dan hanya angka agregat beserta sumbernya yang
+  dilaporkan. Tidak dipakai menyetel prompt. Dilaporkan terpisah dan tidak digabung ke set utama
+  karena distribusinya berbeda (toko ritel kecil, struk termal).
+- **Set ketahanan** (`manifest-ketahanan.jsonl`, 006, 007, 011, 016, 026): kualitatif saja.
+- **Dataset publik** (CORD, bila dikerjakan): dilaporkan terpisah; cek lisensinya.
+- Nota yang ditambahkan setelah `bagi` tidak dipakai menyetel prompt dan dilaporkan sebagai
+  gelombang terpisah.
+
 ## 3. Struktur folder
 
 ```
@@ -96,7 +112,8 @@ pip install -r requirements-dev.txt && pip install -e . --no-deps
 python -m nota_eval pralabel --manifest ../data/private/toko/manifest.jsonl --model gemini-3.8-flash
 
 # 2. Bagi dev/uji SEKALI. Sisa tetap uji selamanya.
-python -m nota_eval bagi --manifest ../data/private/toko/manifest.jsonl --dev 15 --seed 42
+# Set utama 17 nota: dev 5 untuk mencari pola gagal, 12 untuk uji.
+python -m nota_eval bagi --manifest ../data/private/toko/manifest.jsonl --dev 5 --seed 42
 
 # 3. CORD (unduh parquet split validation dan test dari Hugging Face naver-clova-ix/cord-v2)
 python -m nota_eval cord --parquet validation.parquet --keluar ../data/eval --split dev --n 20
