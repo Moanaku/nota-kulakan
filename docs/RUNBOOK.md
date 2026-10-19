@@ -48,6 +48,10 @@ Fase 1 dan 2 bisa berjalan paralel.
     pribadi, dan nomor rekening dipotong atau ditutup dulu (crop, atau tutup dengan kertas saat memfoto).
   - Tier gratis punya batas permintaan per menit dan per hari (lihat halaman rate limit di AI Studio
     untuk model yang dipakai). Harness evaluasi memakai `--jeda` dan menunggu otomatis saat kena 429.
+  - **Foto evaluasi yang dikirim:** hanya versi tertutup (kotak hitam, tanpa EXIF) di `data/private/toko/`.
+    Foto asli disimpan di `data/private/asli/` dan tidak dikirim; skrip penutupnya ada di luar repo.
+    Putaran `pralabel` pertama untuk nota 008-027 terlanjur mengirim file asli yang belum ditutup, termasuk
+    EXIF-nya; yang sudah terkirim tidak bisa ditarik kembali.
 
 ## Fase 3. Tonggak penentu: Gemini membaca nota asli (SELESAI, 19 Okt 2026)
 

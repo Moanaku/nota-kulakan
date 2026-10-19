@@ -30,9 +30,9 @@ Studi kasus produk dan rekayasa, bukan pesaing aplikasi kasir.
 7. Setiap perubahan prompt menaikkan `VERSI_PROMPT`; prompt hanya disetel dengan `--split dev`; angka README hanya dari `--split uji`.
 8. Test ditulis Claude, ditinjau Dani. Jangan menonaktifkan tes atau melemahkan lint agar build hijau.
 9. README hanya berisi angka terukur dan bersumber. Data sintetis diberi label.
-10. Foto nota asli tidak di-commit (`data/private/`). Server tidak menyimpan foto dan tidak mencatat isinya di log.
-    Gemini memakai tier gratis: yang boleh dikirim hanya nota berisi nama toko, nama toko penerima, barang, dan harga;
-    nomor telepon, alamat pribadi, dan nomor rekening dipotong atau ditutup dulu (`docs/KEPUTUSAN.md` 16).
+10. Foto nota asli tidak di-commit (`data/private/`). Foto evaluasi ditutup kotak hitam (nama, alamat, HP, NPWP,
+    rekening pembeli) sebelum dikirim ke Gemini; foto asli ada di `data/private/asli/` dan tidak dikirim.
+    Server tidak menyimpan foto dan tidak mencatat isinya di log.
 11. Jangan mulai Lapisan 2 (`docs/PRD.md` 7b) sebelum Lapisan 1 berjalan, terukur, dan terdokumentasi.
 12. Tanya dulu sebelum mengubah `applicationId`, skema database (butuh migrasi), atau format API.
 13. Pesan commit dan deskripsi PR tanpa atribusi Claude/AI (tanpa Co-Authored-By, tanpa tautan sesi).
