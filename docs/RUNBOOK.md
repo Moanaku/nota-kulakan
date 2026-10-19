@@ -102,7 +102,8 @@ Fase 1 dan 2 bisa berjalan paralel.
 ## Fase 5. Evaluasi (angka untuk README)
 
 Ikuti `docs/EVALUASI.md`. Ringkasnya:
-- [ ] 5.1 [D] Foto sekitar 50 nota (cetak dan tulis) dengan aturan data nota di 2.5.
+- [ ] 5.1 [D] 17 nota cetak milik sendiri di set utama, dengan aturan data nota di 2.5. Nota tulis milik
+  sendiri bisa ditambah sebagai gelombang terpisah setelah `bagi`.
 - [ ] 5.2 [A] Manifest, lalu `pralabel`.
 - [ ] 5.3 [D] Periksa setiap angka draf terhadap foto, hapus baris `_status`. Ini satu-satunya pekerjaan
   evaluasi yang tidak bisa didelegasikan.

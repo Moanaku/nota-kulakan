@@ -14,7 +14,9 @@ definisi di bawah saat interview; ubah yang tidak disetujui sebelum angka pertam
 
 | Set | Isi | Sumber | Lisensi / izin |
 |---|---|---|---|
-| toko | ~50 nota kulakan dari toko pengguna, cetak dan tulis | difoto Dani | data pribadi; foto tidak di-commit, tidak dipublikasikan; telepon, alamat pribadi, dan rekening ditutup sebelum dikirim ke Gemini tier gratis (KEPUTUSAN 16) |
+| toko (utama) | 17 nota kulakan cetak milik sendiri, dibagi dev/uji | difoto Dani | data pribadi; foto tidak di-commit, tidak dipublikasikan; ditutup kotak hitam (nama, alamat, HP, NPWP, rekening pembeli) dan tanpa EXIF sebelum dikirim ke Gemini |
+| toko (internet) | 5 foto nota dari internet: 2 tulis, 2 campuran, 1 cetak; dilaporkan terpisah | internet | hak cipta pemilik asli; tidak didistribusikan; ditutup kotak hitam sebelum dikirim ke Gemini |
+| toko (ketahanan) | 5 kasus khusus (dua nota satu foto, kertas terpotong, retur, salinan); kualitatif | difoto Dani / internet | sama seperti di atas |
 | cord | ~50 struk dari CORD v2 split validation (dev) dan test (uji) | `python -m nota_eval cord` | CC BY 4.0, atribusi di README |
 
 Catatan jujur:
@@ -22,6 +24,8 @@ Catatan jujur:
   ekstraksi teks cetak dan aritmetika; tidak menguji singkatan grosir atau tulisan tangan.
 - Pemetaan field CORD ke skema kita ditulis tanpa sempat membuka data aslinya. Jalankan
   konverter, buka 5 file hasil, dan cocokkan dengan gambarnya sebelum angka dipakai.
+- Tulisan tangan hanya ada di set internet (004, 005), jadi **tidak dinilai pada nota milik sendiri**.
+  Hipotesis bahwa tulisan tangan terbaca (KEPUTUSAN 1 dan 18) belum diuji.
 - Foto evaluasi dari toko diambil dengan kamera HP, tetapi tidak lewat aplikasi. Kompresi
   aplikasi ditiru dengan parameter yang sama (`--max-sisi`, `--kualitas`).
 

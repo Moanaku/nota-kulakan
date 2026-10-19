@@ -8,6 +8,7 @@ interview dan ditinjau ulang bila datanya berubah. Format: keputusan, alternatif
 - **Alasan:** pengguna nyata (satu toko sembako), hasil AI paling bisa diperiksa otomatis (aritmetika),
   data publik untuk separuh evaluasi (CORD), dan nota memang menumpuk di laci tanpa dipakai.
 - **Uji:** Fase 3 runbook. Bila nota tulis tangan tidak terbaca, keputusan ini ditinjau ulang.
+- **Catatan (19 Okt 2026):** hipotesis tulisan tangan belum bisa diuji dengan nota milik sendiri karena set utama cetak semua.
 
 ## 2. Kotlin native + Compose, bukan Flutter
 - **Alasan:** lowongan Android perbankan yang ditemukan meminta Kotlin, Compose, MVVM, Clean
@@ -136,3 +137,4 @@ interview dan ditinjau ulang bila datanya berubah. Format: keputusan, alternatif
 - **Alternatif:** ganti arah ke Pesanan WhatsApp bila tulisan tangan tidak terbaca; tidak terjadi.
 - **Cara menguji:** evaluasi set uji di Fase 5. Bila akurasi nota tulis jauh di bawah nota cetak,
   keputusan 1 dan 18 ditinjau ulang.
+- **Catatan (19 Okt 2026):** hipotesis tulisan tangan belum bisa diuji dengan nota milik sendiri karena set utama cetak semua.
