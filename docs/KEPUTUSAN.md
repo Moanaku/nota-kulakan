@@ -122,3 +122,17 @@ interview dan ditinjau ulang bila datanya berubah. Format: keputusan, alternatif
   tidak boleh memakai label "dipublikasikan di Play Store".
 - **Cara menguji:** APK dari halaman rilis terpasang di HP yang tidak memasang dari Play, lalu
   membaca satu nota asli terhadap backend (RUNBOOK 6.4).
+
+## 18. Lanjut ke evaluasi 50 nota
+- **Keputusan (19 Okt 2026):** arah nota kulakan diteruskan; berikutnya evaluasi sekitar 50 nota
+  (RUNBOOK Fase 5, `docs/EVALUASI.md`). Cadangan Pesanan WhatsApp (RUNBOOK 3.4) tidak dipakai.
+- **Dasar:** D3 dengan `gemini-3.1-flash-lite` pada 6 nota toko (cetak, tulis, campuran): 5 sesuai
+  dengan foto, 1 punya bagian bernilai null (tidak terbaca, bukan salah tebak). Nota 007, dua nota
+  dalam satu foto, digabung menjadi satu nota tanpa peringatan; ini batasan yang dicatat, di luar
+  hitungan 6 nota.
+- **Batas bukti:** n=6, diperiksa satu orang (Dani) terhadap foto, dari draf pra-label. Ini cukup
+  untuk memutuskan arah, **BUKAN angka akurasi untuk README**. Angka README hanya dari `--split uji`
+  (aturan CLAUDE.md 7 dan 9).
+- **Alternatif:** ganti arah ke Pesanan WhatsApp bila tulisan tangan tidak terbaca; tidak terjadi.
+- **Cara menguji:** evaluasi set uji di Fase 5. Bila akurasi nota tulis jauh di bawah nota cetak,
+  keputusan 1 dan 18 ditinjau ulang.

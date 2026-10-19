@@ -5,6 +5,7 @@ __pycache__/
 .env
 *.jks
 *.keystore
+keystore.properties
 local.properties
 .gradle/
 build/
