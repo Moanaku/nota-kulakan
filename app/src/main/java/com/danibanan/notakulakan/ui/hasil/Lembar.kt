@@ -2,25 +2,19 @@ package com.danibanan.notakulakan.ui.hasil
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,9 +42,8 @@ import com.danibanan.notakulakan.ui.komponen.KolomTeks
 import com.danibanan.notakulakan.ui.komponen.PemisahBaris
 import com.danibanan.notakulakan.ui.komponen.PesanPeriksa
 import com.danibanan.notakulakan.ui.komponen.SheetKoreksi
+import com.danibanan.notakulakan.ui.komponen.SheetPilihan
 import com.danibanan.notakulakan.ui.komponen.TombolTeks
-import com.danibanan.notakulakan.ui.theme.Elevasi
-import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
 import com.danibanan.notakulakan.ui.theme.Ukuran
 
@@ -180,11 +173,7 @@ fun LembarTotal(
     }
 }
 
-/**
- * Pemilih produk. Bukan sheet koreksi (tanpa Simpan/Batal; memilih satu baris langsung menutup), jadi memakai
- * `ModalBottomSheet` dengan gaya yang sama dengan [SheetKoreksi]. Lihat catatan di LAPORAN: butuh komponen resmi.
- */
-@OptIn(ExperimentalMaterial3Api::class)
+/** Pemilih produk di atas [SheetPilihan]: memilih satu baris langsung menutup sheet (lewat [onPilih]). */
 @Composable
 fun LembarProduk(
     namaDiNota: String,
@@ -196,50 +185,34 @@ fun LembarProduk(
     val tersaring = daftar.filter { cari.isBlank() || it.nama.contains(cari.trim(), ignoreCase = true) }
     val namaBaru = cari.trim().ifEmpty { namaDiNota.trim() }
 
-    ModalBottomSheet(
-        onDismissRequest = onTutup,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        shape = RoundedCornerShape(topStart = Radius.besar, topEnd = Radius.besar),
-        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        tonalElevation = Elevasi.tinggi,
-    ) {
-        Column(
-            Modifier.fillMaxWidth().padding(horizontal = Spasi.l).imePadding(),
-            verticalArrangement = Arrangement.spacedBy(Spasi.m),
-        ) {
-            Text(
-                stringResource(R.string.pilih_produk_judul),
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                stringResource(R.string.pilih_produk_isi, namaDiNota.ifBlank { "-" }),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            KolomTeks(nilai = cari, onNilaiBerubah = { cari = it }, label = stringResource(R.string.cari_produk))
-            LazyColumn(Modifier.fillMaxWidth().heightIn(max = Spasi.xxxl * 8).navigationBarsPadding()) {
-                if (namaBaru.isNotEmpty()) {
-                    item {
-                        BarisPilihan(stringResource(R.string.buat_produk_baru, namaBaru), utama = true) {
-                            onPilih(PilihanProduk.Baru(namaBaru))
-                        }
-                        PemisahBaris()
+    SheetPilihan(judul = stringResource(R.string.pilih_produk_judul), onTutup = onTutup) {
+        Text(
+            stringResource(R.string.pilih_produk_isi, namaDiNota.ifBlank { "-" }),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        KolomTeks(nilai = cari, onNilaiBerubah = { cari = it }, label = stringResource(R.string.cari_produk))
+        LazyColumn(Modifier.fillMaxWidth().heightIn(max = Spasi.xxxl * 8).navigationBarsPadding()) {
+            if (namaBaru.isNotEmpty()) {
+                item {
+                    BarisPilihan(stringResource(R.string.buat_produk_baru, namaBaru), utama = true) {
+                        onPilih(PilihanProduk.Baru(namaBaru))
                     }
-                }
-                if (tersaring.isEmpty() && cari.isNotBlank()) {
-                    item {
-                        DataKosong(
-                            jenis = JenisKosong.HASIL_FILTER_KOSONG,
-                            objek = stringResource(R.string.objek_produk),
-                            onAksi = { cari = "" },
-                        )
-                    }
-                }
-                items(tersaring, key = { it.id }) { p ->
-                    BarisPilihan(p.nama) { onPilih(PilihanProduk.Ada(p)) }
                     PemisahBaris()
                 }
+            }
+            if (tersaring.isEmpty() && cari.isNotBlank()) {
+                item {
+                    DataKosong(
+                        jenis = JenisKosong.HASIL_FILTER_KOSONG,
+                        objek = stringResource(R.string.objek_produk),
+                        onAksi = { cari = "" },
+                    )
+                }
+            }
+            items(tersaring, key = { it.id }) { p ->
+                BarisPilihan(p.nama) { onPilih(PilihanProduk.Ada(p)) }
+                PemisahBaris()
             }
         }
     }

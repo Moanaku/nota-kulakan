@@ -152,6 +152,7 @@
     <string name="kosong_filter_isi">Ubah atau hapus filter untuk melihat %1$s lain.</string>
     <string name="kosong_hapus_filter">Hapus filter</string>
     <string name="galat_coba_lagi">Coba lagi</string>
+    <string name="galat_foto_ulang">Foto ulang</string>
     <string name="galat_judul">Tidak bisa memuat</string>
     <string name="skeleton_memuat_barang">Memuat daftar barang</string>
     <string name="offline_spanduk">Sedang offline. Nota baru belum bisa dibaca sampai HP tersambung.</string>

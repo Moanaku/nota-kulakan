@@ -145,6 +145,7 @@ private fun LayarGagal(
                 // Foto yang salah tidak membaik dengan diulang: aksi utamanya memilih foto lain.
                 onCobaLagi = if (s.bisaUlang) onUlang else onGantiFoto,
                 judul = stringResource(R.string.gagal_judul),
+                teksAksi = stringResource(if (s.bisaUlang) R.string.galat_coba_lagi else R.string.galat_foto_ulang),
             )
             Column(
                 Modifier.fillMaxWidth().padding(horizontal = Spasi.l),

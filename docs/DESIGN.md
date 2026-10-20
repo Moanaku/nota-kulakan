@@ -106,6 +106,21 @@ jumlah, status), baris ringkasan total, chip status (cocok / selisih / belum ter
 nota, sheet koreksi, serta tiga kondisi data: kosong, skeleton, galat (sebab + tombol "Coba lagi"), dan
 spanduk offline. Layar hanya merakit komponen ini. Komponen baru butuh izin Dani.
 
+Komponen yang sudah disetujui dan dipakai (kondisinya ada di katalog debug, `KatalogKomponen`):
+- `BarAtas`: bilah judul layar; tombol kembali hanya bila `onKembali` diberikan.
+- `TombolCatatNota`: aksi utama di Stok dan Riwayat; datar, warna aksen.
+- `BarBawah`: navigasi dua area (Stok, Riwayat); `Tab` menandai area aktif.
+- `PesanPeriksa` (`JenisPesan` GALAT / INFO / COCOK): pesan pemeriksaan satu baris atau nota.
+- `statusHarga` dan `ChipSelisihHarga`: perubahan harga modal. Naik = selisih, turun = cocok, tetap atau
+  produk baru = info.
+- `FotoNota`: foto nota dari berkas lokal; tanpa berkas tampil placeholder.
+- `SheetPilihan`: sheet bawah untuk memilih satu pilihan (mis. produk), turunan gaya `SheetKoreksi`. Tanpa
+  Simpan/Batal; sheet selalu tampil penuh. Isi memuat daftar tanpa `verticalScroll`.
+- Parameter tambahan `KondisiGalat(teksAksi = ...)`: bawaannya "Coba lagi". Aksi yang bukan mengulang
+  panggilan memakai label lain: "Foto ulang" untuk foto yang salah.
+
+Chip status pada kartu Riwayat dan Stok belum ada: kolom `dikonfirmasi` belum tersimpan (ditolak sementara).
+
 Status baris selalu ganda: ikon + teks + warna (tidak pernah warna saja).
 
 ## 5. Keputusan desain sadar

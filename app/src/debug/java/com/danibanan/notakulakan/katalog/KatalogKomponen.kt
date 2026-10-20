@@ -19,20 +19,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.danibanan.notakulakan.ui.komponen.BarAtas
+import com.danibanan.notakulakan.ui.komponen.BarBawah
 import com.danibanan.notakulakan.ui.komponen.BarisBarang
 import com.danibanan.notakulakan.ui.komponen.BarisRingkasanTotal
+import com.danibanan.notakulakan.ui.komponen.ChipSelisihHarga
 import com.danibanan.notakulakan.ui.komponen.ChipStatus
 import com.danibanan.notakulakan.ui.komponen.DataKosong
+import com.danibanan.notakulakan.ui.komponen.FotoNota
 import com.danibanan.notakulakan.ui.komponen.JenisKosong
+import com.danibanan.notakulakan.ui.komponen.JenisPesan
 import com.danibanan.notakulakan.ui.komponen.KartuRingkasanNota
 import com.danibanan.notakulakan.ui.komponen.KolomRupiah
 import com.danibanan.notakulakan.ui.komponen.KolomTeks
 import com.danibanan.notakulakan.ui.komponen.KondisiGalat
 import com.danibanan.notakulakan.ui.komponen.PemisahBaris
+import com.danibanan.notakulakan.ui.komponen.PesanPeriksa
 import com.danibanan.notakulakan.ui.komponen.SheetKoreksi
+import com.danibanan.notakulakan.ui.komponen.SheetPilihan
 import com.danibanan.notakulakan.ui.komponen.SkeletonBarisBarang
 import com.danibanan.notakulakan.ui.komponen.SpandukOffline
 import com.danibanan.notakulakan.ui.komponen.StatusBaris
+import com.danibanan.notakulakan.ui.komponen.Tab
+import com.danibanan.notakulakan.ui.komponen.TombolCatatNota
 import com.danibanan.notakulakan.ui.komponen.TombolSekunder
 import com.danibanan.notakulakan.ui.komponen.TombolTeks
 import com.danibanan.notakulakan.ui.komponen.TombolUtama
@@ -49,6 +58,7 @@ fun KatalogKomponen() {
     var teks by remember { mutableStateOf("Gula pasir kristal putih kemasan 1 kg") }
     var rupiah by remember { mutableStateOf<Long?>(1234567) }
     var sheet by remember { mutableStateOf(false) }
+    var sheetPilihan by remember { mutableStateOf(false) }
 
     Column(
         Modifier
@@ -98,11 +108,42 @@ fun KatalogKomponen() {
             )
         }
 
+        Bagian("Bilah judul (BarAtas)") {
+            BarAtas("Catat nota")
+            BarAtas("Periksa nota", onKembali = {})
+        }
+
+        Bagian("Tombol catat nota (TombolCatatNota)") {
+            TombolCatatNota(onClick = {})
+        }
+
+        Bagian("Navigasi bawah (BarBawah)") {
+            BarBawah(aktif = Tab.STOK, onStok = {}, onRiwayat = {})
+            BarBawah(aktif = Tab.RIWAYAT, onStok = {}, onRiwayat = {})
+        }
+
         Bagian("Chip status") {
             ChipStatus(StatusBaris.COCOK)
             ChipStatus(StatusBaris.SELISIH)
             ChipStatus(StatusBaris.BELUM_TERBACA)
             ChipStatus(StatusBaris.SELISIH, teks = "Selisih Rp 12.345.678 dari total di nota")
+        }
+
+        Bagian("Chip harga modal (ChipSelisihHarga)") {
+            ChipSelisihHarga(selisih = null, adaRiwayat = false) // kondisi: produk baru, belum ada riwayat
+            ChipSelisihHarga(selisih = 5_000, adaRiwayat = true) // kondisi: naik, perlu diperhatikan
+            ChipSelisihHarga(selisih = -3_000, adaRiwayat = true) // kondisi: turun
+            ChipSelisihHarga(selisih = 0, adaRiwayat = true) // kondisi: tetap
+        }
+
+        Bagian("Pesan pemeriksaan (PesanPeriksa)") {
+            PesanPeriksa("Total nota cocok dengan jumlah barang.", JenisPesan.COCOK)
+            PesanPeriksa("Total nota selisih Rp 12.345 dari jumlah barang.", JenisPesan.GALAT)
+            PesanPeriksa("Qty belum terbaca; isi manual di lembar koreksi.", JenisPesan.INFO)
+        }
+
+        Bagian("Foto nota (FotoNota, tanpa foto)") {
+            FotoNota(path = null) // kondisi: berkas foto tidak ada, tampil placeholder
         }
 
         Bagian("Baris barang (daftar = baris + divider)") {
@@ -137,6 +178,10 @@ fun KatalogKomponen() {
             TombolSekunder("Buka lembar koreksi barang", onClick = { sheet = true }, modifier = Modifier.fillMaxWidth())
         }
 
+        Bagian("Sheet pilihan (SheetPilihan)") {
+            TombolSekunder("Buka pilihan produk", onClick = { sheetPilihan = true }, modifier = Modifier.fillMaxWidth())
+        }
+
         Bagian("Kondisi: kosong (belum ada data)") {
             DataKosong(JenisKosong.BELUM_ADA_DATA, objek = "nota", teksAksi = "Foto nota pertama", onAksi = {})
         }
@@ -146,6 +191,12 @@ fun KatalogKomponen() {
         Bagian("Kondisi: skeleton") { SkeletonBarisBarang() }
         Bagian("Kondisi: galat") {
             KondisiGalat("Server tidak bisa dihubungi. Periksa sambungan internet, lalu coba lagi.", onCobaLagi = {})
+            KondisiGalat(
+                "Foto ini tidak terbaca sebagai nota. Coba foto ulang dengan cahaya lebih terang.",
+                onCobaLagi = {},
+                judul = "Nota belum terbaca",
+                teksAksi = "Foto ulang",
+            ) // kondisi: foto salah, aksi memilih foto lain (bukan mengulang panggilan)
         }
         Bagian("Spanduk offline") { SpandukOffline(tampil = true) }
     }
@@ -160,6 +211,18 @@ fun KatalogKomponen() {
         ) {
             KolomTeks(teks, { teks = it }, label = "Nama barang di nota")
             KolomRupiah(rupiah, { rupiah = it }, label = "Harga satuan")
+        }
+    }
+
+    if (sheetPilihan) {
+        SheetPilihan(judul = "Masuk ke produk apa?", onTutup = { sheetPilihan = false }) {
+            Text("Tertulis di nota: Gula Pasir Kristal 1 kg", style = MaterialTheme.typography.bodySmall)
+            KolomTeks("", {}, label = "Cari produk")
+            Text("Buat produk baru: Gula Pasir Kristal 1 kg", style = MaterialTheme.typography.titleMedium)
+            PemisahBaris()
+            Text("Gula pasir kristal 1 kg", style = MaterialTheme.typography.bodyLarge)
+            PemisahBaris()
+            Text("Gula pasir halus 500 g", style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
