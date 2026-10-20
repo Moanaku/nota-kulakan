@@ -5,7 +5,17 @@ from decimal import Decimal
 import pytest
 
 from conftest import nota_json
-from nota.extraction import EkstraksiGagal, JenisGagal, baca_json, ekstrak, petakan
+from nota.extraction import (
+    EkstraksiGagal,
+    JenisGagal,
+    KlienGemini,
+    ModelGagal,
+    ModelSibuk,
+    ModelTimeout,
+    baca_json,
+    ekstrak,
+    petakan,
+)
 from nota.pricing import biaya_usd
 from nota.validator import Kode, Tingkat
 
@@ -182,3 +192,24 @@ def test_petakan_nama_kosong_diberi_penanda():
         {"items": [{"nama": "  ", "qty": "1", "harga_satuan": "1", "jumlah": "1"}], "total": "1"}
     )
     assert nota.items[0].nama == "(tanpa nama)"
+
+
+@pytest.mark.parametrize(
+    ("kode", "diharapkan"),
+    [(504, ModelTimeout), (408, ModelTimeout), (503, ModelSibuk), (429, ModelSibuk), (400, ModelGagal)],
+)
+def test_klien_gemini_klasifikasi_galat_http(kode, diharapkan):
+    from google.genai import errors
+
+    class Palsu:
+        class models:  # noqa: N801
+            @staticmethod
+            def generate_content(**_):
+                raise (errors.ServerError if kode >= 500 else errors.ClientError)(
+                    kode, {"error": {"message": "x", "status": "X"}}
+                )
+
+    klien = KlienGemini(api_key="k", nama_model="m")
+    klien._klien = Palsu()
+    with pytest.raises(diharapkan):
+        klien.hasilkan(b"x", "image/jpeg")

@@ -8,7 +8,7 @@ import json
 import os
 import time
 from collections.abc import Callable
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, fields
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -84,6 +84,28 @@ def klien_gemini(konfig: Konfigurasi) -> KlienModel:
     )
 
 
+class LayananTerputus(SystemExit):
+    """Layanan AI tetap sibuk atau kuota habis setelah semua coba ulang.
+
+    Subclass SystemExit agar `pralabel` tetap berhenti. `harian` = kuota per hari habis:
+    mencoba konfigurasi lain tidak ada gunanya.
+    """
+
+    def __init__(self, pesan: str, alasan: str, harian: bool) -> None:
+        super().__init__(pesan)
+        self.alasan = alasan
+        self.harian = harian
+
+
+def _alasan_sibuk(e: EkstraksiGagal) -> tuple[str, bool]:
+    """(alasan, kuota_harian) dari galat asli klien."""
+    asli = str(e.__cause__ or "")
+    harian = "perday" in asli.lower().replace(" ", "").replace("_", "")
+    if "429" in asli or "RESOURCE_EXHAUSTED" in asli:
+        return ("kuota harian habis (429)" if harian else "kuota habis (429)"), harian
+    return "layanan sibuk (5xx)", False
+
+
 def ekstrak_tahan_kuota(
     gambar: bytes,
     mime: str,
@@ -97,7 +119,7 @@ def ekstrak_tahan_kuota(
 
     Tier gratis Gemini membatasi permintaan per menit dan per hari. Kasus yang gagal karena kuota
     bukan ukuran akurasi model, jadi tidak boleh tercatat sebagai kegagalan ekstraksi. Bila setelah
-    `ulang_sibuk` kali masih sibuk (kemungkinan kuota harian habis), evaluasi dihentikan.
+    `ulang_sibuk` kali masih sibuk, dilempar `LayananTerputus`.
     """
     for ke in range(ulang_sibuk + 1):
         try:
@@ -106,9 +128,12 @@ def ekstrak_tahan_kuota(
             if e.jenis is not JenisGagal.LAYANAN_SIBUK:
                 raise
             if ke == ulang_sibuk:
-                raise SystemExit(
-                    f"Layanan AI masih sibuk atau kuota habis setelah {ulang_sibuk} kali coba ulang. "
-                    "Cek batas kuota di AI Studio, lalu jalankan lagi nanti."
+                alasan, harian = _alasan_sibuk(e)
+                raise LayananTerputus(
+                    f"Layanan AI masih sibuk atau kuota habis setelah {ulang_sibuk} kali coba ulang "
+                    f"({alasan}). Cek batas kuota di AI Studio, lalu jalankan lagi nanti.",
+                    alasan,
+                    harian,
                 ) from e
             tunggu = tunggu_sibuk_detik * 2**ke
             cetak(f"  kuota/sibuk, tunggu {tunggu:.0f} detik lalu coba lagi ({ke + 1}/{ulang_sibuk})")
@@ -129,6 +154,22 @@ def periksa_kebenaran_siap(kasus: list[Kasus]) -> None:
         raise SystemExit("Kebenaran belum siap:\n  " + "\n  ".join(belum))
 
 
+@dataclass(frozen=True)
+class TidakLengkap:
+    konfigurasi: str
+    selesai: int
+    total: int
+    alasan: str
+
+
+@dataclass(frozen=True)
+class HasilEvaluasi:
+    """`hasil` hanya berisi konfigurasi yang selesai penuh; sisanya ada di `tidak_lengkap`."""
+
+    hasil: list[HasilKasus]
+    tidak_lengkap: list[TidakLengkap]
+
+
 def jalankan_evaluasi(
     kasus: list[Kasus],
     konfigurasi: list[Konfigurasi],
@@ -140,15 +181,21 @@ def jalankan_evaluasi(
     ulang_sibuk: int = 3,
     tunggu_sibuk_detik: float = 30.0,
     tidur: Callable[[float], None] = time.sleep,
-) -> list[HasilKasus]:
+) -> HasilEvaluasi:
     periksa_kebenaran_siap(kasus)
     keluar.mkdir(parents=True, exist_ok=True)
     semua: list[HasilKasus] = []
+    tidak_lengkap: list[TidakLengkap] = []
+    berhenti: str | None = None
 
     for konfig in konfigurasi:
+        if berhenti:
+            tidak_lengkap.append(TidakLengkap(konfig.label, 0, len(kasus), f"tidak dijalankan: {berhenti}"))
+            continue
         klien = buat_klien(konfig)
         folder_prediksi = keluar / "prediksi" / konfig.label.replace("@", "_")
         folder_prediksi.mkdir(parents=True, exist_ok=True)
+        hasil_konfig: list[HasilKasus] = []
         for nomor, k in enumerate(kasus, start=1):
             benar = k.baca_kebenaran()
             gambar, mime = siapkan_gambar(k.gambar, konfig.max_sisi, konfig.kualitas)
@@ -165,6 +212,7 @@ def jalankan_evaluasi(
                     "isu": [isu_ke_dict(i) for i in hasil.isu],
                     "lolos": hasil.lolos,
                     "token": asdict(hasil.pemakaian),
+                    "latensi_ms": hasil.latensi_ms,
                 }
             except EkstraksiGagal as e:
                 p = e.pemakaian
@@ -172,15 +220,23 @@ def jalankan_evaluasi(
                 h = nilai_kasus(
                     k.id, k.jenis, konfig.label, benar, None, None, e.jenis.value, biaya, None, len(gambar)
                 )
-                simpan = {"gagal": e.jenis.value, "pesan": e.pesan, "token": asdict(p)}
+                simpan = {"gagal": e.jenis.value, "pesan": e.pesan, "token": asdict(p), "latensi_ms": None}
+            except LayananTerputus as e:
+                cetak(f"[{konfig.label}] {nomor}/{len(kasus)} {k.id}: BERHENTI, {e.alasan}")
+                tidak_lengkap.append(TidakLengkap(konfig.label, len(hasil_konfig), len(kasus), e.alasan))
+                if e.harian:
+                    berhenti = e.alasan
+                break
             (folder_prediksi / f"{k.id}.json").write_text(
                 json.dumps(simpan, ensure_ascii=False, indent=2), encoding="utf-8"
             )
-            semua.append(h)
+            hasil_konfig.append(h)
             status = "GAGAL " + h.gagal if h.gagal else ("sempurna" if h.sempurna else "ada salah")
             cetak(f"[{konfig.label}] {nomor}/{len(kasus)} {k.id}: {status}")
             if jeda_detik:
                 tidur(jeda_detik)
+        else:
+            semua.extend(hasil_konfig)
 
     _tulis_csv(keluar / "hasil.csv", semua)
     ringkasan = ringkas(semua)
@@ -193,15 +249,17 @@ def jalankan_evaluasi(
         f"- Definisi metrik: lihat docs/EVALUASI.md\n\n"
     )
     tabel = tabel_markdown(ringkasan, kurs_idr)
+    if tidak_lengkap:
+        tabel += "\n## Tidak lengkap\n\nTidak masuk tabel di atas.\n\n" + "".join(
+            f"- {t.konfigurasi}: {t.selesai}/{t.total} nota selesai; {t.alasan}\n" for t in tidak_lengkap
+        )
     (keluar / "ringkasan.md").write_text(meta + tabel, encoding="utf-8")
     cetak("\n" + tabel)
-    return semua
+    return HasilEvaluasi(semua, tidak_lengkap)
 
 
 def _tulis_csv(path: Path, hasil: list[HasilKasus]) -> None:
-    if not hasil:
-        return
-    kolom = list(asdict(hasil[0]).keys()) + ["kategori_validator"]
+    kolom = [f.name for f in fields(HasilKasus)] + ["kategori_validator"]
     with path.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=kolom)
         w.writeheader()

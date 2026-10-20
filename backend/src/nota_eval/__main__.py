@@ -115,7 +115,7 @@ def main(argv: list[str] | None = None) -> int:
         for s in max_sisi
     ]
     keluar = args.keluar or FOLDER_BACKEND / "eval-hasil" / datetime.now().strftime("%Y%m%d-%H%M%S")
-    jalankan_evaluasi(
+    evaluasi = jalankan_evaluasi(
         kasus,
         konfigurasi,
         keluar,
@@ -125,6 +125,11 @@ def main(argv: list[str] | None = None) -> int:
         tunggu_sibuk_detik=args.tunggu_sibuk,
     )
     print(f"\nHasil lengkap: {keluar}")
+    if evaluasi.tidak_lengkap:
+        print(
+            f"{len(evaluasi.tidak_lengkap)} konfigurasi tidak lengkap (lihat ringkasan.md)", file=sys.stderr
+        )
+        return 1
     return 0
 
 

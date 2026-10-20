@@ -420,10 +420,10 @@ class KlienGemini:
                 config=types.GenerateContentConfig(**konfig),
             )
         except errors.APIError as e:
+            if e.code in (408, 504):  # 504 DEADLINE_EXCEEDED adalah ServerError, periksa lebih dulu
+                raise ModelTimeout(str(e)) from e
             if e.code == 429 or isinstance(e, errors.ServerError):
                 raise ModelSibuk(str(e)) from e
-            if e.code in (408, 504):
-                raise ModelTimeout(str(e)) from e
             raise ModelGagal(str(e)) from e
         except self._timeout as e:
             raise ModelTimeout(str(e)) from e

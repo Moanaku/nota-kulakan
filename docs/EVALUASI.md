@@ -228,3 +228,22 @@ Ditetapkan 2026-10-20, sebelum split uji dijalankan.
   $0,75 / $3,75), jadi angka biayanya hanya berlaku sampai 2026-12-31.
 - **Set lain**: set internet dan set ketahanan dijalankan sesudah konfigurasi ditetapkan, dengan
   konfigurasi yang terpilih, dan dilaporkan terpisah.
+
+### Putaran uji pertama terhenti (2026-10-20) dan putaran kedua
+
+Putaran pertama tidak menghasilkan ringkasan: proses keluar tanpa menulis `hasil.csv` dan
+`ringkasan.md`, dan latensi per nota tidak tersimpan. Empat konfigurasi selesai (12 nota), lalu
+`gemini-3.8-flash` @1600 px terhenti di nota keenam karena waktu habis (3 kali retry); 3.8-flash
+@1024 px belum dijalankan. Keputusan, ditetapkan sebelum putaran kedua dijalankan:
+
+- Harness diperbaiki (latensi per nota disimpan; konfigurasi yang terhenti ditandai tidak lengkap
+  tanpa membuang ringkasan konfigurasi lain; kode keluar bukan 0 bila ada yang tidak lengkap).
+  Definisi metrik, prompt, dan skema tidak berubah.
+- **Putaran kedua adalah satu-satunya putaran resmi** untuk keenam konfigurasi, apa pun hasilnya.
+  Putaran pertama diarsipkan, tidak dipakai sebagai angka, dan hanya disebut di sini. Hitungan kasar
+  yang sempat terlihat di layar pada putaran pertama tidak dipakai.
+- Waktu habis (batas 30 detik per panggilan, sama dengan produksi) adalah kegagalan terukur: nota
+  dihitung gagal di kolom "Gagal" dan konfigurasi tidak diulang. Penyebabnya (model lambat atau
+  server sedang padat) tidak bisa dibedakan dan dicatat sebagai batasan.
+- Layanan sibuk (503) atau kuota (429) setelah retry membuat konfigurasi "tidak lengkap": tidak
+  masuk tabel metrik, dicantumkan terpisah, dan diulang penuh di lain waktu.

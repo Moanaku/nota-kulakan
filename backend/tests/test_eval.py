@@ -8,7 +8,7 @@ from decimal import Decimal
 import pytest
 
 from conftest import nota_json
-from nota.extraction import EkstraksiGagal, ModelGagal, ModelSibuk
+from nota.extraction import EkstraksiGagal, ModelGagal, ModelSibuk, ModelTimeout
 from nota.schema import ItemBaris, Nota
 from nota.serialize import nota_ke_dict
 from nota_eval.cord import CordTidakBisa, petakan_cord
@@ -252,7 +252,8 @@ def test_jalankan_evaluasi_ujung_ke_ujung(tmp_path, klien_skrip):
         buat_klien=lambda _: klien_skrip([keluaran]),
         cetak=lambda _: None,
     )
-    assert hasil[0].kategori_validator == "tertangkap"
+    assert hasil.hasil[0].kategori_validator == "tertangkap"
+    assert not hasil.tidak_lengkap
     assert (tmp_path / "keluar" / "hasil.csv").exists()
     assert "Versi prompt" in (tmp_path / "keluar" / "ringkasan.md").read_text()
     assert list((tmp_path / "keluar" / "prediksi").rglob("a.json"))
@@ -348,3 +349,95 @@ def test_jeda_dipakai_antar_kasus(tmp_path, klien_skrip):
         tidur=tidur.append,
     )
     assert tidur == [30.0, 5.0]
+
+
+def _dua_nota(tmp_path):
+    benar = nota_ke_dict(Nota(items=(_item("Gula", "2", 60000, 120000),), total=120000))
+    kasus = []
+    for i in ("a", "b"):
+        (tmp_path / f"{i}.jpg").write_bytes(bytes([255, 216, 255]) + b"0" * 20)
+        (tmp_path / f"{i}.json").write_text(json.dumps(benar))
+        kasus.append(Kasus(i, tmp_path / f"{i}.jpg", tmp_path / f"{i}.json", "cetak", "uji"))
+    return kasus
+
+
+def test_waktu_habis_dicatat_gagal_dan_evaluasi_lanjut(tmp_path, klien_skrip):
+    hasil = jalankan_evaluasi(
+        _dua_nota(tmp_path),
+        [Konfigurasi("m", 0)],
+        tmp_path / "keluar",
+        buat_klien=lambda _: klien_skrip([ModelTimeout("t"), _GULA]),
+        cetak=lambda _: None,
+    )
+    assert [h.gagal for h in hasil.hasil] == ["waktu_habis", None]
+    assert not hasil.tidak_lengkap
+    simpan = json.loads((tmp_path / "keluar" / "prediksi" / "m_asli" / "b.json").read_text())
+    assert simpan["latensi_ms"] is not None
+    assert (
+        json.loads((tmp_path / "keluar" / "prediksi" / "m_asli" / "a.json").read_text())["gagal"]
+        == "waktu_habis"
+    )
+
+
+def test_sibuk_menandai_tidak_lengkap_dan_lanjut_ke_konfigurasi_berikutnya(tmp_path, klien_skrip):
+    skrip = {"m1": [_GULA, ModelSibuk("503")], "m2": [_GULA, _GULA]}
+    hasil = jalankan_evaluasi(
+        _dua_nota(tmp_path),
+        [Konfigurasi("m1", 0), Konfigurasi("m2", 0)],
+        tmp_path / "keluar",
+        buat_klien=lambda k: klien_skrip(skrip[k.model]),
+        cetak=lambda _: None,
+        ulang_sibuk=0,
+    )
+    assert [(t.konfigurasi, t.selesai, t.total) for t in hasil.tidak_lengkap] == [("m1@asli", 1, 2)]
+    assert {h.konfigurasi for h in hasil.hasil} == {"m2@asli"}
+    ringkasan = (tmp_path / "keluar" / "ringkasan.md").read_text()
+    assert "## Tidak lengkap" in ringkasan and "m1@asli: 1/2" in ringkasan
+    assert "| m1@asli |" not in ringkasan and "| m2@asli |" in ringkasan
+    assert "m2@asli" in (tmp_path / "keluar" / "hasil.csv").read_text()
+
+
+def test_kuota_harian_berhenti_total_setelah_menulis_ringkasan(tmp_path, klien_skrip):
+    skrip = {"m1": [ModelSibuk("429 RESOURCE_EXHAUSTED GenerateRequestsPerDayPerProject")], "m2": []}
+    hasil = jalankan_evaluasi(
+        _dua_nota(tmp_path),
+        [Konfigurasi("m1", 0), Konfigurasi("m2", 0)],
+        tmp_path / "keluar",
+        buat_klien=lambda k: klien_skrip(skrip[k.model]),
+        cetak=lambda _: None,
+        ulang_sibuk=0,
+    )
+    assert [t.konfigurasi for t in hasil.tidak_lengkap] == ["m1@asli", "m2@asli"]
+    assert "kuota harian" in hasil.tidak_lengkap[0].alasan
+    assert "tidak dijalankan" in hasil.tidak_lengkap[1].alasan
+    assert (tmp_path / "keluar" / "hasil.csv").exists()
+    assert "## Tidak lengkap" in (tmp_path / "keluar" / "ringkasan.md").read_text()
+    assert not (tmp_path / "keluar" / "prediksi" / "m2_asli").exists()
+
+
+def test_kuota_per_menit_tidak_menghentikan_konfigurasi_lain(klien_skrip):
+    klien = klien_skrip([ModelSibuk("429 RESOURCE_EXHAUSTED PerMinute")])
+    with pytest.raises(SystemExit) as info:
+        ekstrak_tahan_kuota(b"x", "image/jpeg", klien, 0, 1.0, lambda _: None, lambda _: None)
+    assert info.value.harian is False and "429" in info.value.alasan
+
+
+def test_main_kode_keluar_bukan_nol_bila_ada_tidak_lengkap(tmp_path, monkeypatch):
+    from nota_eval import __main__ as cli
+    from nota_eval.jalankan import HasilEvaluasi, TidakLengkap
+
+    kasus = _dua_nota(tmp_path)
+    tulis_manifest(tmp_path / "m.json", kasus)
+    monkeypatch.setattr(cli, "muat_env", lambda _: None)
+    for tidak_lengkap, harapan in (([TidakLengkap("m@asli", 1, 2, "x")], 1), ([], 0)):
+        monkeypatch.setattr(cli, "jalankan_evaluasi", lambda *a, _t=tidak_lengkap, **k: HasilEvaluasi([], _t))
+        argv = [
+            "jalankan",
+            "--manifest",
+            str(tmp_path / "m.json"),
+            "--split",
+            "uji",
+            "--keluar",
+            str(tmp_path / "k"),
+        ]
+        assert cli.main(argv) == harapan
