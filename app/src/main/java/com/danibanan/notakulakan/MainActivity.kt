@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.danibanan.notakulakan.ui.nav.NavigasiNota
-import com.danibanan.notakulakan.ui.tema.TemaNota
+import com.danibanan.notakulakan.ui.theme.NotaTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -14,7 +14,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TemaNota {
+            NotaTheme {
                 NavigasiNota()
             }
         }
