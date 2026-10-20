@@ -1,7 +1,8 @@
 # Nota Kulakan
 
-Nota kulakan dari grosir menumpuk di laci, sehingga barang masuk dan harga modal tidak tercatat. Aplikasi
-ini membaca foto nota dengan AI, memeriksa hitungannya dengan aturan, lalu mencatat stok dan harga modal.
+Nota kulakan dari grosir dicatat tangan di buku; stok tidak dihitung dari nota dan kenaikan harga modal tidak
+terlihat. Aplikasi ini membaca foto nota dengan AI, memeriksa hitungannya dengan aturan, lalu mencatat stok dan
+harga modal.
 
 - Demo video: [video demo: menyusul]
 - Unduh APK: [APK: menyusul di Releases]
@@ -24,8 +25,8 @@ Proyek ini adalah studi kasus produk dan rekayasa, bukan pesaing aplikasi kasir 
 ## Masalah dan cara lama
 
 Toko sembako menerima nota kulakan (cetak dan tulisan tangan) dari grosir dan sales. Di toko yang menjadi studi
-kasus, nota ditumpuk di laci. Cara lama yang ada saat ini adalah menulis di buku; stok dan harga modal tidak
-dihitung dari nota, sehingga kenaikan harga modal tidak terlihat.
+kasus, nota dicatat tangan di buku dan kertasnya disimpan di laci. Stok dan harga modal tidak dihitung dari
+nota, sehingga kenaikan harga modal tidak terlihat.
 
 **Hipotesis (belum diukur):** mencatat nota lewat aplikasi lebih cepat per nota daripada menulis di buku, dan
 hasilnya lebih jarang salah karena hitungan diperiksa otomatis. Cara uji: 10 nota (target; minimal 6), tiap nota
