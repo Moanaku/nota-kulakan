@@ -13,7 +13,7 @@ Docker Hub, atau Gemini API. Akibatnya:
 
 Prompt di bawah sudah dijalankan sekali dan selesai. Simpan untuk sejarah, atau jalankan ulang bila
 lingkungan build berganti. Tempel prompt di bawah ke **Claude Code**
-(terminal VS Code atau aplikasi desktop) atau ke **Antigravity**, dari folder akar repo. Agen
+(terminal VS Code atau aplikasi desktop), dari folder akar repo. Agen
 yang tidak otomatis membaca `CLAUDE.md` tetap akan membacanya karena prompt memintanya.
 
 ---

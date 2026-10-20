@@ -1,6 +1,6 @@
 # Daftar tugas Nota Kulakan
 
-Pemilik: **C** = Claude (sesi cloud), **A** = agen lokal (Claude Code / Antigravity di laptop),
+Pemilik: **C** = Claude (sesi cloud), **A** = agen lokal (Claude Code di laptop),
 **D** = Dani. Centang hanya bila kriteria "selesai kalau" terpenuhi.
 Langkah operasional rinci (perintah, urutan) ada di `docs/RUNBOOK.md`.
 
@@ -32,7 +32,7 @@ Langkah operasional rinci (perintah, urutan) ada di `docs/RUNBOOK.md`.
   Nota yang boleh dikirim ke Gemini hanya yang memuat nama toko, nama toko penerima, daftar barang,
   dan harga. Nota yang memuat nomor telepon, alamat pribadi, atau nomor rekening harus dipotong atau
   ditutup dulu (crop, atau tutup dengan kertas saat memfoto).
-- [ ] C6 (D) Android Studio, Python 3.11+, Git, Claude Code/Antigravity terpasang. (1.3)
+- [ ] C6 (D) Android Studio, Python 3.11+, Git, Claude Code terpasang. (1.3)
 - [ ] C7 (D) Repo di GitHub, CI hijau. (1.2, 1.5)
 
 ## D. Backend ekstraksi

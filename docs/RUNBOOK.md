@@ -1,7 +1,7 @@
 # Runbook: dari zip sampai rilis APK
 
 Pemilik langkah: **[D]** = Dani (butuh akun, pembayaran, HP, atau keputusan), **[A]** = agen lokal
-(Claude Code atau Antigravity, lewat `docs/HANDOFF-AGENT.md`), **[D+A]** = Dani mengizinkan, agen
+(Claude Code, lewat `docs/HANDOFF-AGENT.md`), **[D+A]** = Dani mengizinkan, agen
 menjalankan. Centang di sini atau di `docs/TASKS.md`.
 
 > **Status 19 Okt 2026:** tidak ada rilis ke Play Store. APK dibagikan lewat GitHub Releases
@@ -22,7 +22,7 @@ Fase 1 dan 2 bisa berjalan paralel.
   git push -u origin main
   ```
   Repo publik lebih berguna untuk portofolio; pastikan tidak ada `.env` atau foto (sudah di `.gitignore`).
-- [ ] 1.3 [D] Pasang Android Studio stable terbaru, Python 3.11+, Git, dan Claude Code atau Antigravity.
+- [ ] 1.3 [D] Pasang Android Studio stable terbaru, Python 3.11+, Git, dan Claude Code.
 - [ ] 1.4 [A] Tempel prompt di `docs/HANDOFF-AGENT.md`. Agen membuat build hijau dan menguji alur
   dengan backend tiruan di emulator. Kamu cukup membaca laporannya.
 - [ ] 1.5 [D] Setelah push, cek tab Actions di GitHub: workflow `backend` dan `android` harus hijau.
