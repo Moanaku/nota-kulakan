@@ -24,6 +24,7 @@ import com.danibanan.notakulakan.ui.theme.Ukuran
 
 private val BentukTombol = RoundedCornerShape(Radius.sedang)
 private val PaddingTombol = PaddingValues(horizontal = Spasi.l, vertical = Spasi.s)
+private val PaddingTombolSejajar = PaddingValues(vertical = Spasi.s)
 
 @Composable
 private fun IsiTombol(teks: String, ikon: ImageVector?) {
@@ -85,7 +86,10 @@ fun TombolSekunder(
     ) { IsiTombol(teks, ikon) }
 }
 
-/** Aksi ringan tanpa wadah (mis. "Batal"). */
+/**
+ * Aksi ringan tanpa wadah (mis. "Batal"). [sejajarMargin] = true membuang padding horizontal supaya teks rata
+ * dengan margin layar (tombol yang berdiri sendiri di bawah teks lain).
+ */
 @Composable
 fun TombolTeks(
     teks: String,
@@ -93,6 +97,7 @@ fun TombolTeks(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     ikon: ImageVector? = null,
+    sejajarMargin: Boolean = false,
 ) {
     val w = MaterialTheme.colorScheme
     TextButton(
@@ -104,6 +109,6 @@ fun TombolTeks(
             contentColor = w.primary,
             disabledContentColor = w.onSurfaceVariant,
         ),
-        contentPadding = PaddingTombol,
+        contentPadding = if (sejajarMargin) PaddingTombolSejajar else PaddingTombol,
     ) { IsiTombol(teks, ikon) }
 }

@@ -2,6 +2,7 @@ package com.danibanan.notakulakan.ui.hasil
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -66,10 +68,14 @@ import com.danibanan.notakulakan.ui.komponen.TombolSekunder
 import com.danibanan.notakulakan.ui.komponen.TombolTeks
 import com.danibanan.notakulakan.ui.komponen.TombolUtama
 import com.danibanan.notakulakan.ui.komponen.formatTanggal
+import com.danibanan.notakulakan.ui.komponen.rememberTersambung
 import com.danibanan.notakulakan.ui.theme.Elevasi
 import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
 import com.danibanan.notakulakan.ui.theme.Ukuran
+
+/** Pada skala font ini ke atas, panel simpan menjadi item terakhir daftar. */
+private const val SKALA_FONT_PANEL_MENGGULIR = 1.5f
 
 private sealed interface Lembar {
     data class Baris(val indeks: Int) : Lembar
@@ -118,8 +124,9 @@ private fun LayarMemproses(onKembali: () -> Unit) {
 }
 
 /** Jenis gagal (termasuk Gemini 503/429 = layanan sibuk, 504/timeout = waktu habis) menjadi kalimat ramah. */
-private fun pesanGagal(jenis: JenisGagal): Int = when (jenis) {
-    JenisGagal.TANPA_JARINGAN -> R.string.gagal_tanpa_jaringan
+private fun pesanGagal(jenis: JenisGagal, tersambung: Boolean): Int = when (jenis) {
+    // HP online tetapi server tak terjangkau: bukan masalah koneksi pengguna.
+    JenisGagal.TANPA_JARINGAN -> if (tersambung) R.string.gagal_layanan_tak_terjangkau else R.string.gagal_tanpa_jaringan
     JenisGagal.WAKTU_HABIS -> R.string.gagal_waktu_habis
     JenisGagal.LAYANAN_SIBUK -> R.string.gagal_layanan_sibuk
     JenisGagal.BUKAN_NOTA -> R.string.gagal_bukan_nota
@@ -137,11 +144,12 @@ private fun LayarGagal(
     onGantiFoto: () -> Unit,
     onManual: () -> Unit,
 ) {
+    val tersambung = rememberTersambung()
     Scaffold(topBar = { BarAtas(stringResource(R.string.periksa_judul), onKembali = onKembali) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())) {
-            SpandukOffline(tampil = s.jenis == JenisGagal.TANPA_JARINGAN)
+            SpandukOffline(tampil = s.jenis == JenisGagal.TANPA_JARINGAN && !tersambung)
             KondisiGalat(
-                sebab = stringResource(pesanGagal(s.jenis)),
+                sebab = stringResource(pesanGagal(s.jenis, tersambung)),
                 // Foto yang salah tidak membaik dengan diulang: aksi utamanya memilih foto lain.
                 onCobaLagi = if (s.bisaUlang) onUlang else onGantiFoto,
                 judul = stringResource(R.string.gagal_judul),
@@ -183,9 +191,13 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
 
     LaunchedEffect(Unit) { vm.muatProduk() }
 
+    // Skala font besar: panel simpan ikut menggulir sebagai item terakhir, tidak menempel memakan layar.
+    val panelMenempel = LocalDensity.current.fontScale < SKALA_FONT_PANEL_MENGGULIR
+    val panel: @Composable () -> Unit = { PanelSimpan(d, onKonfirmasi = vm::setKonfirmasi, onSimpan = { vm.simpan() }) }
+
     Scaffold(
         topBar = { BarAtas(stringResource(R.string.periksa_judul), onKembali = onKembali) },
-        bottomBar = { PanelSimpan(d, onKonfirmasi = vm::setKonfirmasi, onSimpan = { vm.simpan() }) },
+        bottomBar = { if (panelMenempel) panel() },
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),
@@ -228,6 +240,7 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
                         TombolTeks(
                             teks = stringResource(if (tampilFoto) R.string.sembunyikan_foto else R.string.lihat_foto),
                             onClick = { tampilFoto = !tampilFoto },
+                            sejajarMargin = true,
                         )
                         if (tampilFoto) FotoNota(d.fotoPath)
                     }
@@ -295,6 +308,7 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
                 }
             }
             item { RingkasanTotal(d, onUbah = { lembar = Lembar.Total }) }
+            if (!panelMenempel) item { Box(Modifier.padding(top = Spasi.xl)) { panel() } }
         }
     }
 

@@ -44,6 +44,7 @@
     <string name="hasil_memproses_isi">Biasanya beberapa detik. Pastikan internet aktif.</string>
     <string name="gagal_judul">Nota belum terbaca</string>
     <string name="gagal_tanpa_jaringan">Tidak ada koneksi internet. Periksa data seluler atau Wi-Fi, lalu coba lagi.</string>
+    <string name="gagal_layanan_tak_terjangkau">Layanan pembaca nota tidak terjangkau. Coba lagi sebentar lagi.</string>
     <string name="gagal_waktu_habis">Server terlalu lama menjawab. Coba lagi sebentar lagi.</string>
     <string name="gagal_layanan_sibuk">Layanan AI sedang sibuk. Tunggu sekitar 10 detik, lalu coba lagi.</string>
     <string name="gagal_bukan_nota">Foto ini tidak terbaca sebagai nota. Coba foto ulang dengan cahaya lebih terang dan seluruh nota masuk bingkai.</string>
