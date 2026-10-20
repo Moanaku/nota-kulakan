@@ -295,3 +295,39 @@ Gagal (waktu habis, layanan) = 0 di keempat konfigurasi lengkap. Alarm palsu 0 d
   server. Aturan bagian 9 tidak memuat latensi; aturan tidak diubah setelah hasil terlihat. Ini
   dicatat sebagai pertimbangan untuk pemilihan model sesudah Lapisan 1.
 - 3.5-flash-lite 1,5x lebih mahal per nota dari 3.1-flash-lite ($0,00170 vs $0,00113-0,00115).
+
+## 11. Set internet dan set ketahanan (2026-10-20, konfigurasi sementara)
+
+Konfigurasi: `gemini-3.1-flash-lite` @1024 px, prompt v2, foto tertutup. Sementara karena
+`gemini-3.8-flash` belum selesai dievaluasi (bagian 10); bila model berganti, dua set ini diulang.
+Dijalankan satu kali, tidak diulang demi akurasi. Tidak dipakai menyetel apa pun.
+
+### Set internet (001-005, n=5, dilaporkan terpisah)
+
+Nota sempurna 5/5 (Wilson 95%: 57-100%); tulis tangan (004, 005) 2/2. Biaya rata-rata $0,00119 per
+nota (perkiraan harga daftar), latensi p50/p90 3,4 / 5,8 detik, foto rata-rata 28 KB. Validator
+menandai 002 dan 004, yang kuncinya sendiri tidak konsisten (bukan kesalahan model); alarm palsu 0/3.
+
+Cara membaca: n=5, jadi 100% tidak boleh dibaca sebagai akurasi umum. Set ini berbeda dari set utama
+(foto dari internet, bukan nota grosir yang saya kumpulkan, dan jauh lebih sedikit baris diskon),
+dan tidak boleh dibandingkan langsung dengan 42% di set uji. Penyebab selisihnya belum diselidiki.
+
+### Set ketahanan (006, 007, 011, 016, 026, kualitatif)
+
+Harness menolak manifest ini karena kunci 007 masih berstatus pra-label. Kunci tidak dikarang.
+Kelima foto dijalankan lewat skrip sementara yang memakai fungsi harness yang sama; keluaran mentah
+dan isu validator disimpan, "nota sempurna" tidak dihitung.
+
+| id | kasus | perilaku model | validator |
+|---|---|---|---|
+| 006 | kertas terpotong | qty 10 dan 2 diisi (kunci null), tanpa tanda ragu | menandai 1 baris |
+| 007 | dua nota dalam satu foto | digabung jadi satu nota, tanpa peringatan | menandai 3 baris + 1 kosong |
+| 011 | retur | tidak ada sinyal retur; baris 40 x 812 ditulis sesuai cetakan 32.466 | menandai baris 4 |
+| 016 | salinan 014 | hasil sama dengan 014 | lolos |
+| 026 | salinan 025 plus baris bonus tanpa harga | 7 baris identik dengan 025 | menandai baris tanpa harga |
+
+Pelajaran produk (hipotesis perilaku, bukan angka akurasi): pada foto yang tidak lengkap atau
+berisi dua nota, model tidak memberi tanda keraguan, jadi satu-satunya penjaga adalah validator dan
+konfirmasi pengguna; lolos validator pada nota yang salah tidak bisa dibedakan dari nota benar.
+016 lolos dan akan masuk otomatis. Keluaran tidak menyimpan `terbaca` dan `catatan`; periksa apakah
+itu memang keputusan desain.
