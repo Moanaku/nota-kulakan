@@ -169,3 +169,37 @@ tanpa pra-label dan bandingkan hasilnya; tulis selisihnya di README.
 - Kasus uji tidak pernah dipindah ke dev setelah dipakai.
 - Simpan folder `eval-hasil/<waktu>/` yang dipakai README (ringkasan.md di-commit, prediksi
   dan foto tidak).
+
+## 8. Riwayat prompt
+
+### v1 -> v2 (2026-10-20)
+
+Alasan, dari pola gagal di set dev:
+- dev 020: nominal PPN yang sudah termasuk dalam harga terbaca sebagai pajak tambahan.
+- dev 015: kolom potongan ("Disc", "Discount Product") bergeser ke baris lain.
+
+Perubahan: aturan 3 (potongan dibaca sejajar barisnya, tanpa potongan = null) dan aturan 5
+(pajak null bila PPN sudah termasuk).
+
+Hasil dev (n=5, gemini-3.1-flash-lite, 1600 px, JPEG 85, definisi metrik 2026-10-19):
+
+| Versi | Nota sempurna (Wilson 95%) | Qty | Diskon baris | Pajak | Validator menangkap | Alarm palsu |
+|---|---|---|---|---|---|---|
+| v1 | 60% (3/5; 23-88%) | 23/25 | 22/25 | 4/5 | 2/2 | 0/3 |
+| v2 run1 | 80% (4/5; 38-96%) | 23/25 | 25/25 | 5/5 | 1/1 | 0/4 |
+| v2 run2 | 80% (4/5; 38-96%) | 23/25 | 25/25 | 5/5 | 1/1 | 0/4 |
+
+Nota 014, 017, 025 tetap sempurna di kedua run. Nota 015 dan pajak 020 membaik. Satu-satunya nota
+yang masih salah adalah 020: qty dua baris (0,5 per kunci 0,125) dan validator menangkapnya.
+Metrik run1 dan run2 identik.
+
+Catatan:
+- (a) Hanya dev yang dipakai menyetel. Set uji belum dijalankan.
+- (b) Qty dua kolom (mis. 020) belum ditangani. Butuh field isi per kemasan, yang mengubah format
+  API dan perlu persetujuan (aturan 12).
+- (c) Contoh "Discount Product" di aturan 3 berasal dari nota dev, tetapi judul kolom yang sama
+  ada di nota uji pemasok yang sama (013, 021). Perbaikan kemungkinan ikut membantu nota uji itu,
+  dan dev dan uji berbagi template pemasok, jadi angka uji tidak sepenuhnya independen dari dev.
+- (d) Pada 2026-10-19 server Gemini membalas 503 dua kali berturut-turut selama sekitar 15 menit
+  tanpa detail kuota. Dipakai tier gratis; biaya di laporan adalah perkiraan harga daftar, bukan
+  tagihan.

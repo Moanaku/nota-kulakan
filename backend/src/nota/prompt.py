@@ -13,7 +13,7 @@ ke versi prompt yang menghasilkannya. Prompt hanya boleh disetel memakai set dev
 
 from __future__ import annotations
 
-VERSI_PROMPT = "v1"
+VERSI_PROMPT = "v2"
 
 PROMPT = """\
 Kamu menyalin isi nota pembelian barang dari grosir atau sales ke toko sembako di Indonesia.
@@ -31,10 +31,15 @@ Aturan:
    - "satuan": dus, pcs, renceng, slop, bal, karton, kg, dan sebagainya, bila tertulis.
    - "harga_satuan": harga per satuan, bila tertulis.
    - "jumlah": nilai rupiah baris itu (biasanya kolom paling kanan), bila tertulis.
-   - "diskon": potongan khusus baris itu, bila tertulis.
+   - "diskon": potongan khusus baris itu, bila tertulis. Kolom potongan (mis. "Disc",
+     "Discount Product") dibaca sejajar dengan barisnya: angka potongan milik barang yang
+     sebaris dengannya, tidak pernah diambil dari baris lain. Baris tanpa potongan diisi null.
 4. Isi null untuk bagian yang tidak tertulis atau tidak terbaca. JANGAN menebak.
 5. "subtotal", "diskon", "pajak", "biaya_lain" (ongkos kirim, service, biaya lain yang
    menambah total), dan "total" untuk tingkat nota. Null bila tidak ada.
+   "pajak" hanya diisi bila nota menambahkan pajak di atas jumlah barang (total = jumlah barang
+   + pajak). Kalau nota menulis PPN sudah termasuk dalam harga (mis. "PPN termasuk",
+   "incl. PPN"), nominal PPN itu hanya informasi: isi null.
 6. "supplier" dan "tanggal" apa adanya bila tertulis.
 7. "jenis": "cetak", "tulis", atau "campuran".
 8. "terbaca": false bila gambar bukan nota atau nota sama sekali tidak terbaca.
