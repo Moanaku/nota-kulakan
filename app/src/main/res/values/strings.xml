@@ -21,10 +21,10 @@
     <string name="galat_stok">Stok tidak bisa dihitung dari nota di HP ini. Coba lagi.</string>
 
     <!-- Selisih harga -->
-    <string name="harga_naik">naik %1$s</string>
-    <string name="harga_turun">turun %1$s</string>
-    <string name="harga_tetap">tetap</string>
-    <string name="harga_baru">baru</string>
+    <string name="harga_naik">Harga naik %1$s</string>
+    <string name="harga_turun">Harga turun %1$s</string>
+    <string name="harga_tetap">Harga tetap</string>
+    <string name="harga_baru">Harga baru</string>
 
     <!-- Foto -->
     <string name="foto_judul">Foto nota dari grosir</string>
