@@ -133,4 +133,19 @@
     <string name="hapus_nota_judul">Hapus nota ini?</string>
     <string name="hapus_nota_isi">Barang dari nota ini akan dikurangi dari total masuk. Tidak bisa dibatalkan.</string>
     <string name="foto_tidak_tersedia">Foto tidak tersedia</string>
+
+    <!-- Komponen inti (ui/komponen) -->
+    <string name="chip_cocok">Cocok</string>
+    <string name="chip_selisih">Selisih</string>
+    <string name="chip_belum_terbaca">Belum terbaca</string>
+    <string name="kosong_belum_ada_judul">Belum ada %1$s</string>
+    <string name="kosong_belum_ada_isi">Data %1$s akan tampil di sini setelah dicatat.</string>
+    <string name="kosong_filter_judul">Tidak ada %1$s yang cocok</string>
+    <string name="kosong_filter_isi">Ubah atau hapus filter untuk melihat %1$s lain.</string>
+    <string name="kosong_hapus_filter">Hapus filter</string>
+    <string name="galat_coba_lagi">Coba lagi</string>
+    <string name="galat_judul">Tidak bisa memuat</string>
+    <string name="skeleton_memuat_barang">Memuat daftar barang</string>
+    <string name="offline_spanduk">Sedang offline. Nota baru belum bisa dibaca sampai HP tersambung.</string>
+    <string name="input_rupiah_awalan">Rp</string>
 </resources>
