@@ -13,11 +13,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.danibanan.notakulakan.R
 import com.danibanan.notakulakan.domain.Rupiah
 import com.danibanan.notakulakan.domain.UkuranFoto
+import com.danibanan.notakulakan.ui.theme.Elevasi
 import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
 import com.danibanan.notakulakan.ui.tema.WarnaNota
@@ -121,20 +125,31 @@ fun Pemberitahuan(
 
 enum class Tab { STOK, RIWAYAT }
 
+/** Navigasi bawah: dua area nyata aplikasi (stok dan riwayat), tidak lebih. */
 @Composable
 fun BarBawah(aktif: Tab, onStok: () -> Unit, onRiwayat: () -> Unit) {
-    NavigationBar {
+    val w = MaterialTheme.colorScheme
+    val warna = NavigationBarItemDefaults.colors(
+        selectedIconColor = w.onPrimaryContainer,
+        selectedTextColor = w.onSurface,
+        indicatorColor = w.primaryContainer,
+        unselectedIconColor = w.onSurfaceVariant,
+        unselectedTextColor = w.onSurfaceVariant,
+    )
+    NavigationBar(containerColor = w.surfaceContainer, tonalElevation = Elevasi.nol) {
         NavigationBarItem(
             selected = aktif == Tab.STOK,
             onClick = onStok,
-            icon = { Ikon(R.drawable.ic_stok, null) },
-            label = { Text(stringResource(R.string.tab_stok)) },
+            icon = { Icon(Icons.Outlined.ShoppingCart, contentDescription = null) },
+            label = { Text(stringResource(R.string.tab_stok), style = MaterialTheme.typography.bodySmall) },
+            colors = warna,
         )
         NavigationBarItem(
             selected = aktif == Tab.RIWAYAT,
             onClick = onRiwayat,
-            icon = { Ikon(R.drawable.ic_riwayat, null) },
-            label = { Text(stringResource(R.string.tab_riwayat)) },
+            icon = { Icon(Icons.Outlined.DateRange, contentDescription = null) },
+            label = { Text(stringResource(R.string.tab_riwayat), style = MaterialTheme.typography.bodySmall) },
+            colors = warna,
         )
     }
 }

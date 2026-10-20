@@ -1,5 +1,7 @@
 package com.danibanan.notakulakan.ui.nav
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -10,6 +12,8 @@ import com.danibanan.notakulakan.ui.hasil.HasilScreen
 import com.danibanan.notakulakan.ui.riwayat.DetailNotaScreen
 import com.danibanan.notakulakan.ui.riwayat.RiwayatScreen
 import com.danibanan.notakulakan.ui.stok.StokScreen
+import com.danibanan.notakulakan.ui.theme.Durasi
+import com.danibanan.notakulakan.ui.theme.spekGerak
 import kotlinx.serialization.Serializable
 
 // Rute bertipe (Navigation 2.8+). Nama properti = kunci di SavedStateHandle ("uri", "id").
@@ -21,7 +25,17 @@ import kotlinx.serialization.Serializable
 
 @Composable
 fun NavigasiNota(nav: NavHostController = rememberNavController()) {
-    NavHost(navController = nav, startDestination = RuteStok) {
+    // Transisi antarlayar: pudar dengan easing dan durasi token (0 ms bila animasi dimatikan di sistem).
+    val masuk = fadeIn(spekGerak(Durasi.sedang))
+    val keluar = fadeOut(spekGerak(Durasi.cepat))
+    NavHost(
+        navController = nav,
+        startDestination = RuteStok,
+        enterTransition = { masuk },
+        exitTransition = { keluar },
+        popEnterTransition = { masuk },
+        popExitTransition = { keluar },
+    ) {
         composable<RuteStok> {
             StokScreen(
                 onCatatNota = { nav.navigate(RuteFoto) },
