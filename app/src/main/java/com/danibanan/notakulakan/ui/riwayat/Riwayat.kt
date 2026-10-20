@@ -3,37 +3,25 @@ package com.danibanan.notakulakan.ui.riwayat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -43,37 +31,78 @@ import com.danibanan.notakulakan.R
 import com.danibanan.notakulakan.domain.Qty
 import com.danibanan.notakulakan.domain.RingkasNota
 import com.danibanan.notakulakan.domain.Rupiah
+import com.danibanan.notakulakan.domain.Validator
+import com.danibanan.notakulakan.domain.model.ItemBaris
+import com.danibanan.notakulakan.domain.model.Tingkat
 import com.danibanan.notakulakan.domain.repo.NotaRepository
 import com.danibanan.notakulakan.domain.repo.NotaTersimpan
+import com.danibanan.notakulakan.ui.komponen.BarAtas
 import com.danibanan.notakulakan.ui.komponen.BarBawah
+import com.danibanan.notakulakan.ui.komponen.BarisBarang
+import com.danibanan.notakulakan.ui.komponen.BarisRingkasanTotal
+import com.danibanan.notakulakan.ui.komponen.ChipStatus
+import com.danibanan.notakulakan.ui.komponen.DataKosong
 import com.danibanan.notakulakan.ui.komponen.FotoNota
-import com.danibanan.notakulakan.ui.komponen.Ikon
-import com.danibanan.notakulakan.ui.komponen.Lencana
+import com.danibanan.notakulakan.ui.komponen.JenisKosong
+import com.danibanan.notakulakan.ui.komponen.JenisPesan
+import com.danibanan.notakulakan.ui.komponen.KartuRingkasanNota
+import com.danibanan.notakulakan.ui.komponen.KondisiGalat
+import com.danibanan.notakulakan.ui.komponen.PemisahBaris
+import com.danibanan.notakulakan.ui.komponen.PesanPeriksa
+import com.danibanan.notakulakan.ui.komponen.SkeletonBarisBarang
+import com.danibanan.notakulakan.ui.komponen.StatusBaris
 import com.danibanan.notakulakan.ui.komponen.Tab
+import com.danibanan.notakulakan.ui.komponen.TombolCatatNota
+import com.danibanan.notakulakan.ui.komponen.TombolSekunder
+import com.danibanan.notakulakan.ui.komponen.TombolTeks
 import com.danibanan.notakulakan.ui.komponen.formatTanggal
-import com.danibanan.notakulakan.ui.tema.WarnaNota
+import com.danibanan.notakulakan.ui.theme.Elevasi
+import com.danibanan.notakulakan.ui.theme.Radius
+import com.danibanan.notakulakan.ui.theme.Spasi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 // ---------------------------------------------------------------------------
 // Daftar riwayat
 // ---------------------------------------------------------------------------
 
-@HiltViewModel
-class RiwayatViewModel @Inject constructor(repo: NotaRepository) : ViewModel() {
-    val riwayat: StateFlow<List<RingkasNota>?> = repo.riwayat()
-        .map<List<RingkasNota>, List<RingkasNota>?> { it }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+sealed interface RiwayatUi {
+    data object Memuat : RiwayatUi
+    data object Galat : RiwayatUi
+    data class Ada(val daftar: List<RingkasNota>) : RiwayatUi
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalCoroutinesApi::class)
+@HiltViewModel
+class RiwayatViewModel @Inject constructor(repo: NotaRepository) : ViewModel() {
+    private val percobaan = MutableStateFlow(0)
+
+    val ui: StateFlow<RiwayatUi> = percobaan
+        .flatMapLatest {
+            repo.riwayat()
+                .map<List<RingkasNota>, RiwayatUi> { RiwayatUi.Ada(it) }
+                .catch { emit(RiwayatUi.Galat) }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RiwayatUi.Memuat)
+
+    fun cobaLagi() = percobaan.update { it + 1 }
+}
+
+/**
+ * Empat kondisi: memuat (skeleton), kosong (belum ada nota; tidak ada filter, jadi tidak ada "hasil filter kosong"),
+ * galat (gagal membaca basis data lokal), offline tidak berlaku (data tersimpan di HP).
+ */
 @Composable
 fun RiwayatScreen(
     onBukaNota: (Long) -> Unit,
@@ -81,56 +110,44 @@ fun RiwayatScreen(
     onCatatNota: () -> Unit,
     vm: RiwayatViewModel = hiltViewModel(),
 ) {
-    val riwayat by vm.riwayat.collectAsStateWithLifecycle()
+    val ui by vm.ui.collectAsStateWithLifecycle()
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.riwayat_judul)) }) },
+        topBar = { BarAtas(stringResource(R.string.riwayat_judul)) },
         bottomBar = { BarBawah(Tab.RIWAYAT, onStok = onKeStok, onRiwayat = {}) },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = onCatatNota,
-                icon = { Ikon(R.drawable.ic_kamera, null) },
-                text = { Text(stringResource(R.string.catat_nota)) },
-            )
-        },
+        floatingActionButton = { TombolCatatNota(onCatatNota) },
     ) { padding ->
-        val daftar = riwayat
-        when {
-            daftar == null -> Column(
-                Modifier.fillMaxSize().padding(padding),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) { CircularProgressIndicator() }
+        when (val s = ui) {
+            RiwayatUi.Memuat -> SkeletonBarisBarang(Modifier.padding(padding).padding(horizontal = Spasi.l), jumlahBaris = 4)
 
-            daftar.isEmpty() -> Column(
-                Modifier.fillMaxSize().padding(padding).padding(32.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    stringResource(R.string.riwayat_kosong),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+            RiwayatUi.Galat -> KondisiGalat(
+                sebab = stringResource(R.string.galat_riwayat),
+                onCobaLagi = vm::cobaLagi,
+                modifier = Modifier.padding(padding),
+            )
+
+            is RiwayatUi.Ada -> if (s.daftar.isEmpty()) {
+                DataKosong(
+                    jenis = JenisKosong.BELUM_ADA_DATA,
+                    objek = stringResource(R.string.objek_nota),
+                    modifier = Modifier.padding(padding),
+                    teksAksi = stringResource(R.string.catat_nota),
+                    onAksi = onCatatNota,
                 )
-            }
-
-            else -> LazyColumn(
-                Modifier.fillMaxSize().padding(padding),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                items(daftar, key = { it.id }) { n ->
-                    Card(onClick = { onBukaNota(n.id) }, modifier = Modifier.fillMaxWidth()) {
-                        Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Column(Modifier.weight(1f)) {
-                                Text(formatTanggal(n.dibuatPada), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                                Text(
-                                    listOfNotNull(n.supplier, stringResource(R.string.riwayat_baris, n.jumlahBaris)).joinToString(" · "),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                            Text(n.total?.let(Rupiah::format) ?: "-", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.ExtraBold)
-                        }
+            } else {
+                LazyColumn(
+                    Modifier.fillMaxSize().padding(padding),
+                    contentPadding = PaddingValues(start = Spasi.l, end = Spasi.l, top = Spasi.s, bottom = Spasi.xxxl * 2),
+                    verticalArrangement = Arrangement.spacedBy(Spasi.m),
+                ) {
+                    items(s.daftar, key = { it.id }) { n ->
+                        KartuRingkasanNota(
+                            toko = n.supplier ?: stringResource(R.string.supplier_kosong),
+                            tanggal = formatTanggal(n.dibuatPada),
+                            jumlahBarang = stringResource(R.string.riwayat_baris, n.jumlahBaris),
+                            total = n.total?.let(Rupiah::format) ?: "-",
+                            status = null, // RingkasNota belum menyimpan status; lihat LAPORAN.
+                            onClick = { onBukaNota(n.id) },
+                        )
                     }
                 }
             }
@@ -144,8 +161,9 @@ fun RiwayatScreen(
 
 sealed interface DetailUi {
     data object Memuat : DetailUi
+    data object Galat : DetailUi
     data object TidakAda : DetailUi
-    data class Ada(val nota: NotaTersimpan) : DetailUi
+    data class Ada(val nota: NotaTersimpan, val galatHapus: Boolean = false) : DetailUi
     data object Terhapus : DetailUi
 }
 
@@ -159,20 +177,43 @@ class DetailViewModel @Inject constructor(
     val ui: StateFlow<DetailUi> = _ui.asStateFlow()
 
     init {
+        muat()
+    }
+
+    fun muat() {
+        _ui.value = DetailUi.Memuat
         viewModelScope.launch {
-            _ui.value = repo.detail(id)?.let { DetailUi.Ada(it) } ?: DetailUi.TidakAda
+            _ui.value = try {
+                repo.detail(id)?.let { DetailUi.Ada(it) } ?: DetailUi.TidakAda
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                DetailUi.Galat
+            }
         }
     }
 
     fun hapus() {
+        val sekarang = _ui.value as? DetailUi.Ada ?: return
         viewModelScope.launch {
-            repo.hapus(id)
-            _ui.value = DetailUi.Terhapus
+            _ui.value = try {
+                repo.hapus(id)
+                DetailUi.Terhapus
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                sekarang.copy(galatHapus = true)
+            }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+private fun statusBaris(i: Int, item: ItemBaris): StatusBaris = when {
+    Validator.periksaBaris(i, item).any { it.tingkat == Tingkat.GALAT } -> StatusBaris.SELISIH
+    item.qty == null || item.hargaSatuan == null || item.jumlah == null -> StatusBaris.BELUM_TERBACA
+    else -> StatusBaris.COCOK
+}
+
 @Composable
 fun DetailNotaScreen(onKembali: () -> Unit, vm: DetailViewModel = hiltViewModel()) {
     val ui by vm.ui.collectAsStateWithLifecycle()
@@ -182,84 +223,89 @@ fun DetailNotaScreen(onKembali: () -> Unit, vm: DetailViewModel = hiltViewModel(
         if (ui == DetailUi.Terhapus || ui == DetailUi.TidakAda) onKembali()
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.detail_judul)) },
-                navigationIcon = {
-                    IconButton(onClick = onKembali) { Ikon(R.drawable.ic_kembali, stringResource(R.string.kembali)) }
-                },
+    Scaffold(topBar = { BarAtas(stringResource(R.string.detail_judul), onKembali = onKembali) }) { padding ->
+        when (val s = ui) {
+            // TidakAda dan Terhapus langsung menutup layar (efek di atas); skeleton menutupi satu frame itu.
+            DetailUi.Memuat, DetailUi.TidakAda, DetailUi.Terhapus ->
+                SkeletonBarisBarang(Modifier.padding(padding).padding(horizontal = Spasi.l))
+
+            DetailUi.Galat -> KondisiGalat(
+                sebab = stringResource(R.string.galat_detail),
+                onCobaLagi = vm::muat,
+                modifier = Modifier.padding(padding),
             )
-        },
-    ) { padding ->
-        val s = ui
-        if (s !is DetailUi.Ada) {
-            Column(
-                Modifier.fillMaxSize().padding(padding),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) { CircularProgressIndicator() }
-            return@Scaffold
-        }
-        val t = s.nota
-        val w = WarnaNota.status
-        LazyColumn(
-            Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            item {
-                Column {
-                    Text(formatTanggal(t.dibuatPada), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    t.nota.supplier?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
-                    if (t.dikonfirmasiMeskiTidakCocok) {
-                        Lencana(stringResource(R.string.detail_dikonfirmasi), w.cekLatar, w.cekTeks, Modifier.padding(top = 6.dp))
-                    }
-                }
-            }
-            if (t.fotoPath != null) item { FotoNota(t.fotoPath) }
-            itemsIndexed(t.nota.items) { i, item ->
-                Card(Modifier.fillMaxWidth()) {
-                    Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            Text(t.namaProduk.getOrNull(i) ?: item.nama, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                            Text(
-                                "${item.nama} · ${item.qty?.let(Qty::format) ?: "?"}${item.satuan?.let { " $it" } ?: ""} × " +
-                                    (item.hargaSatuan?.let(Rupiah::format) ?: "?"),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                        Text(item.jumlah?.let(Rupiah::format) ?: "?", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                    }
-                }
-            }
-            item {
-                Row(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-                    Text(stringResource(R.string.total_tertulis), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                    Text(t.nota.total?.let(Rupiah::format) ?: "-", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.ExtraBold)
-                }
-            }
-            item {
-                OutlinedButton(
-                    onClick = { tanyaHapus = true },
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-                ) { Text(stringResource(R.string.hapus_nota), color = MaterialTheme.colorScheme.error) }
-            }
+
+            is DetailUi.Ada -> IsiDetail(s, padding, onHapus = { tanyaHapus = true })
         }
     }
 
     if (tanyaHapus) {
         AlertDialog(
             onDismissRequest = { tanyaHapus = false },
-            title = { Text(stringResource(R.string.hapus_nota_judul)) },
-            text = { Text(stringResource(R.string.hapus_nota_isi)) },
-            confirmButton = {
-                TextButton(onClick = { tanyaHapus = false; vm.hapus() }) {
-                    Text(stringResource(R.string.hapus), color = MaterialTheme.colorScheme.error)
-                }
-            },
-            dismissButton = { TextButton(onClick = { tanyaHapus = false }) { Text(stringResource(R.string.batal)) } },
+            shape = RoundedCornerShape(Radius.besar),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            tonalElevation = Elevasi.tinggi,
+            title = { Text(stringResource(R.string.hapus_nota_judul), style = MaterialTheme.typography.headlineSmall) },
+            text = { Text(stringResource(R.string.hapus_nota_isi), style = MaterialTheme.typography.bodyLarge) },
+            confirmButton = { TombolTeks(stringResource(R.string.hapus_nota), onClick = { tanyaHapus = false; vm.hapus() }) },
+            dismissButton = { TombolTeks(stringResource(R.string.batal), onClick = { tanyaHapus = false }) },
         )
+    }
+}
+
+@Composable
+private fun IsiDetail(s: DetailUi.Ada, padding: PaddingValues, onHapus: () -> Unit) {
+    val t = s.nota
+    LazyColumn(
+        Modifier.fillMaxSize().padding(padding),
+        contentPadding = PaddingValues(horizontal = Spasi.l, vertical = Spasi.s),
+    ) {
+        // Satu elemen dominan: total nota, dengan tanggal dan supplier sebagai keterangan.
+        item {
+            Column(Modifier.padding(bottom = Spasi.l), verticalArrangement = Arrangement.spacedBy(Spasi.s)) {
+                Text(
+                    listOfNotNull(t.nota.supplier, formatTanggal(t.dibuatPada)).joinToString(" · "),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                BarisRingkasanTotal(
+                    label = stringResource(R.string.total_tertulis),
+                    nilai = t.nota.total?.let(Rupiah::format) ?: "-",
+                    dominan = true,
+                )
+                if (t.dikonfirmasiMeskiTidakCocok) {
+                    ChipStatus(StatusBaris.SELISIH, teks = stringResource(R.string.detail_dikonfirmasi))
+                } else {
+                    ChipStatus(StatusBaris.COCOK, teks = stringResource(R.string.status_cocok))
+                }
+            }
+        }
+        if (t.fotoPath != null) item { FotoNota(t.fotoPath, Modifier.padding(bottom = Spasi.m)) }
+        item {
+            Text(
+                stringResource(R.string.hasil_barang_judul),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = Spasi.s),
+            )
+        }
+        itemsIndexed(t.nota.items) { i, item ->
+            val namaProduk = t.namaProduk.getOrNull(i) ?: item.nama
+            val hitungan = "${item.qty?.let(Qty::format) ?: "?"}${item.satuan?.let { " $it" } ?: ""} × " +
+                (item.hargaSatuan?.let(Rupiah::format) ?: "?")
+            BarisBarang(
+                nama = namaProduk,
+                qtyHarga = if (namaProduk == item.nama) hitungan else "${item.nama} · $hitungan",
+                jumlah = item.jumlah?.let(Rupiah::format) ?: "?",
+                status = statusBaris(i, item),
+            )
+            PemisahBaris()
+        }
+        item {
+            Column(Modifier.fillMaxWidth().padding(top = Spasi.xl), verticalArrangement = Arrangement.spacedBy(Spasi.s)) {
+                if (s.galatHapus) PesanPeriksa(stringResource(R.string.galat_hapus), JenisPesan.GALAT)
+                TombolSekunder(stringResource(R.string.hapus_nota), onClick = onHapus, modifier = Modifier.fillMaxWidth())
+            }
+        }
     }
 }

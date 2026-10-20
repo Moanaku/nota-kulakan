@@ -133,7 +133,10 @@
 
     <!-- Riwayat -->
     <string name="riwayat_judul">Riwayat nota</string>
-    <string name="riwayat_kosong">Nota yang sudah disimpan muncul di sini.</string>
+    <string name="objek_nota">nota</string>
+    <string name="galat_riwayat">Daftar nota tidak bisa dibaca dari HP ini. Coba lagi.</string>
+    <string name="galat_detail">Nota ini tidak bisa dibuka. Coba lagi.</string>
+    <string name="galat_hapus">Nota belum terhapus. Coba lagi.</string>
     <string name="riwayat_baris">%1$d baris</string>
     <string name="detail_judul">Detail nota</string>
     <string name="detail_dikonfirmasi">Disimpan meski hitungan di nota tidak cocok</string>

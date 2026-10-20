@@ -55,7 +55,7 @@ fun BarisRingkasanTotal(
 
 /**
  * Ringkasan satu nota (objek yang berdiri sendiri, jadi boleh berbentuk kartu): toko, tanggal, jumlah barang,
- * total, status. Kartu = outline `pemisah`, elevasi 0, tanpa bayangan.
+ * total, status ([status] null = tidak ditampilkan, mis. riwayat yang belum menyimpan status). Kartu = outline `pemisah`, elevasi 0, tanpa bayangan.
  */
 @Composable
 fun KartuRingkasanNota(
@@ -63,7 +63,7 @@ fun KartuRingkasanNota(
     tanggal: String,
     jumlahBarang: String,
     total: String,
-    status: StatusBaris,
+    status: StatusBaris?,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
@@ -93,7 +93,7 @@ fun KartuRingkasanNota(
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                ChipStatus(status)
+                if (status != null) ChipStatus(status)
             }
         }
     }

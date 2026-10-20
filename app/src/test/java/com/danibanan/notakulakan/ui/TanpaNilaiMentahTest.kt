@@ -15,7 +15,6 @@ class TanpaNilaiMentahTest {
     // Berkas lama yang akan dimigrasi bersama layarnya (tugas migrasi berikutnya). Jangan menambah daftar ini
     // untuk kode baru; kode baru wajib memakai token dari ui/theme.
     private val akanDimigrasi = setOf(
-        "ui/riwayat/Riwayat.kt",
         "ui/stok/StokScreen.kt",
         "ui/tema/Tema.kt", // tema lama, digantikan ui/theme
         "ui/komponen/Komponen.kt", // komponen lama (Lencana, Pemberitahuan, BarBawah, FotoNota)
