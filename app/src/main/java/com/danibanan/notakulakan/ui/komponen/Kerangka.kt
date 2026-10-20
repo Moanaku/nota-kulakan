@@ -65,17 +65,23 @@ fun TombolCatatNota(onClick: () -> Unit, modifier: Modifier = Modifier) {
     )
 }
 
+/** Status chip untuk perubahan harga modal. */
+class StatusHarga(val status: StatusBaris, val teks: String)
+
 /**
- * Perubahan harga modal sebagai [ChipStatus]: naik = selisih (perlu diperhatikan), turun = cocok,
+ * Perubahan harga modal sebagai status: naik = selisih (perlu diperhatikan), turun = cocok,
  * tetap atau produk baru = info.
  */
 @Composable
+fun statusHarga(selisih: Long?, adaRiwayat: Boolean): StatusHarga = when {
+    !adaRiwayat || selisih == null -> StatusHarga(StatusBaris.BELUM_TERBACA, stringResource(R.string.harga_baru))
+    selisih > 0 -> StatusHarga(StatusBaris.SELISIH, stringResource(R.string.harga_naik, Rupiah.format(selisih)))
+    selisih < 0 -> StatusHarga(StatusBaris.COCOK, stringResource(R.string.harga_turun, Rupiah.format(-selisih)))
+    else -> StatusHarga(StatusBaris.BELUM_TERBACA, stringResource(R.string.harga_tetap))
+}
+
+@Composable
 fun ChipSelisihHarga(selisih: Long?, adaRiwayat: Boolean, modifier: Modifier = Modifier) {
-    when {
-        !adaRiwayat || selisih == null ->
-            ChipStatus(StatusBaris.BELUM_TERBACA, modifier, stringResource(R.string.harga_baru))
-        selisih > 0 -> ChipStatus(StatusBaris.SELISIH, modifier, stringResource(R.string.harga_naik, Rupiah.format(selisih)))
-        selisih < 0 -> ChipStatus(StatusBaris.COCOK, modifier, stringResource(R.string.harga_turun, Rupiah.format(-selisih)))
-        else -> ChipStatus(StatusBaris.BELUM_TERBACA, modifier, stringResource(R.string.harga_tetap))
-    }
+    val h = statusHarga(selisih, adaRiwayat)
+    ChipStatus(h.status, modifier, h.teks)
 }

@@ -12,13 +12,9 @@ class TanpaNilaiMentahTest {
     private val skala = setOf("0", "2", "4", "8", "12", "16", "24", "32", "48")
     private val dpAngka = Regex("""(?<![\w.])(\d+(?:\.\d+)?)\.dp\b""")
 
-    // Berkas lama yang akan dimigrasi bersama layarnya (tugas migrasi berikutnya). Jangan menambah daftar ini
-    // untuk kode baru; kode baru wajib memakai token dari ui/theme.
-    private val akanDimigrasi = setOf(
-        "ui/stok/StokScreen.kt",
-        "ui/tema/Tema.kt", // tema lama, digantikan ui/theme
-        "ui/komponen/Komponen.kt", // komponen lama (Lencana, Pemberitahuan, BarBawah, FotoNota)
-    )
+    // Semua layar sudah dimigrasi: tidak ada pengecualian tersisa. Jangan menambah daftar ini; kode baru
+    // wajib memakai token dari ui/theme.
+    private val akanDimigrasi = emptySet<String>()
 
     private fun akar(): File = listOf("src/main/java", "app/src/main/java").map(::File).first { it.isDirectory }
 

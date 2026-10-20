@@ -25,7 +25,7 @@ import com.danibanan.notakulakan.ui.theme.Ukuran
  * Satu baris barang dengan tiga tingkat: nama (isi-tebal), qty x harga (keterangan, teks-sekunder),
  * jumlah (isi-tebal, tabular, rata kanan); status sebagai chip. Jarak di dalam baris 4 dp, antar baris 16 dp
  * (8 dp atas + 8 dp bawah). Teks sudah diformat oleh pemanggil, mis. [qtyHarga] = "2 dus x Rp 45.000".
- * Berikan [onClick] bila baris bisa diketuk (membuka sheet koreksi).
+ * Berikan [onClick] bila baris bisa diketuk (membuka sheet koreksi). [teksStatus] mengganti label chip bawaan.
  */
 @Composable
 fun BarisBarang(
@@ -35,6 +35,7 @@ fun BarisBarang(
     status: StatusBaris,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
+    teksStatus: String? = null,
 ) {
     val dasar = modifier
         .fillMaxWidth()
@@ -60,7 +61,7 @@ fun BarisBarang(
                 modifier = Modifier.widthIn(min = Spasi.xxxl),
             )
         }
-        ChipStatus(status)
+        ChipStatus(status, teks = teksStatus)
     }
 }
 
