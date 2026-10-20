@@ -17,12 +17,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import com.danibanan.notakulakan.ui.theme.Elevasi
 import com.danibanan.notakulakan.ui.theme.GayaNota
 import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
 import com.danibanan.notakulakan.ui.theme.Ukuran
+
+private const val SKALA_FONT_SUSUN_VERTIKAL = 1.5f
 
 /**
  * Baris label + nilai rupiah (subtotal, diskon, PPN). Dengan [dominan] = true dipakai untuk total nota:
@@ -35,23 +38,27 @@ fun BarisRingkasanTotal(
     modifier: Modifier = Modifier,
     dominan: Boolean = false,
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth().padding(vertical = Spasi.xs),
-        horizontalArrangement = Arrangement.spacedBy(Spasi.l),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            label,
-            modifier = Modifier.weight(1f),
-            style = if (dominan) MaterialTheme.typography.titleLarge else MaterialTheme.typography.bodyLarge,
-            color = if (dominan) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-            nilai,
-            style = if (dominan) GayaNota.angkaBesar else MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.End,
-        )
+    val labelGaya = if (dominan) MaterialTheme.typography.titleLarge else MaterialTheme.typography.bodyLarge
+    val labelWarna = if (dominan) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+    val nilaiGaya = if (dominan) GayaNota.angkaBesar else MaterialTheme.typography.bodyLarge
+    if (LocalDensity.current.fontScale >= SKALA_FONT_SUSUN_VERTIKAL) {
+        // Skala besar: label di atas, angka di bawahnya, supaya label tidak terpecah menjadi baris yatim.
+        Column(
+            modifier = modifier.fillMaxWidth().padding(vertical = Spasi.xs),
+            verticalArrangement = Arrangement.spacedBy(Spasi.xs),
+        ) {
+            Text(label, style = labelGaya, color = labelWarna)
+            Text(nilai, style = nilaiGaya, color = MaterialTheme.colorScheme.onSurface)
+        }
+    } else {
+        Row(
+            modifier = modifier.fillMaxWidth().padding(vertical = Spasi.xs),
+            horizontalArrangement = Arrangement.spacedBy(Spasi.l),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(label, modifier = Modifier.weight(1f), style = labelGaya, color = labelWarna)
+            Text(nilai, style = nilaiGaya, color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.End)
+        }
     }
 }
 
