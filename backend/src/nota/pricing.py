@@ -4,10 +4,11 @@ Biaya dihitung dari token yang DILAPORKAN API di setiap respons, bukan dari perk
 Harga diambil dari halaman resmi dan HARUS diperbarui sebelum pengukuran di README.
 
 Sumber   : https://ai.google.dev/gemini-api/docs/pricing
-Dibaca   : 2026-10-12
+Dibaca   : 2026-10-20
 Catatan  : halaman menyebut harga berbayar ini berlaku sampai 31 Desember 2026, dan harga
            gemini-3.8-flash dan gemini-3.6-flash naik per 1 Januari 2027 (1,50/7,50).
-           Harga output sudah termasuk token thinking.
+           Harga output sudah termasuk token thinking. Tidak ada tarif gambar terpisah;
+           gambar memakai tarif masuk.
 """
 
 from __future__ import annotations
@@ -15,7 +16,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 SUMBER_HARGA = "https://ai.google.dev/gemini-api/docs/pricing"
-TANGGAL_HARGA = "2026-10-12"
+TANGGAL_HARGA = "2026-10-20"
 
 
 @dataclass(frozen=True)

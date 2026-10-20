@@ -5,7 +5,7 @@ Studi kasus produk dan rekayasa, bukan pesaing aplikasi kasir.
 
 ## Dokumen
 - Spesifikasi `docs/PRD.md`, tugas dan pemilik `docs/TASKS.md`, langkah operasional `docs/RUNBOOK.md`,
-  alasan keputusan `docs/KEPUTUSAN.md`, evaluasi `docs/EVALUASI.md`. Baca PRD dan TASKS sebelum mengerjakan tugas;
+  alasan keputusan `docs/KEPUTUSAN.md`, evaluasi `docs/EVALUASI.md`, aturan tetap agen `docs/PROTOKOL-AGEN.md`. Baca PRD dan TASKS sebelum mengerjakan tugas;
   centang tugas hanya bila kriteria selesainya terpenuhi.
 
 ## Stack

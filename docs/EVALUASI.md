@@ -128,7 +128,8 @@ python -m nota_eval jalankan --manifest ../data/private/toko/manifest.jsonl --sp
 
 # 5. Angka README: uji, beberapa konfigurasi sekaligus
 python -m nota_eval jalankan --manifest ../data/private/toko/manifest.jsonl --split uji \
-  --model gemini-3.1-flash-lite --model gemini-3.8-flash --max-sisi 1600 --max-sisi 1024 --kurs-idr <KURS>
+  --model gemini-3.1-flash-lite --model gemini-3.5-flash-lite --model gemini-3.8-flash \
+  --max-sisi 1600 --max-sisi 1024 --kurs-idr <KURS>
 ```
 
 Bias jangkar pada pra-label: model terkuat yang menulis draf bisa membuat salahnya ikut
@@ -203,3 +204,27 @@ Catatan:
 - (d) Pada 2026-10-19 server Gemini membalas 503 dua kali berturut-turut selama sekitar 15 menit
   tanpa detail kuota. Dipakai tier gratis; biaya di laporan adalah perkiraan harga daftar, bukan
   tagihan.
+
+## 9. Protokol uji
+
+Ditetapkan 2026-10-20, sebelum split uji dijalankan.
+
+- **Konfigurasi utama** (angka utama README): `gemini-3.1-flash-lite` pada 1600 px, yang disetel di
+  dev dengan prompt v2.
+- **Konfigurasi uji**: 3 model (`gemini-3.1-flash-lite`, `gemini-3.5-flash-lite`,
+  `gemini-3.8-flash`) x 2 ukuran foto (1024 dan 1600 px) = 6. Semuanya dilaporkan di tabel; tidak
+  ada yang disembunyikan.
+- **Pindah model**: dari konfigurasi utama hanya bila model lain unggul >= 2 nota sempurna di uji
+  DAN biaya per nota <= 3x konfigurasi utama. Selain itu tetap.
+- **Ukuran foto**: 1024 px dipakai bila nota sempurnanya tidak lebih rendah dari 1600 px lebih dari
+  1 nota (alasan: pemakaian data pengguna). Selain itu 1600 px.
+- **Pengulangan**: konfigurasi yang gagal di tengah jalan karena 503/429 diulang penuh dari awal.
+  Konfigurasi tidak pernah diulang karena akurasinya rendah.
+- **Batas inferensi**: selisih <= 2 nota dari 12 tidak bermakna secara statistik (Wilson 95%
+  lebar). Dilaporkan sebagai batasan, bukan sebagai pemenang.
+- **Biaya**: harga daftar dari https://ai.google.dev/gemini-api/docs/pricing, dibaca 2026-10-20,
+  termasuk token berpikir sebagai token keluaran. Tier gratis tidak ditagih; angka ini perkiraan.
+  Harga `gemini-3.8-flash` naik pada 2027-01-01 ($1,50 masuk / $7,50 keluar per 1 juta token dari
+  $0,75 / $3,75), jadi angka biayanya hanya berlaku sampai 2026-12-31.
+- **Set lain**: set internet dan set ketahanan dijalankan sesudah konfigurasi ditetapkan, dengan
+  konfigurasi yang terpilih, dan dilaporkan terpisah.
