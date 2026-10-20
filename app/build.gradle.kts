@@ -46,7 +46,7 @@ android {
         versionName = "0.1.0"
 
         // Parameter kompresi = variabel evaluasi (lihat docs/EVALUASI.md). Ubah bersama.
-        buildConfigField("int", "FOTO_MAX_SISI", "1600")
+        buildConfigField("int", "FOTO_MAX_SISI", "1024")
         buildConfigField("int", "FOTO_KUALITAS", "85")
     }
 
