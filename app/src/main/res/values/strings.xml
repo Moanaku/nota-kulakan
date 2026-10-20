@@ -5,7 +5,6 @@
     <!-- Umum -->
     <string name="kembali">Kembali</string>
     <string name="batal">Batal</string>
-    <string name="hapus">Hapus</string>
 
     <!-- Navigasi bawah -->
     <string name="tab_stok">Stok</string>
@@ -52,7 +51,6 @@
     <string name="gagal_foto_terlalu_besar">Foto terlalu besar untuk dikirim. Pilih foto lain.</string>
     <string name="gagal_aplikasi_ditolak">Server menolak aplikasi ini. Pastikan memakai versi dari Play Store.</string>
     <string name="gagal_server">Terjadi gangguan di server. Coba lagi, atau isi manual.</string>
-    <string name="coba_lagi">Coba lagi</string>
     <string name="ganti_foto">Ganti foto</string>
     <string name="isi_manual">Isi manual</string>
 
@@ -104,7 +102,6 @@
     <string name="sebelumnya_terbaca">Tadinya terbaca %1$s</string>
     <string name="cocok_baris">%1$s × %2$s = %3$s. Cocok dengan jumlah tertulis.</string>
     <string name="hapus_baris">Hapus baris ini</string>
-    <string name="selesai">Selesai</string>
     <string name="simpan_koreksi_baris">Simpan koreksi baris</string>
     <string name="simpan_total_nota">Simpan total nota</string>
 
