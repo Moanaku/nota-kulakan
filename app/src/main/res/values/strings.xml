@@ -80,7 +80,13 @@
     <string name="belum_diisi">belum diisi</string>
     <string name="ubah_total">Ubah total</string>
     <string name="catatan_ai">Catatan dari pembaca nota: %1$s</string>
-    <string name="simpan_ke_stok">Simpan ke stok</string>
+    <string name="simpan_ke_stok">Simpan nota ke stok</string>
+    <string name="menyimpan_nota">Menyimpan nota…</string>
+    <string name="hasil_barang_judul">Barang</string>
+    <string name="objek_barang">barang</string>
+    <string name="objek_produk">produk</string>
+    <string name="ubah_total_supplier">Ubah total dan supplier</string>
+    <string name="total_nota">Total nota</string>
     <string name="konfirmasi_tidak_cocok">Angka sudah saya cocokkan dengan nota fisik. Hitungan di nota memang tidak cocok.</string>
     <string name="terhalang_lengkapi">Lengkapi baris yang ditandai merah dulu</string>
     <string name="terhalang_nama">Setiap baris harus punya nama barang</string>
@@ -97,8 +103,10 @@
     <string name="bukan_angka">Bukan angka yang dikenali</string>
     <string name="sebelumnya_terbaca">Tadinya terbaca %1$s</string>
     <string name="cocok_baris">%1$s × %2$s = %3$s. Cocok dengan jumlah tertulis.</string>
-    <string name="hapus_baris">Hapus baris</string>
+    <string name="hapus_baris">Hapus baris ini</string>
     <string name="selesai">Selesai</string>
+    <string name="simpan_koreksi_baris">Simpan koreksi baris</string>
+    <string name="simpan_total_nota">Simpan total nota</string>
 
     <!-- Lembar total -->
     <string name="edit_total_judul">Total dan supplier</string>
@@ -118,7 +126,7 @@
 
     <!-- Tersimpan -->
     <string name="tersimpan_judul">Nota tersimpan</string>
-    <string name="tersimpan_isi">%1$d baris masuk ke stok · %2$s</string>
+    <string name="tersimpan_isi">%1$d baris masuk ke stok.</string>
     <string name="tersimpan_perubahan">Perubahan harga modal dari nota sebelumnya</string>
     <string name="lihat_stok">Lihat stok</string>
     <string name="catat_nota_lain">Catat nota lain</string>

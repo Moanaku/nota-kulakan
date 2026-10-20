@@ -64,16 +64,17 @@ fun DataKosong(
     )
 }
 
-/** Galat: sebab dalam kalimat Indonesia (bukan pesan exception) + tombol "Coba lagi". */
+/** Galat: sebab dalam kalimat Indonesia (bukan pesan exception) + tombol "Coba lagi". [judul] menyebut objek yang gagal. */
 @Composable
 fun KondisiGalat(
     sebab: String,
     onCobaLagi: () -> Unit,
     modifier: Modifier = Modifier,
+    judul: String = stringResource(R.string.galat_judul),
 ) {
     PesanTengah(
         ikon = Icons.Outlined.Warning,
-        judul = stringResource(R.string.galat_judul),
+        judul = judul,
         isi = sebab,
         modifier = modifier,
         teksAksi = stringResource(R.string.galat_coba_lagi),

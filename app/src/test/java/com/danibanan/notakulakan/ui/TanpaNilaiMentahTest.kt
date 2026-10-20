@@ -16,8 +16,6 @@ class TanpaNilaiMentahTest {
     // untuk kode baru; kode baru wajib memakai token dari ui/theme.
     private val akanDimigrasi = setOf(
         "ui/foto/FotoScreen.kt",
-        "ui/hasil/HasilScreen.kt",
-        "ui/hasil/Lembar.kt",
         "ui/riwayat/Riwayat.kt",
         "ui/stok/StokScreen.kt",
         "ui/tema/Tema.kt", // tema lama, digantikan ui/theme

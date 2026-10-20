@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -33,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import com.danibanan.notakulakan.R
 import com.danibanan.notakulakan.domain.Rupiah
 import com.danibanan.notakulakan.domain.UkuranFoto
+import com.danibanan.notakulakan.ui.theme.Radius
+import com.danibanan.notakulakan.ui.theme.Spasi
 import com.danibanan.notakulakan.ui.tema.WarnaNota
 import java.io.File
 import java.time.Instant
@@ -162,11 +166,15 @@ fun FotoNota(path: String?, modifier: Modifier = Modifier, lebarMaks: Int = 1200
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
-                .padding(24.dp),
+                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(Radius.sedang))
+                .padding(Spasi.xl),
             contentAlignment = Alignment.Center,
         ) {
-            Ikon(R.drawable.ic_nota, stringResource(R.string.foto_tidak_tersedia), Modifier.size(32.dp))
+            Icon(
+                Icons.Outlined.Info,
+                contentDescription = stringResource(R.string.foto_tidak_tersedia),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

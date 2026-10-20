@@ -4,6 +4,8 @@
     <!-- Hanya internet. Kamera dipanggil lewat aplikasi kamera sistem (tanpa izin CAMERA),
          galeri lewat Photo Picker (tanpa izin penyimpanan). -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Hanya untuk membaca status tersambung/tidak (spanduk offline); tidak ada akses data jaringan lain. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".NotaApp"

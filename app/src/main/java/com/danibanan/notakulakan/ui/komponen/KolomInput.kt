@@ -77,6 +77,7 @@ fun KolomTeks(
     galat: String? = null,
     bantuan: String? = null,
     satuBaris: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
 ) {
     OutlinedTextField(
         value = nilai,
@@ -90,6 +91,7 @@ fun KolomTeks(
             { if (galat != null) PesanGalat(pesan) else Text(pesan) }
         },
         singleLine = satuBaris,
+        keyboardOptions = keyboardOptions,
         shape = RoundedCornerShape(Radius.kecil),
         colors = kolomWarna(),
     )

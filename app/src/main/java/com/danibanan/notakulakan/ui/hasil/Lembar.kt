@@ -5,27 +5,26 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,10 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import com.danibanan.notakulakan.R
 import com.danibanan.notakulakan.domain.PilihanProduk
 import com.danibanan.notakulakan.domain.Produk
@@ -48,44 +45,42 @@ import com.danibanan.notakulakan.domain.Validator
 import com.danibanan.notakulakan.domain.model.ItemBaris
 import com.danibanan.notakulakan.domain.model.Nota
 import com.danibanan.notakulakan.domain.model.Tingkat
-import com.danibanan.notakulakan.ui.komponen.Ikon
-import com.danibanan.notakulakan.ui.tema.WarnaNota
+import com.danibanan.notakulakan.ui.komponen.DataKosong
+import com.danibanan.notakulakan.ui.komponen.JenisKosong
+import com.danibanan.notakulakan.ui.komponen.KolomRupiah
+import com.danibanan.notakulakan.ui.komponen.KolomTeks
+import com.danibanan.notakulakan.ui.komponen.PemisahBaris
+import com.danibanan.notakulakan.ui.komponen.SheetKoreksi
+import com.danibanan.notakulakan.ui.komponen.TombolTeks
+import com.danibanan.notakulakan.ui.theme.Elevasi
+import com.danibanan.notakulakan.ui.theme.Radius
+import com.danibanan.notakulakan.ui.theme.Spasi
+import com.danibanan.notakulakan.ui.theme.Ukuran
 
-/** Teks masukan uang: kosong = null, tak terbaca = galat. */
-private class MasukanUang(awal: Long?) {
-    var teks by mutableStateOf(awal?.let(Rupiah::formatTanpaRp) ?: "")
-    val nilai: Long? get() = teks.takeIf { it.isNotBlank() }?.let(Rupiah::parseAtauNull)
-    val salah: Boolean get() = teks.isNotBlank() && nilai == null
-}
+internal enum class JenisPesan { GALAT, INFO, COCOK }
 
+/** Pesan pemeriksaan satu baris atau nota: ikon + kalimat + warna, tidak pernah warna saja. */
 @Composable
-private fun KolomAngka(
-    label: String,
-    teks: String,
-    onUbah: (String) -> Unit,
-    salah: Boolean,
-    keyboard: KeyboardType = KeyboardType.Number,
-    bantuan: String? = null,
-    modifier: Modifier = Modifier,
-) {
-    val pesan: String? = if (salah) stringResource(R.string.bukan_angka) else bantuan
-    OutlinedTextField(
-        value = teks,
-        onValueChange = onUbah,
-        label = { Text(label) },
-        isError = salah,
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboard),
-        supportingText = if (pesan != null) {
-            { Text(pesan) }
-        } else {
-            null
-        },
-        modifier = modifier.fillMaxWidth(),
-    )
+internal fun PesanPeriksa(pesan: String, jenis: JenisPesan, modifier: Modifier = Modifier) {
+    val w = MaterialTheme.colorScheme
+    val (latar, isi, ikon) = when (jenis) {
+        JenisPesan.GALAT -> Triple(w.errorContainer, w.onErrorContainer, Icons.Outlined.Warning)
+        JenisPesan.COCOK -> Triple(w.primaryContainer, w.onPrimaryContainer, Icons.Outlined.Check)
+        JenisPesan.INFO -> Triple(w.surfaceContainerHigh, w.onSurfaceVariant, Icons.Outlined.Info)
+    }
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(latar, RoundedCornerShape(Radius.kecil))
+            .padding(Spasi.m),
+        horizontalArrangement = Arrangement.spacedBy(Spasi.s),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Icon(ikon, contentDescription = null, tint = isi)
+        Text(pesan, style = MaterialTheme.typography.bodySmall, color = isi, modifier = Modifier.weight(1f))
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LembarBaris(
     indeks: Int,
@@ -94,171 +89,128 @@ fun LembarBaris(
     onHapus: () -> Unit,
     onTutup: () -> Unit,
 ) {
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var nama by remember { mutableStateOf(item.nama) }
     var qty by remember { mutableStateOf(item.qty?.let(Qty::format) ?: "") }
     var satuan by remember { mutableStateOf(item.satuan ?: "") }
-    val harga = remember { MasukanUang(item.hargaSatuan) }
-    val jumlah = remember { MasukanUang(item.jumlah) }
-    val diskon = remember { MasukanUang(item.diskonBaris.takeIf { it != 0L }) }
-    val hargaAwal = remember { harga.teks }
+    var harga by remember { mutableStateOf(item.hargaSatuan) }
+    var jumlah by remember { mutableStateOf(item.jumlah) }
+    var diskon by remember { mutableStateOf(item.diskonBaris.takeIf { it != 0L }) }
+    val hargaAwal = remember { item.hargaSatuan }
 
     val qtyNilai = qty.takeIf { it.isNotBlank() }?.let(Qty::parseAtauNull)
     val qtySalah = qty.isNotBlank() && qtyNilai == null
-    val adaSalah = qtySalah || harga.salah || jumlah.salah || diskon.salah
 
     val baru = ItemBaris(
         nama = nama.trim(),
         qty = qtyNilai,
         satuan = satuan.trim().ifEmpty { null },
-        hargaSatuan = harga.nilai,
-        jumlah = jumlah.nilai,
-        diskonBaris = diskon.nilai ?: 0L,
+        hargaSatuan = harga,
+        jumlah = jumlah,
+        diskonBaris = diskon ?: 0L,
         // Harga yang dihitung server tetap ditandai selama pengguna tidak mengubahnya.
-        hargaDihitung = item.hargaDihitung && harga.teks == hargaAwal,
+        hargaDihitung = item.hargaDihitung && harga == hargaAwal,
     )
     val pratinjau = Validator.periksaBaris(indeks, baru).firstOrNull { it.tingkat == Tingkat.GALAT }
 
-    ModalBottomSheet(onDismissRequest = onTutup, sheetState = state) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp)
-                .imePadding()
-                .navigationBarsPadding(),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Text(
-                stringResource(R.string.edit_baris_judul, indeks + 1),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
+    SheetKoreksi(
+        judul = stringResource(R.string.edit_baris_judul, indeks + 1),
+        teksSimpan = stringResource(R.string.simpan_koreksi_baris),
+        teksBatal = stringResource(R.string.batal),
+        onSimpan = { onSelesai(baru) },
+        onTutup = onTutup,
+        simpanAktif = !qtySalah,
+    ) {
+        KolomTeks(
+            nilai = nama,
+            onNilaiBerubah = { nama = it },
+            label = stringResource(R.string.nama_barang),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(Spasi.m)) {
+            KolomTeks(
+                nilai = qty,
+                onNilaiBerubah = { qty = it },
+                label = stringResource(R.string.qty),
+                modifier = Modifier.weight(1f),
+                galat = if (qtySalah) stringResource(R.string.bukan_angka) else null,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             )
-            OutlinedTextField(
-                value = nama,
-                onValueChange = { nama = it },
-                label = { Text(stringResource(R.string.nama_barang)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                modifier = Modifier.fillMaxWidth(),
+            KolomTeks(
+                nilai = satuan,
+                onNilaiBerubah = { satuan = it },
+                label = stringResource(R.string.satuan),
+                modifier = Modifier.weight(1f),
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                KolomAngka(
-                    stringResource(R.string.qty), qty, { qty = it }, qtySalah,
-                    keyboard = KeyboardType.Decimal, modifier = Modifier.weight(1f),
-                )
-                OutlinedTextField(
-                    value = satuan,
-                    onValueChange = { satuan = it },
-                    label = { Text(stringResource(R.string.satuan)) },
-                    singleLine = true,
-                    modifier = Modifier.weight(1f),
-                )
-            }
-            KolomAngka(
-                stringResource(R.string.harga_satuan), harga.teks, { harga.teks = it }, harga.salah,
-                bantuan = item.hargaSatuan
-                    ?.takeIf { harga.teks != hargaAwal }
-                    ?.let { stringResource(R.string.sebelumnya_terbaca, Rupiah.format(it)) },
-            )
-            KolomAngka(stringResource(R.string.jumlah_rp), jumlah.teks, { jumlah.teks = it }, jumlah.salah)
-            KolomAngka(stringResource(R.string.diskon_baris), diskon.teks, { diskon.teks = it }, diskon.salah)
-
-            val s = WarnaNota.status
-            val qtyBaru = baru.qty
-            val hargaBaru = baru.hargaSatuan
-            val jumlahBaru = baru.jumlah
-            if (pratinjau != null) {
-                Text(
-                    pratinjau.pesan,
-                    color = s.galatTeks,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.fillMaxWidth().background(s.galatLatar, RoundedCornerShape(12.dp)).padding(12.dp),
-                )
-            } else if (qtyBaru != null && hargaBaru != null && jumlahBaru != null && !baru.hargaDihitung) {
-                Text(
-                    stringResource(R.string.cocok_baris, Qty.format(qtyBaru), Rupiah.format(hargaBaru), Rupiah.format(jumlahBaru)),
-                    color = s.cocokTeks,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.fillMaxWidth().background(s.cocokLatar, RoundedCornerShape(12.dp)).padding(12.dp),
-                )
-            }
-
-            Button(
-                onClick = { onSelesai(baru) },
-                enabled = !adaSalah,
-                modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
-            ) { Text(stringResource(R.string.selesai)) }
-            TextButton(onClick = onHapus, modifier = Modifier.fillMaxWidth()) {
-                Ikon(R.drawable.ic_hapus, null, warna = MaterialTheme.colorScheme.error)
-                Spacer(Modifier.size(6.dp))
-                Text(stringResource(R.string.hapus_baris), color = MaterialTheme.colorScheme.error)
-            }
-            Spacer(Modifier.size(12.dp))
         }
+        KolomRupiah(
+            nilai = harga,
+            onNilaiBerubah = { harga = it },
+            label = stringResource(R.string.harga_satuan),
+            bantuan = hargaAwal
+                ?.takeIf { harga != hargaAwal }
+                ?.let { stringResource(R.string.sebelumnya_terbaca, Rupiah.format(it)) },
+        )
+        KolomRupiah(nilai = jumlah, onNilaiBerubah = { jumlah = it }, label = stringResource(R.string.jumlah_rp))
+        KolomRupiah(nilai = diskon, onNilaiBerubah = { diskon = it }, label = stringResource(R.string.diskon_baris))
+
+        val qtyBaru = baru.qty
+        val hargaBaru = baru.hargaSatuan
+        val jumlahBaru = baru.jumlah
+        if (pratinjau != null) {
+            PesanPeriksa(pratinjau.pesan, JenisPesan.GALAT)
+        } else if (qtyBaru != null && hargaBaru != null && jumlahBaru != null && !baru.hargaDihitung) {
+            PesanPeriksa(
+                stringResource(R.string.cocok_baris, Qty.format(qtyBaru), Rupiah.format(hargaBaru), Rupiah.format(jumlahBaru)),
+                JenisPesan.COCOK,
+            )
+        }
+        TombolTeks(
+            teks = stringResource(R.string.hapus_baris),
+            onClick = onHapus,
+            modifier = Modifier.fillMaxWidth(),
+            ikon = Icons.Outlined.Delete,
+        )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LembarTotal(
     nota: Nota,
     onSelesai: (total: Long?, subtotal: Long?, diskon: Long, pajak: Long, biayaLain: Long, supplier: String?) -> Unit,
     onTutup: () -> Unit,
 ) {
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var supplier by remember { mutableStateOf(nota.supplier ?: "") }
-    val total = remember { MasukanUang(nota.total) }
-    val subtotal = remember { MasukanUang(nota.subtotal) }
-    val diskon = remember { MasukanUang(nota.diskon.takeIf { it != 0L }) }
-    val pajak = remember { MasukanUang(nota.pajak.takeIf { it != 0L }) }
-    val biaya = remember { MasukanUang(nota.biayaLain.takeIf { it != 0L }) }
-    val adaSalah = listOf(total, subtotal, diskon, pajak, biaya).any { it.salah }
+    var total by remember { mutableStateOf(nota.total) }
+    var subtotal by remember { mutableStateOf(nota.subtotal) }
+    var diskon by remember { mutableStateOf(nota.diskon.takeIf { it != 0L }) }
+    var pajak by remember { mutableStateOf(nota.pajak.takeIf { it != 0L }) }
+    var biaya by remember { mutableStateOf(nota.biayaLain.takeIf { it != 0L }) }
 
-    ModalBottomSheet(onDismissRequest = onTutup, sheetState = state) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp)
-                .imePadding()
-                .navigationBarsPadding(),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Text(stringResource(R.string.edit_total_judul), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            OutlinedTextField(
-                value = supplier,
-                onValueChange = { supplier = it },
-                label = { Text(stringResource(R.string.supplier)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                modifier = Modifier.fillMaxWidth(),
-            )
-            KolomAngka(stringResource(R.string.total_rp), total.teks, { total.teks = it }, total.salah)
-            KolomAngka(stringResource(R.string.subtotal_opsional), subtotal.teks, { subtotal.teks = it }, subtotal.salah)
-            KolomAngka(stringResource(R.string.diskon), diskon.teks, { diskon.teks = it }, diskon.salah)
-            KolomAngka(stringResource(R.string.pajak), pajak.teks, { pajak.teks = it }, pajak.salah)
-            KolomAngka(stringResource(R.string.biaya_lain), biaya.teks, { biaya.teks = it }, biaya.salah)
-            Button(
-                onClick = {
-                    onSelesai(
-                        total.nilai,
-                        subtotal.nilai,
-                        kotlin.math.abs(diskon.nilai ?: 0L),
-                        pajak.nilai ?: 0L,
-                        biaya.nilai ?: 0L,
-                        supplier,
-                    )
-                },
-                enabled = !adaSalah,
-                modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
-            ) { Text(stringResource(R.string.selesai)) }
-            Spacer(Modifier.size(12.dp))
-        }
+    SheetKoreksi(
+        judul = stringResource(R.string.edit_total_judul),
+        teksSimpan = stringResource(R.string.simpan_total_nota),
+        teksBatal = stringResource(R.string.batal),
+        onSimpan = { onSelesai(total, subtotal, diskon ?: 0L, pajak ?: 0L, biaya ?: 0L, supplier) },
+        onTutup = onTutup,
+    ) {
+        KolomTeks(
+            nilai = supplier,
+            onNilaiBerubah = { supplier = it },
+            label = stringResource(R.string.supplier),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+        )
+        KolomRupiah(nilai = total, onNilaiBerubah = { total = it }, label = stringResource(R.string.total_rp))
+        KolomRupiah(nilai = subtotal, onNilaiBerubah = { subtotal = it }, label = stringResource(R.string.subtotal_opsional))
+        KolomRupiah(nilai = diskon, onNilaiBerubah = { diskon = it }, label = stringResource(R.string.diskon))
+        KolomRupiah(nilai = pajak, onNilaiBerubah = { pajak = it }, label = stringResource(R.string.pajak))
+        KolomRupiah(nilai = biaya, onNilaiBerubah = { biaya = it }, label = stringResource(R.string.biaya_lain))
     }
 }
 
+/**
+ * Pemilih produk. Bukan sheet koreksi (tanpa Simpan/Batal; memilih satu baris langsung menutup), jadi memakai
+ * `ModalBottomSheet` dengan gaya yang sama dengan [SheetKoreksi]. Lihat catatan di LAPORAN: butuh komponen resmi.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LembarProduk(
@@ -267,39 +219,53 @@ fun LembarProduk(
     onPilih: (PilihanProduk) -> Unit,
     onTutup: () -> Unit,
 ) {
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var cari by remember { mutableStateOf("") }
     val tersaring = daftar.filter { cari.isBlank() || it.nama.contains(cari.trim(), ignoreCase = true) }
+    val namaBaru = cari.trim().ifEmpty { namaDiNota.trim() }
 
-    ModalBottomSheet(onDismissRequest = onTutup, sheetState = state) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp).imePadding()) {
-            Text(stringResource(R.string.pilih_produk_judul), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+    ModalBottomSheet(
+        onDismissRequest = onTutup,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        shape = RoundedCornerShape(topStart = Radius.besar, topEnd = Radius.besar),
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        tonalElevation = Elevasi.tinggi,
+    ) {
+        Column(
+            Modifier.fillMaxWidth().padding(horizontal = Spasi.l).imePadding(),
+            verticalArrangement = Arrangement.spacedBy(Spasi.m),
+        ) {
+            Text(
+                stringResource(R.string.pilih_produk_judul),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
             Text(
                 stringResource(R.string.pilih_produk_isi, namaDiNota.ifBlank { "-" }),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(Modifier.size(10.dp))
-            OutlinedTextField(
-                value = cari,
-                onValueChange = { cari = it },
-                label = { Text(stringResource(R.string.cari_produk)) },
-                leadingIcon = { Ikon(R.drawable.ic_cari, null) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            LazyColumn(Modifier.fillMaxWidth().heightIn(max = 420.dp).navigationBarsPadding()) {
-                val namaBaru = cari.trim().ifEmpty { namaDiNota.trim() }
+            KolomTeks(nilai = cari, onNilaiBerubah = { cari = it }, label = stringResource(R.string.cari_produk))
+            LazyColumn(Modifier.fillMaxWidth().heightIn(max = Spasi.xxxl * 8).navigationBarsPadding()) {
                 if (namaBaru.isNotEmpty()) {
                     item {
-                        BarisPilihan(stringResource(R.string.buat_produk_baru, namaBaru), tebal = true) {
+                        BarisPilihan(stringResource(R.string.buat_produk_baru, namaBaru), utama = true) {
                             onPilih(PilihanProduk.Baru(namaBaru))
                         }
-                        HorizontalDivider()
+                        PemisahBaris()
+                    }
+                }
+                if (tersaring.isEmpty() && cari.isNotBlank()) {
+                    item {
+                        DataKosong(
+                            jenis = JenisKosong.HASIL_FILTER_KOSONG,
+                            objek = stringResource(R.string.objek_produk),
+                            onAksi = { cari = "" },
+                        )
                     }
                 }
                 items(tersaring, key = { it.id }) { p ->
                     BarisPilihan(p.nama) { onPilih(PilihanProduk.Ada(p)) }
+                    PemisahBaris()
                 }
             }
         }
@@ -307,20 +273,19 @@ fun LembarProduk(
 }
 
 @Composable
-private fun BarisPilihan(teks: String, tebal: Boolean = false, onKlik: () -> Unit) {
+private fun BarisPilihan(teks: String, utama: Boolean = false, onKlik: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
-            .heightIn(min = 52.dp)
+            .defaultMinSize(minHeight = Ukuran.sentuhMin)
             .clickable(onClick = onKlik)
-            .padding(vertical = 12.dp),
+            .padding(vertical = Spasi.s),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             teks,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = if (tebal) FontWeight.Bold else FontWeight.Normal,
-            color = if (tebal) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+            style = if (utama) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge,
+            color = if (utama) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
         )
     }
 }
