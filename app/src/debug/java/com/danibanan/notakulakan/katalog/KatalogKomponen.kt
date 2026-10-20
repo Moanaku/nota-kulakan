@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import com.danibanan.notakulakan.ui.komponen.BarAtas
 import com.danibanan.notakulakan.ui.komponen.BarBawah
 import com.danibanan.notakulakan.ui.komponen.BarisBarang
+import com.danibanan.notakulakan.ui.komponen.BarisNota
 import com.danibanan.notakulakan.ui.komponen.BarisRingkasanTotal
 import com.danibanan.notakulakan.ui.komponen.ChipSelisihHarga
 import com.danibanan.notakulakan.ui.komponen.ChipStatus
@@ -162,7 +163,14 @@ fun KatalogKomponen() {
             BarisRingkasanTotal("Total nota", JUMLAH_PANJANG, dominan = true)
         }
 
-        Bagian("Kartu ringkasan nota") {
+        Bagian("Baris nota (daftar riwayat = baris + divider)") {
+            BarisNota("Toko Makmur", "20 Okt 2026, 09.15", "12 barang", "Rp 1.234.500")
+            PemisahBaris()
+            BarisNota(TOKO_PANJANG, "20 Okt 2026, 09.15", "128 barang", JUMLAH_PANJANG, onClick = {})
+            PemisahBaris()
+        }
+
+        Bagian("Kartu ringkasan nota (satu objek berdiri sendiri, mis. Nota terakhir di Stok)") {
             KartuRingkasanNota("Toko Makmur", "20 Okt 2026, 09.15", "12 barang", "Rp 1.234.500", StatusBaris.COCOK)
             KartuRingkasanNota(
                 TOKO_PANJANG,

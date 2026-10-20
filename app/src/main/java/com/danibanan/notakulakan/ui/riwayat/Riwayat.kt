@@ -39,13 +39,13 @@ import com.danibanan.notakulakan.domain.repo.NotaTersimpan
 import com.danibanan.notakulakan.ui.komponen.BarAtas
 import com.danibanan.notakulakan.ui.komponen.BarBawah
 import com.danibanan.notakulakan.ui.komponen.BarisBarang
+import com.danibanan.notakulakan.ui.komponen.BarisNota
 import com.danibanan.notakulakan.ui.komponen.BarisRingkasanTotal
 import com.danibanan.notakulakan.ui.komponen.ChipStatus
 import com.danibanan.notakulakan.ui.komponen.DataKosong
 import com.danibanan.notakulakan.ui.komponen.FotoNota
 import com.danibanan.notakulakan.ui.komponen.JenisKosong
 import com.danibanan.notakulakan.ui.komponen.JenisPesan
-import com.danibanan.notakulakan.ui.komponen.KartuRingkasanNota
 import com.danibanan.notakulakan.ui.komponen.KondisiGalat
 import com.danibanan.notakulakan.ui.komponen.PemisahBaris
 import com.danibanan.notakulakan.ui.komponen.PesanPeriksa
@@ -138,17 +138,16 @@ fun RiwayatScreen(
                 LazyColumn(
                     Modifier.fillMaxSize().padding(padding),
                     contentPadding = PaddingValues(start = Spasi.l, end = Spasi.l, top = Spasi.s, bottom = paddingBawahFab()),
-                    verticalArrangement = Arrangement.spacedBy(Spasi.m),
                 ) {
                     items(s.daftar, key = { it.id }) { n ->
-                        KartuRingkasanNota(
+                        BarisNota(
                             toko = n.supplier ?: stringResource(R.string.supplier_kosong),
                             tanggal = formatTanggal(n.dibuatPada),
                             jumlahBarang = stringResource(R.string.riwayat_baris, n.jumlahBaris),
                             total = n.total?.let(Rupiah::format) ?: "-",
-                            status = null, // RingkasNota belum menyimpan status; lihat LAPORAN.
                             onClick = { onBukaNota(n.id) },
                         )
+                        PemisahBaris()
                     }
                 }
             }

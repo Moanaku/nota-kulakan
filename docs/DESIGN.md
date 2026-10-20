@@ -93,7 +93,8 @@ Teks tidak lebih kecil dari 12 sp, dan teks yang harus dibaca pengguna untuk men
   14 sp keterangan `teks-sekunder`; jumlah 16 sp isi-tebal rata kanan, tabular; status sebagai chip.
   Jarak antar baris (16 dp) lebih besar daripada jarak di dalam baris (4 dp).
 - **Daftar = baris + divider**, bukan kartu satu per baris. Kartu dipakai hanya untuk satu objek yang
-  berdiri sendiri (mis. ringkasan nota).
+  berdiri sendiri (mis. "Nota terakhir" di Stok). Riwayat memakai `BarisNota`: toko 16 sp isi-tebal, tanggal
+  dan jumlah baris 14 sp keterangan, total 16 sp isi-tebal rata kanan; divider di antara baris.
 - **Motion**: satu easing `cubic-bezier(0.2, 0, 0, 1)`; durasi 150 / 200 / 300 ms untuk transisi dalam
   layar. Hormati pengaturan "hapus animasi" sistem.
 - **Target sentuh** >= 48 dp. **Ikon**: satu keluarga (Material Symbols Outlined, bobot 400), satu
@@ -107,7 +108,10 @@ nota, sheet koreksi, serta tiga kondisi data: kosong, skeleton, galat (sebab + t
 spanduk offline. Layar hanya merakit komponen ini. Komponen baru butuh izin Dani.
 
 Komponen yang sudah disetujui dan dipakai (kondisinya ada di katalog debug, `KatalogKomponen`):
-- `BarAtas`: bilah judul layar; tombol kembali hanya bila `onKembali` diberikan.
+- `BarAtas`: bilah judul layar; tombol kembali hanya bila `onKembali` diberikan. Tinggi minimum, bukan tetap:
+  judul panjang atau skala font besar membungkus ke baris berikutnya.
+- `BarisNota`: satu nota di daftar Riwayat (baris + divider). `KartuRingkasanNota` tetap untuk satu nota yang
+  berdiri sendiri.
 - `TombolCatatNota`: aksi utama di Stok dan Riwayat; datar, warna aksen.
 - `BarBawah`: navigasi dua area (Stok, Riwayat); `Tab` menandai area aktif.
 - `PesanPeriksa` (`JenisPesan` GALAT / INFO / COCOK): pesan pemeriksaan satu baris atau nota.

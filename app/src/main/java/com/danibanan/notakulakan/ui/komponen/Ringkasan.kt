@@ -5,8 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -96,5 +98,46 @@ fun KartuRingkasanNota(
                 if (status != null) ChipStatus(status)
             }
         }
+    }
+}
+
+/**
+ * Satu nota dalam daftar riwayat (daftar = baris + divider, bukan kartu per nota): toko (isi-tebal), tanggal dan
+ * jumlah barang (keterangan), total rata kanan. Beri [PemisahBaris] di antara baris.
+ */
+@Composable
+fun BarisNota(
+    toko: String,
+    tanggal: String,
+    jumlahBarang: String,
+    total: String,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(Radius.sedang))
+            .let { if (onClick != null) it.clickable(onClick = onClick) else it }
+            .defaultMinSize(minHeight = Ukuran.sentuhMin)
+            .padding(vertical = Spasi.s),
+        horizontalArrangement = Arrangement.spacedBy(Spasi.l),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
+            Text(toko, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+            Text(
+                "$tanggal · $jumlahBarang",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Text(
+            total,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.End,
+            modifier = Modifier.widthIn(min = Spasi.xxxl),
+        )
     }
 }
