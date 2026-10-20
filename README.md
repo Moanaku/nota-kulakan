@@ -6,9 +6,17 @@ harga modal.
 
 - Demo video: [video demo: menyusul]
 - Unduh APK: [APK: menyusul di Releases]
-- Tangkapan layar: [tangkapan layar: menyusul]
+- Tangkapan layar: di bawah.
 
 Proyek ini adalah studi kasus produk dan rekayasa, bukan pesaing aplikasi kasir atau pencatat stok yang sudah mapan.
+
+<p>
+  <img src="docs/img/contoh-pilihan.png" width="240" alt="Layar Catat nota dengan lembar Pilih nota contoh: tiga nota buatan sendiri, bukan nota nyata">
+  <img src="docs/img/contoh-selisih.png" width="240" alt="Layar Periksa nota untuk nota contoh: baris Gula Pasir ditandai selisih karena 2 x Rp 60 tidak sama dengan Rp 120.000">
+  <img src="docs/img/contoh-koreksi-gelap.png" width="240" alt="Layar Periksa nota tema gelap setelah koreksi: semua hitungan cocok dan tombol Simpan nota ke stok aktif">
+</p>
+
+Tangkapan layar dari mode contoh (data sintetis).
 
 ## Status
 
