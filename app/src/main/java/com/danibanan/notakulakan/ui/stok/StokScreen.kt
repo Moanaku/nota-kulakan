@@ -34,6 +34,7 @@ import com.danibanan.notakulakan.ui.komponen.SkeletonBarisBarang
 import com.danibanan.notakulakan.ui.komponen.Tab
 import com.danibanan.notakulakan.ui.komponen.TombolCatatNota
 import com.danibanan.notakulakan.ui.komponen.formatTanggal
+import com.danibanan.notakulakan.ui.komponen.paddingBawahFab
 import com.danibanan.notakulakan.ui.komponen.statusHarga
 import com.danibanan.notakulakan.ui.theme.Spasi
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -115,7 +116,7 @@ fun StokScreen(
 private fun DaftarStok(s: StokUi.Ada, modifier: Modifier) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(start = Spasi.l, end = Spasi.l, top = Spasi.s, bottom = Spasi.xxxl * 2),
+        contentPadding = PaddingValues(start = Spasi.l, end = Spasi.l, top = Spasi.s, bottom = paddingBawahFab()),
     ) {
         item {
             Text(

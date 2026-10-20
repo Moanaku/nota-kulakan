@@ -56,6 +56,7 @@ import com.danibanan.notakulakan.ui.komponen.TombolCatatNota
 import com.danibanan.notakulakan.ui.komponen.TombolSekunder
 import com.danibanan.notakulakan.ui.komponen.TombolTeks
 import com.danibanan.notakulakan.ui.komponen.formatTanggal
+import com.danibanan.notakulakan.ui.komponen.paddingBawahFab
 import com.danibanan.notakulakan.ui.theme.Elevasi
 import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
@@ -136,7 +137,7 @@ fun RiwayatScreen(
             } else {
                 LazyColumn(
                     Modifier.fillMaxSize().padding(padding),
-                    contentPadding = PaddingValues(start = Spasi.l, end = Spasi.l, top = Spasi.s, bottom = Spasi.xxxl * 2),
+                    contentPadding = PaddingValues(start = Spasi.l, end = Spasi.l, top = Spasi.s, bottom = paddingBawahFab()),
                     verticalArrangement = Arrangement.spacedBy(Spasi.m),
                 ) {
                     items(s.daftar, key = { it.id }) { n ->

@@ -15,11 +15,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.res.stringResource
 import com.danibanan.notakulakan.R
 import com.danibanan.notakulakan.domain.Rupiah
 import com.danibanan.notakulakan.ui.theme.Elevasi
 import com.danibanan.notakulakan.ui.theme.Radius
+import com.danibanan.notakulakan.ui.theme.Spasi
 
 /** Bilah judul layar (judul-layar, Newsreader). Tombol kembali hanya bila [onKembali] diberikan. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,6 +66,17 @@ fun TombolCatatNota(onClick: () -> Unit, modifier: Modifier = Modifier) {
         icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
         text = { Text(stringResource(R.string.catat_nota), style = MaterialTheme.typography.labelLarge) },
     )
+}
+
+/**
+ * Padding bawah daftar di layar ber-FAB: tinggi [TombolCatatNota] (membesar bersama skala font) + margin FAB
+ * dari bilah bawah + 16 dp, supaya baris terakhir bisa digulir sampai di atas tombol.
+ */
+@Composable
+fun paddingBawahFab(): Dp {
+    val tinggiTeks = with(LocalDensity.current) { MaterialTheme.typography.labelLarge.lineHeight.toDp() }
+    val tinggiFab = maxOf(Spasi.xxxl + Spasi.s, tinggiTeks + Spasi.xl)
+    return tinggiFab + Spasi.l + Spasi.l
 }
 
 /** Status chip untuk perubahan harga modal. */
