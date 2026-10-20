@@ -1,19 +1,29 @@
 package com.danibanan.notakulakan.ui.komponen
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
@@ -24,27 +34,38 @@ import com.danibanan.notakulakan.ui.theme.Elevasi
 import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
 
-/** Bilah judul layar (judul-layar, Newsreader). Tombol kembali hanya bila [onKembali] diberikan. */
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Bilah judul layar (judul-layar, Newsreader). Tombol kembali hanya bila [onKembali] diberikan. Tinggi minimum,
+ * bukan tetap: judul panjang atau skala font besar membungkus ke baris berikutnya, tidak terpotong.
+ */
 @Composable
 fun BarAtas(judul: String, modifier: Modifier = Modifier, onKembali: (() -> Unit)? = null) {
-    TopAppBar(
-        title = { Text(judul, style = MaterialTheme.typography.headlineMedium) },
-        modifier = modifier,
-        navigationIcon = {
-            if (onKembali != null) {
-                IconButton(onClick = onKembali) {
-                    Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = stringResource(R.string.kembali))
-                }
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
+            .heightIn(min = Spasi.xxxl + Spasi.l)
+            .padding(horizontal = if (onKembali != null) Spasi.xs else Spasi.l, vertical = Spasi.s),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (onKembali != null) {
+            IconButton(onClick = onKembali) {
+                Icon(
+                    Icons.AutoMirrored.Outlined.ArrowBack,
+                    contentDescription = stringResource(R.string.kembali),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
             }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
-            scrolledContainerColor = MaterialTheme.colorScheme.background,
-            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-        ),
-    )
+            Spacer(Modifier.width(Spasi.xs))
+        }
+        Text(
+            judul,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+    }
 }
 
 /** Aksi utama di layar stok dan riwayat. Datar (elevasi 0), warna aksen. */
