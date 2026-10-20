@@ -8,8 +8,9 @@ Keputusan keamanan dan privasi:
 - Setiap permintaan wajib membawa token App Check. Secara bawaan token bersifat sekali pakai
   (limited-use) dan dikonsumsi saat verifikasi, sehingga token yang disadap tidak bisa
   diputar ulang. Biayanya satu panggilan jaringan tambahan per permintaan.
-- Foto tidak disimpan dan tidak dicatat di log. Log hanya berisi angka (token, latensi,
-  jumlah baris, lolos/tidak).
+- Kode tidak menulis foto ke disk dan log tidak memuat isi nota; log hanya berisi angka (token,
+  latensi, jumlah baris, lolos/tidak). Unggahan multipart sementara dapat ditampung framework
+  (Starlette) di berkas sementara bila > 1 MB.
 - Jenis file ditentukan dari isi file (magic bytes), bukan dari header yang dikirim klien.
 
 Jalankan lokal tanpa API key dan tanpa App Check:
