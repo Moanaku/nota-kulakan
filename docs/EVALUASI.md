@@ -370,23 +370,25 @@ backend dengan Gemini asli; HP tersambung kabel (`adb reverse`); aplikasi debug.
 sebelum memotret. Nomor telepon, alamat pribadi, dan nomor rekening ditutup sebelum difoto. Foto asli
 dihapus dari HP setelah selesai dan tidak masuk repo. Toko dicatat dengan kode (T1, T2, ...), bukan nama.
 
-**Satuan.** Nota (n sebanyak yang terkumpul; target 20, dilaporkan apa adanya berapa pun hasilnya).
+**Satuan.** Nota (n sebanyak yang terkumpul; target 10, minimal 6, dilaporkan apa adanya berapa pun hasilnya; gelombang pertama hanya di toko Dani sendiri).
 Tiap nota dikerjakan dua kali (berpasangan): cara lama dan aplikasi, urutan diselang-seling (nota ganjil
 cara lama dulu, genap aplikasi dulu). Nota disimpan di tempat yang sama dan dipegang kedua kali.
-Cara lama (asumsi, bisa diganti bila Dani menyebutkan yang lain): mengetik nama barang, qty, harga, jumlah
-tiap baris dan total ke Catatan/Excel di HP.
+Cara lama: menulis tangan di buku tulis, seperti orang tua Dani mencatat sekarang (mereka tidak menyimpan di HP).
+Tulis sebanyak yang biasa mereka tulis; bila mereka tidak menulis harga atau jumlah per baris, ikuti itu dan
+catat di kolom `catatan` apa saja yang ditulis (bagian yang tidak ditulis membuat cara lama tampak lebih cepat,
+jadi perbandingan ini konservatif terhadap aplikasi).
 
-**Waktu.** Stopwatch. Cara lama: dari nota di tangan sampai semua baris dan total terketik. Aplikasi: dari
+**Waktu.** Stopwatch. Cara lama: dari nota di tangan sampai semua baris dan total tertulis di buku. Aplikasi: dari
 mengetuk "Catat nota" sampai "Simpan nota ke stok" selesai (termasuk foto, menunggu AI, memeriksa, mengoreksi).
 Ditulis dalam detik per nota, dan dilaporkan juga per baris (detik / jumlah baris).
 
 **Kesalahan.** Setelah selesai, bandingkan hasil dengan nota fisik angka per angka. `salah_manual` =
-jumlah angka salah pada hasil ketikan cara lama. `baris_dikoreksi_di_app` = baris yang perlu diperbaiki
+jumlah angka salah pada hasil tulisan cara lama. `baris_dikoreksi_di_app` = baris yang perlu diperbaiki
 pengguna sebelum disimpan. `salah_lolos_di_app` = angka salah pada data yang tersimpan. `validator_menandai`
 = ya/tidak. Nota dinilai "benar tanpa koreksi" bila `baris_dikoreksi_di_app` = 0 dan hasil benar.
 
 **Pelaporan.** Rata-rata dan median detik per nota dan per baris untuk kedua cara, selisihnya, jumlah nota,
 jumlah toko, serta proporsi nota "benar tanpa koreksi" (Wilson 95%). Keterbatasan wajib: satu pemakai (Dani),
 efek belajar karena nota yang sama dikerjakan dua kali (diredam dengan urutan diselang-seling), jumlah nota
-kecil, nota dikumpulkan dari toko yang dikenal Dani (bukan sampel acak), dan cara lama yang diasumsikan.
+kecil, nota dikumpulkan dari toko yang dikenal Dani (bukan sampel acak), dan cara lama (menulis di buku) yang hanya menyalin, tanpa memeriksa hitungan, memperbarui stok, atau menghitung harga modal.
 Tidak ada klaim tentang pengguna lain, pendapatan, atau dampak bisnis.

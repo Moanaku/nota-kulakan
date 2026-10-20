@@ -40,9 +40,9 @@ Satu baris per nota di `lembar-lapangan.csv` (Excel atau editor teks, simpan seb
 | `jenis` | cetak / tulis / campuran |
 | `jumlah_baris` | jumlah baris barang di nota |
 | `urutan` | `manual-dulu` atau `app-dulu` |
-| `detik_manual` | stopwatch: nota di tangan sampai semua baris dan total terketik |
+| `detik_manual` | stopwatch: nota di tangan sampai semua baris dan total tertulis di buku tulis |
 | `detik_aplikasi` | stopwatch: ketuk "Catat nota" sampai "Simpan nota ke stok" selesai |
-| `salah_manual` | jumlah angka salah pada ketikan cara lama (banding dengan nota fisik) |
+| `salah_manual` | jumlah angka salah pada tulisan cara lama (banding dengan nota fisik) |
 | `baris_dikoreksi_di_app` | baris yang diperbaiki sebelum disimpan |
 | `salah_lolos_di_app` | angka salah pada data yang tersimpan |
 | `validator_menandai` | ya / tidak |
