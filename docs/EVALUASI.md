@@ -331,3 +331,30 @@ berisi dua nota, model tidak memberi tanda keraguan, jadi satu-satunya penjaga a
 konfirmasi pengguna; lolos validator pada nota yang salah tidak bisa dibedakan dari nota benar.
 016 lolos dan akan masuk otomatis. Keluaran tidak menyimpan `terbaca` dan `catatan`; periksa apakah
 itu memang keputusan desain.
+
+## 12. gemini-3.8-flash: evaluasi tidak lengkap (2026-10-20)
+
+Hanya `gemini-3.8-flash` @1600 px yang dicoba pada putaran ini (folder `uji-20261020-3.8flash-1600`,
+split uji, prompt v2). Hasil terukur, tanpa angka akurasi:
+
+- 9 dari 12 nota terproses, dan **kesembilannya gagal `waktu_habis`** pada batas 30 detik per panggilan
+  (token 0, tidak ada keluaran model). Nota ke-10 kena 429 (kuota harian habis) setelah 3 kali coba ulang,
+  sisanya tidak dijalankan. @1024 px tidak dijalankan.
+- Batas tier gratis yang tercatat dari galat 429 tadi pagi: 20 permintaan per hari per proyek per model
+  (`GenerateRequestsPerDayPerProjectPerModel-FreeTier`). Dugaan, belum diverifikasi: coba ulang setelah
+  waktu habis ikut dihitung ke kuota, sehingga 9 nota yang gagal sudah menghabiskannya.
+- Penyebab waktu habis belum diketahui: bisa latensi model lebih dari 30 detik atau layanan tidak merespons;
+  keduanya tidak dibedakan. Satu putaran sebelumnya (putaran 1) juga menunjukkan waktu habis pada model ini.
+
+### Keputusan (ditulis sebelum ada pengulangan; tidak ada pengulangan)
+
+- Pada @1600 maksimal 3 nota sempurna mungkin (3 nota sisa), sedangkan syarat mengganti model adalah
+  minimal 8 dari 12 dan biaya paling banyak 3x. Jadi 3.8-flash tidak bisa mengalahkan konfigurasi utama
+  pada ukuran itu. @1024 tidak terukur; tidak ada klaim apa pun tentang akurasinya.
+- Konfigurasi akhir tidak berubah: `gemini-3.1-flash-lite` @1024 px, 5/12 nota sempurna (42%, Wilson 19-68%).
+  Set internet dan set ketahanan (bagian 11) sudah memakai konfigurasi ini, jadi tidak perlu diulang.
+- 3.8-flash tidak dievaluasi lebih lanjut. Alasannya praktis dan tidak bergantung pada akurasi: batas 20
+  permintaan per hari di tier gratis tidak cukup untuk aplikasi, harga naik dua kali lipat pada 2027-01-01,
+  dan dua putaran berturut-turut menunjukkan waktu habis pada batas produksi 30 detik.
+
+Keterbatasan untuk README: model ini diuji sebagian dan hanya pada satu ukuran foto.
