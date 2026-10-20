@@ -247,3 +247,51 @@ Putaran pertama tidak menghasilkan ringkasan: proses keluar tanpa menulis `hasil
   server sedang padat) tidak bisa dibedakan dan dicatat sebagai batasan.
 - Layanan sibuk (503) atau kuota (429) setelah retry membuat konfigurasi "tidak lengkap": tidak
   masuk tabel metrik, dicantumkan terpisah, dan diulang penuh di lain waktu.
+
+## 10. Hasil uji, putaran 2 (2026-10-20)
+
+Putaran resmi sesuai bagian 9: split uji (12 nota milik sendiri, cetak), prompt v2, foto tertutup.
+Ringkasan lengkap: `docs/hasil/uji-2026-10-20-putaran2.md`. Biaya = perkiraan harga daftar
+(tier gratis, tanpa tagihan), harga dibaca 2026-10-20.
+
+| Konfigurasi | Nota sempurna (Wilson 95%) | Total benar | Diskon baris | Validator menangkap | Biaya/nota | Latensi p50/p90 | Foto |
+|---|---|---|---|---|---|---|---|
+| 3.1-flash-lite @1024 | 5/12 = 42% (19-68%) | 92% | 78% | 4/4 | $0,00113 | 2,6 / 16,5 s | 88 KB |
+| 3.1-flash-lite @1600 | 6/12 = 50% (25-75%) | 83% | 88% | 3/3 | $0,00115 | 2,6 / 25,4 s | 193 KB |
+| 3.5-flash-lite @1024 | 7/12 = 58% (32-81%) | 92% | 90% | 2/2 | $0,00170 | 2,1 / 4,1 s | 88 KB |
+| 3.5-flash-lite @1600 | 7/12 = 58% (32-81%) | 100% | 90% | 2/2 | $0,00170 | 2,1 / 2,6 s | 193 KB |
+| 3.8-flash @1600 dan @1024 | tidak lengkap: 0/12, kuota harian habis (429) | | | | | | |
+
+Gagal (waktu habis, layanan) = 0 di keempat konfigurasi lengkap. Alarm palsu 0 di semuanya.
+
+### Penerapan aturan bagian 9 (hitungan, bukan penilaian)
+
+- **Model**: 3.5-flash-lite unggul 1 nota sempurna (7 vs 6) dari konfigurasi utama; syaratnya >= 2.
+  Model tetap `gemini-3.1-flash-lite`. `gemini-3.8-flash` belum dievaluasi (kuota harian habis), jadi
+  keputusan model baru final setelah 3.8-flash dijalankan penuh di hari lain (protokol: konfigurasi
+  tidak lengkap diulang penuh).
+- **Ukuran foto**: 1024 px (5/12) tidak lebih rendah dari 1600 px (6/12) lebih dari 1 nota, jadi
+  1024 px dipakai (foto 88 KB vs 193 KB).
+- **Konfigurasi sementara**: `gemini-3.1-flash-lite` @1024 px, 5/12 nota sempurna (42%, Wilson
+  19-68%). Interval antar konfigurasi saling tumpang tindih; selisih 1 nota tidak bermakna.
+
+### Temuan (dari hasil per nota; penyebab tertulis sebagai dugaan bila belum diselidiki)
+
+- Nota 009, 018, 023, 024, 027 salah di keempat konfigurasi. Tiga di antaranya (023, 024, 027)
+  kuncinya tidak konsisten secara aritmetika (pecahan qty yang dibulatkan, selisih pembulatan 1
+  rupiah), sehingga praktis tidak bisa sempurna persis; dilaporkan terpisah dari matriks validator.
+- Pada nota dengan kunci konsisten (n=9), semua nota yang salah ditandai validator di keempat
+  konfigurasi (terlewat 0 dari 2-4). Pembaginya kecil; belum bisa disimpulkan lebih jauh.
+- 009 dan 018 (diskon persen per baris): `diskon_baris` tidak terbaca (model mengisi 0). Skema tidak
+  punya field persen dan kunci berupa rupiah turunan.
+- 022: 3.1-flash-lite memakai total tulisan tangan (4.505.000) bukan total cetak (4.504.997); 3.5
+  benar.
+- 024: pada 3.1-flash-lite @1600 hasilnya rusak total (nama bergeser, qty/harga/jumlah kosong).
+  Dugaan: foto terbalik 180 derajat; belum diselidiki.
+- 027: diskon nota 1001 (menghitung dua kali potongan baris); pada 3.5 juga pajak 11745 (PPN sudah
+  termasuk).
+- Latensi p90 3.1-flash-lite 16,5-25,4 detik mendekati batas 30 detik per panggilan, sedangkan 3.5
+  2,6-4,1 detik. Satu putaran, beban server tidak terkontrol; belum bisa dipisahkan dari beban
+  server. Aturan bagian 9 tidak memuat latensi; aturan tidak diubah setelah hasil terlihat. Ini
+  dicatat sebagai pertimbangan untuk pemilihan model sesudah Lapisan 1.
+- 3.5-flash-lite 1,5x lebih mahal per nota dari 3.1-flash-lite ($0,00170 vs $0,00113-0,00115).
