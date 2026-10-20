@@ -161,8 +161,34 @@ interview dan ditinjau ulang bila datanya berubah. Format: keputusan, alternatif
   APK; (3) biaya: tier berbayar diperlukan untuk rilis ke pengguna lain.
 - **Akibat:** kriteria PRD 9 "berjalan terhadap backend yang sudah deploy" diganti: alur F1 sampai F5 berjalan
   di HP asli terhadap backend asli di laptop (hari lapangan, `docs/LAPANGAN.md`) dan dalam mode contoh pada APK
-  rilis. Mode contoh belum diimplementasikan di aplikasi; itu tugas terpisah.
+  rilis. Mode contoh sudah diimplementasikan (lihat "Implementasi" di bawah).
 - **Alternatif:** backend publik di Cloud Run dengan App Check (butuh Play); backend publik tanpa perlindungan
   (ditolak: kuota dan privasi).
 - **Cara menguji:** APK rilis di HP tanpa jaringan ke server mana pun menampilkan nota contoh berlabel dan
   menyelesaikan alur simpan.
+- **Implementasi (20 Okt 2026):**
+  - Layar Foto punya "Coba dengan nota contoh" (pilih 1 dari 3: bersih, satu selisih hitungan, diskon + ongkos
+    kirim). Pilihan masuk ke layar Periksa lewat jalur yang sama dengan hasil server: penguraian teks angka
+    (`Rupiah.parse`, `Qty.parse`), validator Kotlin, koreksi, simpan. Tidak ada panggilan jaringan dan tidak ada
+    penyiapan foto dari URI. Layar Periksa menampilkan "Nota contoh. Hasil baca sudah disiapkan, bukan hasil AI."
+    dan tidak menampilkan catatan pembaca nota. Analitik tidak mencatat nota contoh.
+  - Data: `app/src/main/assets/contoh/{bersih,selisih,diskon}.json` (angka berupa teks, mis. "60.000") dan `.jpg`
+    (dibuat `tools/buat_gambar_contoh.py`, bertuliskan "CONTOH SINTETIS"; semuanya buatan sendiri). Pada nota
+    "selisih" harga satuan Gula Pasir terbaca "60" padahal jumlah 120.000, jadi validator menandai satu baris;
+    pengguna mengoreksi ke 60.000.
+  - **Tanda "(Contoh)":** nota yang disimpan dari mode contoh diberi supplier berawalan `(Contoh) ` (PREFIKS_CONTOH
+    di `domain/repo/Repositori.kt`). Awalan dipasang saat simpan dan tetap ada walau pengguna mengubah atau
+    mengosongkan supplier. Tidak ada kolom baru dan tidak ada migrasi.
+  - **Hapus data contoh:** tombol di layar Riwayat (muncul hanya bila ada nota berawalan itu), dengan konfirmasi.
+    Menghapus nota yang `substr(supplier, 1, panjang awalan) = awalan` (cocok persis, huruf besar-kecil dibedakan)
+    beserta fotonya; baris ikut terhapus (CASCADE), stok dihitung ulang dari baris sehingga ikut turun.
+  - **Rilis tanpa server:** `BuildConfig.NOTA_PUNYA_SERVER` bernilai true di build debug, dan di build rilis hanya
+    bila `nota.api.url.release` terisi. Bila false, "Ambil foto" dan "Pilih dari galeri" nonaktif dengan kalimat
+    penjelasnya; "Isi manual tanpa foto" tetap aktif. Kalimat privasi foto-ke-server disembunyikan saat tanpa server.
+- **Batasan:** (1) data contoh bercampur di stok dan riwayat sampai dihapus; (2) tanda hanya berupa awalan nama
+  supplier, jadi nota nyata yang suppliernya kebetulan diawali "(Contoh) " ikut terhapus; (3) produk dan alias yang
+  dibuat saat menyimpan nota contoh (mis. "Gula Pasir", "Kopi Sachet") TIDAK ikut terhapus. Tanpa baris nota produk
+  itu tidak muncul di stok, tetapi tetap muncul di daftar pemilih produk dan nama itu akan dikenali sebagai alias.
+  Membersihkannya butuh penanda asal produk (kolom baru, migrasi) atau aturan baru "hapus produk tanpa baris";
+  keduanya belum dikerjakan dan butuh persetujuan.
+- **Cara menguji (diperbarui):** `ContohAlurTest` (JVM) dan pemeriksaan di HP (build tanpa server).

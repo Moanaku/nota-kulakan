@@ -91,7 +91,7 @@ Masih terbuka:
 4. **Model ekstraksi dan ukuran foto.** Diputuskan: `gemini-3.1-flash-lite`, 1024 px (`docs/KEPUTUSAN.md` 19).
 5. **Perlindungan backend untuk APK di luar Play.** App Check Play Integrity tidak berlaku
    (`docs/KEPUTUSAN.md` 17). Dijawab dengan tidak menyediakan backend publik: APK rilis memakai mode contoh
-   (`docs/KEPUTUSAN.md` 20).
+   (`docs/KEPUTUSAN.md` 20; sudah diimplementasikan).
 6. **Skema `Nota` v1** (`backend/src/nota/schema.py`) menunggu tinjauan Dani.
 
 ## 7a. Tambahan di dalam Lapisan 1
@@ -131,7 +131,7 @@ Urut menurut nilai per usaha, menunggu Lapisan 1 terukur:
 ## 9. Definisi selesai Lapisan 1
 
 - Alur F1 sampai F5 berjalan di HP asli terhadap backend asli di laptop (hari lapangan, `docs/LAPANGAN.md`), dan APK rilis
-  menjalankannya dalam mode contoh tanpa server (`docs/KEPUTUSAN.md` 20).
+  menjalankannya dalam mode contoh tanpa server, tombol "Coba dengan nota contoh" di layar Foto (`docs/KEPUTUSAN.md` 20).
 - Unit test backend dan Android (ditulis Claude, ditinjau dan dipahami Dani) hijau di CI.
 - Tabel akurasi dari set uji ada di README, per jenis nota dan per model.
 - Biaya per nota terukur dari penggunaan token nyata.

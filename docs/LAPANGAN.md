@@ -8,6 +8,9 @@ Konfigurasi: `gemini-3.1-flash-lite`, foto 1024 px (`docs/KEPUTUSAN.md` 19). Sem
 2. HP: opsi pengembang + debugging USB aktif, kabel tersambung, `adb devices` menampilkan status `device`.
 3. `.\scripts\lapangan.ps1 pasang`: membangun aplikasi debug yang menunjuk ke `http://localhost:8080/` dan memasangnya.
    (Bawaan debug `10.0.2.2` hanya untuk emulator; di HP asli alamat itu tidak terjangkau.)
+   Hari lapangan memakai build debug ini (server ada), BUKAN mode contoh: nota contoh diberi supplier
+   berawalan "(Contoh) " dan tidak boleh ikut terhitung. Bila sempat mencoba mode contoh, hapus lewat Riwayat >
+   "Hapus data contoh" sebelum mencatat nota sungguhan.
 4. Siapkan lembar: `data/private/eval-hasil/lapangan/lembar-lapangan.csv` sudah berisi header.
 
 ## 2. Menjalankan backend asli
