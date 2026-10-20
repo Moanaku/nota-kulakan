@@ -193,7 +193,7 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
 
     // Skala font besar: panel simpan ikut menggulir sebagai item terakhir, tidak menempel memakan layar.
     val panelMenempel = LocalDensity.current.fontScale < SKALA_FONT_PANEL_MENGGULIR
-    val panel: @Composable () -> Unit = { PanelSimpan(d, onKonfirmasi = vm::setKonfirmasi, onSimpan = { vm.simpan() }) }
+    val panel: @Composable () -> Unit = { PanelSimpan(d, menempel = panelMenempel, onKonfirmasi = vm::setKonfirmasi, onSimpan = { vm.simpan() }) }
 
     Scaffold(
         topBar = { BarAtas(stringResource(R.string.periksa_judul), onKembali = onKembali) },
@@ -423,12 +423,17 @@ private fun RingkasanTotal(d: DrafUi, onUbah: () -> Unit) {
 private fun Long?.rupiahAtauKosong(): String = this?.let(Rupiah::format) ?: stringResource(R.string.belum_diisi)
 
 @Composable
-private fun PanelSimpan(d: DrafUi, onKonfirmasi: (Boolean) -> Unit, onSimpan: () -> Unit) {
+private fun PanelSimpan(d: DrafUi, menempel: Boolean, onKonfirmasi: (Boolean) -> Unit, onSimpan: () -> Unit) {
     Surface(color = MaterialTheme.colorScheme.background, tonalElevation = Elevasi.nol, shadowElevation = Elevasi.nol) {
         Column {
             HorizontalDivider(thickness = Ukuran.garis, color = MaterialTheme.colorScheme.outlineVariant)
             Column(
-                Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = Spasi.l, vertical = Spasi.m),
+                Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    // Sebagai item daftar, gutter 16 dp sudah dari contentPadding daftar.
+                    .let { if (menempel) it.padding(horizontal = Spasi.l) else it }
+                    .padding(vertical = Spasi.m),
                 verticalArrangement = Arrangement.spacedBy(Spasi.s),
             ) {
                 when {
