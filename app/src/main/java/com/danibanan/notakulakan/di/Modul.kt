@@ -6,6 +6,7 @@ import com.danibanan.notakulakan.BuildConfig
 import com.danibanan.notakulakan.PengaturanVarian
 import com.danibanan.notakulakan.data.analitik.FirebaseAnalitik
 import com.danibanan.notakulakan.data.foto.FotoKompresor
+import com.danibanan.notakulakan.data.contoh.ContohRepositoryImpl
 import com.danibanan.notakulakan.data.lokal.BasisdataNota
 import com.danibanan.notakulakan.data.lokal.NotaDao
 import com.danibanan.notakulakan.data.lokal.NotaRepositoryImpl
@@ -13,6 +14,7 @@ import com.danibanan.notakulakan.data.remote.AppCheckInterceptor
 import com.danibanan.notakulakan.data.remote.EkstraksiRepositoryImpl
 import com.danibanan.notakulakan.data.remote.NotaApi
 import com.danibanan.notakulakan.domain.repo.Analitik
+import com.danibanan.notakulakan.domain.repo.ContohRepository
 import com.danibanan.notakulakan.domain.repo.EkstraksiRepository
 import com.danibanan.notakulakan.domain.repo.Jam
 import com.danibanan.notakulakan.domain.repo.NotaRepository
@@ -94,6 +96,9 @@ object ModulData {
 abstract class ModulBinding {
     @Binds
     abstract fun ekstraksi(impl: EkstraksiRepositoryImpl): EkstraksiRepository
+
+    @Binds
+    abstract fun contoh(impl: ContohRepositoryImpl): ContohRepository
 
     @Binds
     abstract fun nota(impl: NotaRepositoryImpl): NotaRepository

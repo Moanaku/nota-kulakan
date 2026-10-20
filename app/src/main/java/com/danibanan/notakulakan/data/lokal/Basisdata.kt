@@ -184,6 +184,12 @@ interface NotaDao {
 
     @Query("DELETE FROM nota WHERE id = :id")
     suspend fun hapusNota(id: Long)
+
+    @Query("SELECT * FROM nota WHERE substr(supplier, 1, length(:prefiks)) = :prefiks")
+    suspend fun notaBerawalan(prefiks: String): List<NotaEntity>
+
+    @Query("DELETE FROM nota WHERE id IN (:id)")
+    suspend fun hapusNotaDenganId(id: List<Long>)
 }
 
 @Database(

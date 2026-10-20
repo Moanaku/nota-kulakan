@@ -15,14 +15,17 @@ import com.danibanan.notakulakan.domain.model.ItemBaris
 import com.danibanan.notakulakan.domain.model.KodeIsu
 import com.danibanan.notakulakan.domain.model.Nota
 import com.danibanan.notakulakan.domain.repo.Analitik
+import com.danibanan.notakulakan.domain.repo.ContohRepository
 import com.danibanan.notakulakan.domain.repo.DrafSimpan
 import com.danibanan.notakulakan.domain.repo.EkstraksiRepository
 import com.danibanan.notakulakan.domain.repo.HasilEkstraksi
 import com.danibanan.notakulakan.domain.repo.HasilSimpan
+import com.danibanan.notakulakan.domain.repo.IdContoh
 import com.danibanan.notakulakan.domain.repo.Jam
 import com.danibanan.notakulakan.domain.repo.JenisGagal
 import com.danibanan.notakulakan.domain.repo.MetaEkstraksi
 import com.danibanan.notakulakan.domain.repo.NotaRepository
+import com.danibanan.notakulakan.domain.repo.PREFIKS_CONTOH
 import com.danibanan.notakulakan.domain.repo.PenyiapFoto
 import com.danibanan.notakulakan.domain.repo.barisKosong
 import com.danibanan.notakulakan.domain.statusSimpan
@@ -58,6 +61,8 @@ data class DrafUi(
     val menyimpan: Boolean = false,
     val duplikat: RingkasNota? = null,
     val galatSimpan: Boolean = false,
+    /** Nota contoh dari APK: hasil baca disiapkan, bukan hasil AI. Disimpan dengan supplier berawalan [PREFIKS_CONTOH]. */
+    val contoh: Boolean = false,
 ) {
     /** Validasi lokal (cermin backend) digabung dengan isu format server yang masih berlaku. */
     val validasi: HasilValidasi = HasilValidasi(Validator.validasi(nota).isu + isuFormatServer)
@@ -79,6 +84,7 @@ data class DrafUi(
 class HasilViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val ekstraksi: EkstraksiRepository,
+    private val contoh: ContohRepository,
     private val repo: NotaRepository,
     private val penyiapFoto: PenyiapFoto,
     private val analitik: Analitik,
@@ -86,6 +92,7 @@ class HasilViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val uri: String? = savedStateHandle["uri"]
+    private val idContoh: String? = savedStateHandle["contoh"]
     private val mulai = jam.sekarang()
     private var fotoTerkompres: File? = null
     private var tersimpan = false
@@ -98,7 +105,40 @@ class HasilViewModel @Inject constructor(
     val produk: StateFlow<List<Produk>> = _produk.asStateFlow()
 
     init {
-        if (uri == null) mulaiManual() else proses()
+        when {
+            idContoh != null -> muatContoh(idContoh)
+            uri == null -> mulaiManual()
+            else -> proses()
+        }
+    }
+
+    /** Nota contoh: dibaca dari assets APK lalu mengikuti jalur yang sama dengan hasil server (tanpa jaringan). */
+    private fun muatContoh(kunci: String) {
+        val id = IdContoh.entries.firstOrNull { it.berkas == kunci } ?: return mulaiManual()
+        jobProses = viewModelScope.launch {
+            try {
+                val nota = contoh.muat(id)
+                fotoTerkompres = nota.foto
+                val items = nota.hasil.nota.items
+                _ui.value = HasilUi.Draf(
+                    DrafUi(
+                        nota = nota.hasil.nota,
+                        isuFormatServer = emptyList(),
+                        pilihan = pilihanAwal(items),
+                        fotoPath = nota.foto.absolutePath,
+                        meta = null,
+                        catatanModel = null,
+                        manual = false,
+                        contoh = true,
+                    ),
+                )
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w("NotaContoh", "nota contoh gagal dibaca: ${e.javaClass.simpleName}")
+                _ui.value = HasilUi.Gagal(JenisGagal.GANGGUAN_SERVER, bisaUlang = false)
+            }
+        }
     }
 
     /** Kompres foto (sekali) lalu kirim ke backend. Dipanggil lagi oleh tombol "Coba lagi". */
@@ -247,7 +287,7 @@ class HasilViewModel @Inject constructor(
                 }
                 val hasil = repo.simpan(
                     DrafSimpan(
-                        nota = d.nota,
+                        nota = if (d.contoh) d.nota.copy(supplier = bertanda(d.nota.supplier)) else d.nota,
                         pilihan = d.pilihan,
                         fotoSementara = fotoTerkompres,
                         dikonfirmasiMeskiTidakCocok = d.status == StatusSimpan.PERLU_KONFIRMASI,
@@ -255,13 +295,16 @@ class HasilViewModel @Inject constructor(
                     ),
                 )
                 tersimpan = true
-                analitik.notaDisimpan(
-                    jumlahBaris = d.nota.items.size,
-                    barisDikoreksi = d.barisDiubah.size,
-                    dikonfirmasi = d.status == StatusSimpan.PERLU_KONFIRMASI,
-                    durasiDetik = (jam.sekarang() - mulai) / 1000,
-                    manual = d.manual,
-                )
+                // Nota contoh tidak dihitung di analitik: bukan pemakaian nyata.
+                if (!d.contoh) {
+                    analitik.notaDisimpan(
+                        jumlahBaris = d.nota.items.size,
+                        barisDikoreksi = d.barisDiubah.size,
+                        dikonfirmasi = d.status == StatusSimpan.PERLU_KONFIRMASI,
+                        durasiDetik = (jam.sekarang() - mulai) / 1000,
+                        manual = d.manual,
+                    )
+                }
                 _ui.value = HasilUi.Tersimpan(hasil, d.nota.items.size, d.nota.total ?: 0L)
             } catch (e: CancellationException) {
                 throw e
@@ -274,6 +317,10 @@ class HasilViewModel @Inject constructor(
     override fun onCleared() {
         if (!tersimpan) fotoTerkompres?.delete()
     }
+
+    /** Supplier selalu berawalan [PREFIKS_CONTOH] (dengan sisa nama yang tidak kosong), walau pengguna mengubahnya. */
+    private fun bertanda(supplier: String?): String =
+        PREFIKS_CONTOH + supplier.orEmpty().removePrefix(PREFIKS_CONTOH).trim().ifEmpty { "Nota contoh" }
 
     private suspend fun pilihanAwal(items: List<ItemBaris>): List<PilihanProduk> {
         val saran = try {

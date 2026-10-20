@@ -23,6 +23,7 @@ internal class RepoBacaPalsu : NotaRepository {
     override fun stok(): Flow<List<StokProduk>> = fakeStok()
     override suspend fun detail(id: Long): NotaTersimpan? = fakeDetail(id)
     override suspend fun hapus(id: Long) = Unit
+    override suspend fun hapusDataContoh(): Int = 0
     override suspend fun daftarProduk(): List<Produk> = emptyList()
     override suspend fun saranProduk(namaDiNota: List<String>): List<Produk?> = namaDiNota.map { null }
     override suspend fun cariDuplikat(total: Long?, jumlahBaris: Int, sekarang: Long): RingkasNota? = null

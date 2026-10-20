@@ -51,6 +51,29 @@ interface EkstraksiRepository {
 }
 
 // ---------------------------------------------------------------------------
+// Mode contoh (nota sintetis di dalam APK, tanpa server)
+// ---------------------------------------------------------------------------
+
+/** Awalan nama supplier pada nota yang disimpan dari mode contoh. Satu-satunya tanda; tidak ada kolom khusus. */
+const val PREFIKS_CONTOH = "(Contoh) "
+
+fun adalahDataContoh(supplier: String?): Boolean = supplier?.startsWith(PREFIKS_CONTOH) == true
+
+/** Tiga nota sintetis; [berkas] = nama berkas di assets/contoh. */
+enum class IdContoh(val berkas: String) {
+    BERSIH("bersih"),
+    SELISIH("selisih"),
+    DISKON("diskon"),
+}
+
+/** Hasil baca yang sudah disiapkan plus salinan gambarnya (berkas sementara milik pemanggil). */
+data class NotaContoh(val hasil: HasilEkstraksi.Berhasil, val foto: File)
+
+interface ContohRepository {
+    suspend fun muat(id: IdContoh): NotaContoh
+}
+
+// ---------------------------------------------------------------------------
 // Penyimpanan lokal
 // ---------------------------------------------------------------------------
 
@@ -94,6 +117,9 @@ interface NotaRepository {
     fun riwayat(): Flow<List<RingkasNota>>
     suspend fun detail(id: Long): NotaTersimpan?
     suspend fun hapus(id: Long)
+
+    /** Menghapus nota yang supplier-nya berawalan [PREFIKS_CONTOH] (stok ikut berkurang). Mengembalikan jumlahnya. */
+    suspend fun hapusDataContoh(): Int
     suspend fun daftarProduk(): List<Produk>
 
     /** Produk yang sudah pernah dipetakan ke nama-nama ini (berdasarkan kunci alias). */

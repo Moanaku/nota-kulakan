@@ -224,6 +224,9 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
                     }
                 }
             }
+            if (d.contoh) {
+                item { PesanPeriksa(stringResource(R.string.periksa_contoh), JenisPesan.INFO, Modifier.padding(bottom = Spasi.m)) }
+            }
             d.catatanModel?.let { catatan ->
                 item {
                     Text(

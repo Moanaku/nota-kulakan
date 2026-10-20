@@ -68,15 +68,17 @@ android {
                 "String", "API_BASE_URL",
                 "\"${pengaturan("nota.api.url.debug", "http://10.0.2.2:8080/")}\"",
             )
+            buildConfigField("boolean", "NOTA_PUNYA_SERVER", "true")
         }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            buildConfigField(
-                "String", "API_BASE_URL",
-                "\"${pengaturan("nota.api.url.release", "https://contoh.invalid/")}\"",
-            )
+            // Tanpa nota.api.url.release, APK rilis tidak punya server: kamera dan galeri nonaktif, mode contoh tetap ada
+            // (docs/KEPUTUSAN.md 20). Alamat cadangan hanya agar Retrofit punya URL dasar yang sah.
+            val urlRilis = pengaturan("nota.api.url.release", "")
+            buildConfigField("String", "API_BASE_URL", "\"${urlRilis.ifBlank { "https://contoh.invalid/" }}\"")
+            buildConfigField("boolean", "NOTA_PUNYA_SERVER", urlRilis.isNotBlank().toString())
             signingConfigs.findByName("rilis")?.let { signingConfig = it }
         }
     }

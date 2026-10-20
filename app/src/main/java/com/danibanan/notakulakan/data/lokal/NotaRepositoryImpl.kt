@@ -20,6 +20,7 @@ import com.danibanan.notakulakan.domain.repo.HasilSimpan
 import com.danibanan.notakulakan.domain.repo.Jam
 import com.danibanan.notakulakan.domain.repo.NotaRepository
 import com.danibanan.notakulakan.domain.repo.NotaTersimpan
+import com.danibanan.notakulakan.domain.repo.PREFIKS_CONTOH
 import com.danibanan.notakulakan.domain.repo.PerubahanTersimpan
 import com.danibanan.notakulakan.domain.repo.StokProduk
 import com.danibanan.notakulakan.domain.satuanSama
@@ -101,6 +102,16 @@ class NotaRepositoryImpl @Inject constructor(
         dao.hapusNota(id) // baris ikut terhapus (CASCADE), stok otomatis berkurang
         foto?.let { File(it).delete() }
         Unit
+    }
+
+    override suspend fun hapusDataContoh(): Int = withContext(io) {
+        val contoh = db.withTransaction {
+            dao.notaBerawalan(PREFIKS_CONTOH).also { daftar ->
+                daftar.map { it.id }.chunked(500).forEach { dao.hapusNotaDenganId(it) } // baris ikut terhapus (CASCADE)
+            }
+        }
+        contoh.forEach { n -> n.fotoPath?.let { File(it).delete() } }
+        contoh.size
     }
 
     override suspend fun daftarProduk(): List<Produk> = withContext(io) {

@@ -20,7 +20,7 @@ import kotlinx.serialization.Serializable
 @Serializable object RuteStok
 @Serializable object RuteRiwayat
 @Serializable object RuteFoto
-@Serializable data class RuteHasil(val uri: String? = null)
+@Serializable data class RuteHasil(val uri: String? = null, val contoh: String? = null)
 @Serializable data class RuteDetail(val id: Long)
 
 @Composable
@@ -57,6 +57,9 @@ fun NavigasiNota(nav: NavHostController = rememberNavController()) {
                 },
                 onIsiManual = {
                     nav.navigate(RuteHasil(null)) { popUpTo<RuteFoto> { inclusive = true } }
+                },
+                onPilihContoh = { id ->
+                    nav.navigate(RuteHasil(contoh = id)) { popUpTo<RuteFoto> { inclusive = true } }
                 },
             )
         }

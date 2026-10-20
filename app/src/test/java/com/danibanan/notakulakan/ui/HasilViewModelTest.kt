@@ -71,6 +71,7 @@ class HasilViewModelTest {
         override fun riwayat(): Flow<List<RingkasNota>> = flowOf(emptyList())
         override suspend fun detail(id: Long): NotaTersimpan? = null
         override suspend fun hapus(id: Long) = Unit
+        override suspend fun hapusDataContoh(): Int = 0
         override suspend fun daftarProduk(): List<Produk> = alias.values.toList()
         override suspend fun saranProduk(namaDiNota: List<String>): List<Produk?> =
             namaDiNota.map { alias[it.lowercase()] }
@@ -111,6 +112,7 @@ class HasilViewModelTest {
     private fun buatVm(uri: String? = "content://foto/1") = HasilViewModel(
         SavedStateHandle(mapOf("uri" to uri)),
         ekstraksi,
+        ContohPalsu(),
         repo,
         foto,
         analitik,

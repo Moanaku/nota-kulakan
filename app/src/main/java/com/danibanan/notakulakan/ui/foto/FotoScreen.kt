@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,10 +31,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.FileProvider
+import com.danibanan.notakulakan.BuildConfig
 import com.danibanan.notakulakan.R
+import com.danibanan.notakulakan.domain.repo.IdContoh
+import com.danibanan.notakulakan.ui.hasil.BarisPilihan
 import com.danibanan.notakulakan.ui.komponen.BarAtas
 import com.danibanan.notakulakan.ui.komponen.JenisPesan
+import com.danibanan.notakulakan.ui.komponen.PemisahBaris
 import com.danibanan.notakulakan.ui.komponen.PesanPeriksa
+import com.danibanan.notakulakan.ui.komponen.SheetPilihan
 import com.danibanan.notakulakan.ui.komponen.SpandukOffline
 import com.danibanan.notakulakan.ui.komponen.TombolSekunder
 import com.danibanan.notakulakan.ui.komponen.TombolTeks
@@ -49,6 +55,9 @@ import java.util.UUID
  * Kamera lewat aplikasi kamera sistem (TakePicture) dan galeri lewat Photo Picker. Keduanya
  * tidak butuh izin CAMERA atau izin penyimpanan, sehingga tidak ada dialog izin yang membingungkan.
  *
+ * Tanpa server ([punyaServer] false: build rilis tanpa alamat server) kamera dan galeri nonaktif; nota contoh dari APK
+ * dan isi manual tetap jalan.
+ *
  * Layar ini tidak memuat data, jadi kondisi kosong dan memuat tidak berlaku. Kondisi yang ada: offline
  * (spanduk; foto tetap bisa diambil, tetapi nota belum bisa dibaca) dan galat (tidak ada aplikasi kamera).
  */
@@ -57,10 +66,13 @@ fun FotoScreen(
     onKembali: () -> Unit,
     onFotoSiap: (String) -> Unit,
     onIsiManual: () -> Unit,
+    onPilihContoh: (String) -> Unit,
+    punyaServer: Boolean = BuildConfig.NOTA_PUNYA_SERVER,
 ) {
     val ctx = LocalContext.current
     var uriKamera by rememberSaveable { mutableStateOf<String?>(null) }
     var kameraTidakAda by rememberSaveable { mutableStateOf(false) }
+    var pilihContoh by rememberSaveable { mutableStateOf(false) }
     val tersambung = rememberTersambung()
 
     val kamera = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { berhasil ->
@@ -133,20 +145,56 @@ fun FotoScreen(
                     stringResource(R.string.foto_ambil),
                     onClick = ::bukaKamera,
                     modifier = Modifier.fillMaxWidth().padding(top = Spasi.m),
+                    enabled = punyaServer,
                 )
                 TombolSekunder(
                     stringResource(R.string.foto_galeri),
                     onClick = { galeri.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = punyaServer,
                 )
+                if (!punyaServer) {
+                    Text(
+                        stringResource(R.string.foto_tanpa_server),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                TombolTeks(stringResource(R.string.foto_contoh), onClick = { pilihContoh = true }, modifier = Modifier.fillMaxWidth())
                 TombolTeks(stringResource(R.string.foto_manual), onClick = onIsiManual, modifier = Modifier.fillMaxWidth())
-                Text(
-                    stringResource(R.string.foto_privasi),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = Spasi.xl),
-                )
+                if (punyaServer) {
+                    Text(
+                        stringResource(R.string.foto_privasi),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = Spasi.xl),
+                    )
+                }
             }
         }
     }
+    if (pilihContoh) {
+        SheetPilihan(judul = stringResource(R.string.contoh_judul), onTutup = { pilihContoh = false }) {
+            Text(
+                stringResource(R.string.contoh_isi),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Column(Modifier.fillMaxWidth().navigationBarsPadding()) {
+                for (id in IdContoh.entries) {
+                    BarisPilihan(stringResource(id.judul())) {
+                        pilihContoh = false
+                        onPilihContoh(id.berkas)
+                    }
+                    PemisahBaris()
+                }
+            }
+        }
+    }
+}
+
+private fun IdContoh.judul(): Int = when (this) {
+    IdContoh.BERSIH -> R.string.contoh_bersih
+    IdContoh.SELISIH -> R.string.contoh_selisih
+    IdContoh.DISKON -> R.string.contoh_diskon
 }

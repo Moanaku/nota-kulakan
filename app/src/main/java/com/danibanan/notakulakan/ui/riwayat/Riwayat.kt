@@ -35,6 +35,7 @@ import com.danibanan.notakulakan.domain.Validator
 import com.danibanan.notakulakan.domain.model.ItemBaris
 import com.danibanan.notakulakan.domain.model.Tingkat
 import com.danibanan.notakulakan.domain.repo.NotaRepository
+import com.danibanan.notakulakan.domain.repo.adalahDataContoh
 import com.danibanan.notakulakan.domain.repo.NotaTersimpan
 import com.danibanan.notakulakan.ui.komponen.BarAtas
 import com.danibanan.notakulakan.ui.komponen.BarBawah
@@ -86,8 +87,10 @@ sealed interface RiwayatUi {
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class RiwayatViewModel @Inject constructor(repo: NotaRepository) : ViewModel() {
+class RiwayatViewModel @Inject constructor(private val repo: NotaRepository) : ViewModel() {
     private val percobaan = MutableStateFlow(0)
+    private val _galatHapusContoh = MutableStateFlow(false)
+    val galatHapusContoh: StateFlow<Boolean> = _galatHapusContoh.asStateFlow()
 
     val ui: StateFlow<RiwayatUi> = percobaan
         .flatMapLatest {
@@ -98,6 +101,20 @@ class RiwayatViewModel @Inject constructor(repo: NotaRepository) : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RiwayatUi.Memuat)
 
     fun cobaLagi() = percobaan.update { it + 1 }
+
+    /** Hapus nota contoh (supplier berawalan "(Contoh) "); daftar dan stok menyegarkan diri dari basis data. */
+    fun hapusDataContoh() {
+        viewModelScope.launch {
+            _galatHapusContoh.value = try {
+                repo.hapusDataContoh()
+                false
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                true
+            }
+        }
+    }
 }
 
 /**
@@ -112,6 +129,8 @@ fun RiwayatScreen(
     vm: RiwayatViewModel = hiltViewModel(),
 ) {
     val ui by vm.ui.collectAsStateWithLifecycle()
+    val galatHapusContoh by vm.galatHapusContoh.collectAsStateWithLifecycle()
+    var tanyaHapusContoh by remember { mutableStateOf(false) }
     Scaffold(
         topBar = { BarAtas(stringResource(R.string.riwayat_judul)) },
         bottomBar = { BarBawah(Tab.RIWAYAT, onStok = onKeStok, onRiwayat = {}) },
@@ -149,9 +168,36 @@ fun RiwayatScreen(
                         )
                         PemisahBaris()
                     }
+                    if (s.daftar.any { adalahDataContoh(it.supplier) }) {
+                        item {
+                            Column(Modifier.fillMaxWidth().padding(top = Spasi.l), verticalArrangement = Arrangement.spacedBy(Spasi.s)) {
+                                if (galatHapusContoh) PesanPeriksa(stringResource(R.string.galat_hapus_contoh), JenisPesan.GALAT)
+                                TombolTeks(
+                                    stringResource(R.string.hapus_contoh),
+                                    onClick = { tanyaHapusContoh = true },
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+
+    if (tanyaHapusContoh) {
+        AlertDialog(
+            onDismissRequest = { tanyaHapusContoh = false },
+            shape = RoundedCornerShape(Radius.besar),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            tonalElevation = Elevasi.tinggi,
+            title = { Text(stringResource(R.string.hapus_contoh_judul), style = MaterialTheme.typography.headlineSmall) },
+            text = { Text(stringResource(R.string.hapus_contoh_isi), style = MaterialTheme.typography.bodyLarge) },
+            confirmButton = {
+                TombolTeks(stringResource(R.string.hapus_contoh), onClick = { tanyaHapusContoh = false; vm.hapusDataContoh() })
+            },
+            dismissButton = { TombolTeks(stringResource(R.string.batal), onClick = { tanyaHapusContoh = false }) },
+        )
     }
 }
 

@@ -37,6 +37,18 @@
     <string name="foto_galeri">Pilih dari galeri</string>
     <string name="foto_manual">Isi manual tanpa foto</string>
     <string name="foto_privasi">Foto dikecilkan dulu, lalu dikirim ke server dan layanan AI untuk dibaca. Foto disimpan hanya di HP ini.</string>
+    <string name="foto_contoh">Coba dengan nota contoh</string>
+    <string name="foto_tanpa_server">Membaca nota dengan AI butuh server sendiri (lihat README). Coba dulu dengan nota contoh.</string>
+    <string name="contoh_judul">Pilih nota contoh</string>
+    <string name="contoh_isi">Nota buatan sendiri, bukan nota nyata. Hasil bacanya sudah disiapkan dan tidak memakai AI atau jaringan.</string>
+    <string name="contoh_bersih">Nota bersih: semua hitungan cocok</string>
+    <string name="contoh_selisih">Nota dengan satu selisih hitungan</string>
+    <string name="contoh_diskon">Nota dengan diskon dan ongkos kirim</string>
+    <string name="periksa_contoh">Nota contoh. Hasil baca sudah disiapkan, bukan hasil AI.</string>
+    <string name="hapus_contoh">Hapus data contoh</string>
+    <string name="hapus_contoh_judul">Hapus data contoh?</string>
+    <string name="hapus_contoh_isi">Nota yang nama suppliernya diawali “(Contoh)” dihapus, dan barangnya dikurangi dari total masuk. Nota lain tidak berubah. Tidak bisa dibatalkan.</string>
+    <string name="galat_hapus_contoh">Data contoh belum terhapus. Coba lagi.</string>
     <string name="foto_tidak_ada_kamera">Tidak ada aplikasi kamera di HP ini. Pilih dari galeri atau isi manual.</string>
 
     <!-- Hasil: memproses dan gagal -->

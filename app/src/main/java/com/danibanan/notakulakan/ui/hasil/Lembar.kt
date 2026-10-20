@@ -236,7 +236,7 @@ fun LembarProduk(
 }
 
 @Composable
-private fun BarisPilihan(teks: String, utama: Boolean = false, onKlik: () -> Unit) {
+internal fun BarisPilihan(teks: String, utama: Boolean = false, onKlik: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
