@@ -35,7 +35,8 @@ Studi kasus produk dan rekayasa, bukan pesaing aplikasi kasir.
 9. README hanya berisi angka terukur dan bersumber. Data sintetis diberi label.
 10. Foto nota asli tidak di-commit (`data/private/`). Foto evaluasi ditutup kotak hitam (nama, alamat, HP, NPWP,
     rekening pembeli) sebelum dikirim ke Gemini; foto asli ada di `data/private/asli/` dan tidak dikirim.
-    Server tidak menyimpan foto dan tidak mencatat isinya di log.
+    Kode tidak menulis foto ke disk dan log tidak memuat isi nota; unggahan multipart sementara dapat ditampung
+    framework di berkas sementara bila > 1 MB.
 11. Jangan mulai Lapisan 2 (`docs/PRD.md` 7b) sebelum Lapisan 1 berjalan, terukur, dan terdokumentasi.
 12. Tanya dulu sebelum mengubah `applicationId`, skema database (butuh migrasi), atau format API.
 13. Pesan commit dan deskripsi PR tanpa atribusi Claude/AI (tanpa Co-Authored-By, tanpa tautan sesi).
