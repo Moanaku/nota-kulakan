@@ -5,7 +5,7 @@ Status: draf untuk ditinjau Dani. Yang bertanda **(HIPOTESIS)** belum diukur dan
 ## 1. Masalah dan pengguna
 
 - **Pengguna:** pemilik toko sembako (toko pengguna), memakai HP Android.
-- **Cara sekarang:** nota dari grosir atau sales (cetak dan tulisan tangan) disimpan sebagai tumpukan kertas di laci. Stok dan harga modal tidak dicatat dari nota itu.
+- **Cara sekarang:** nota dari grosir atau sales (cetak dan tulisan tangan) dicatat tangan di buku, dan kertasnya disimpan di laci. Stok dan harga modal tidak dihitung dari nota itu.
 - **Masalah:** perubahan harga modal tidak terlihat, dan jumlah barang yang masuk tidak tercatat.
 - **Posisi project:** studi kasus produk dan rekayasa, bukan pesaing aplikasi kasir.
 
