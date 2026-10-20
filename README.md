@@ -129,8 +129,9 @@ token), jadi angka biaya model itu hanya berlaku sampai 2026-12-31.
 - Gemini yang dipakai adalah tier gratis: Google boleh memakai isi permintaan untuk memperbaiki produknya.
   Karena itu foto evaluasi ditutup kotak hitam (nama, alamat, HP, NPWP, rekening pembeli) sebelum dikirim, dan
   rilis ke pengguna lain membutuhkan tier berbayar (KEPUTUSAN 16).
-- Foto nota asli tidak ada di repo (`data/private/` di-ignore). Server tidak menyimpan foto dan tidak mencatat
-  isinya di log.
+- Foto nota asli tidak ada di repo (`data/private/` di-ignore). Kode backend tidak menulis foto ke disk dan log
+  aplikasi hanya berisi angka (token, latensi, jumlah baris), bukan isi nota. Batasnya: unggahan di atas 1 MB
+  sementara ditampung Starlette di berkas sementara selama permintaan berjalan, dan foto tetap dikirim ke Gemini.
 
 ## Batas yang diketahui
 
