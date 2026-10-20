@@ -93,7 +93,7 @@
     <!-- Lembar edit baris -->
     <string name="edit_baris_judul">Perbaiki baris %1$d</string>
     <string name="nama_barang">Nama barang</string>
-    <string name="qty">Jumlah barang</string>
+    <string name="qty">Jumlah</string>
     <string name="satuan">Satuan</string>
     <string name="harga_satuan">Harga satuan (Rp)</string>
     <string name="jumlah_rp">Jumlah tertulis di nota (Rp)</string>

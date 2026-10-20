@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,6 +47,9 @@ import com.danibanan.notakulakan.ui.komponen.SheetPilihan
 import com.danibanan.notakulakan.ui.komponen.TombolTeks
 import com.danibanan.notakulakan.ui.theme.Spasi
 import com.danibanan.notakulakan.ui.theme.Ukuran
+
+/** Pada skala font ini ke atas, kolom jumlah dan satuan ditumpuk menjadi satu kolom. */
+private const val SKALA_FONT_SATU_KOLOM = 1.3f
 
 @Composable
 fun LembarBaris(
@@ -90,23 +94,36 @@ fun LembarBaris(
             nilai = nama,
             onNilaiBerubah = { nama = it },
             label = stringResource(R.string.nama_barang),
+            maksBaris = 3,
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(Spasi.m)) {
+        // Skala font besar: dua kolom berdampingan terlalu sempit, jadi disusun vertikal.
+        val kolomQty: @Composable (Modifier) -> Unit = { m ->
             KolomTeks(
                 nilai = qty,
                 onNilaiBerubah = { qty = it },
                 label = stringResource(R.string.qty),
-                modifier = Modifier.weight(1f),
+                modifier = m,
                 galat = if (qtySalah) stringResource(R.string.bukan_angka) else null,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             )
+        }
+        val kolomSatuan: @Composable (Modifier) -> Unit = { m ->
             KolomTeks(
                 nilai = satuan,
                 onNilaiBerubah = { satuan = it },
                 label = stringResource(R.string.satuan),
-                modifier = Modifier.weight(1f),
+                modifier = m,
             )
+        }
+        if (LocalDensity.current.fontScale >= SKALA_FONT_SATU_KOLOM) {
+            kolomQty(Modifier)
+            kolomSatuan(Modifier)
+        } else {
+            Row(horizontalArrangement = Arrangement.spacedBy(Spasi.m)) {
+                kolomQty(Modifier.weight(1f))
+                kolomSatuan(Modifier.weight(1f))
+            }
         }
         KolomRupiah(
             nilai = harga,

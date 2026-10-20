@@ -66,7 +66,7 @@ private fun PesanGalat(pesan: String) {
     }
 }
 
-/** Kolom teks biasa (nama barang, nama toko, satuan). */
+/** Kolom teks biasa (nama barang, nama toko, satuan). [maksBaris] > 1 untuk teks panjang seperti nama barang. */
 @Composable
 fun KolomTeks(
     nilai: String,
@@ -76,7 +76,7 @@ fun KolomTeks(
     enabled: Boolean = true,
     galat: String? = null,
     bantuan: String? = null,
-    satuBaris: Boolean = true,
+    maksBaris: Int = 1,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
 ) {
     OutlinedTextField(
@@ -90,7 +90,8 @@ fun KolomTeks(
         supportingText = (galat ?: bantuan)?.let { pesan ->
             { if (galat != null) PesanGalat(pesan) else Text(pesan) }
         },
-        singleLine = satuBaris,
+        singleLine = maksBaris == 1,
+        maxLines = maksBaris,
         keyboardOptions = keyboardOptions,
         shape = RoundedCornerShape(Radius.kecil),
         colors = kolomWarna(),
