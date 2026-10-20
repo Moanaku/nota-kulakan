@@ -38,7 +38,7 @@
     <string name="foto_galeri">Pilih dari galeri</string>
     <string name="foto_manual">Isi manual tanpa foto</string>
     <string name="foto_privasi">Foto dikecilkan dulu, lalu dikirim ke server dan layanan AI untuk dibaca. Foto disimpan hanya di HP ini.</string>
-    <string name="foto_tidak_ada_kamera">Tidak ada aplikasi kamera di HP ini</string>
+    <string name="foto_tidak_ada_kamera">Tidak ada aplikasi kamera di HP ini. Pilih dari galeri atau isi manual.</string>
 
     <!-- Hasil: memproses dan gagal -->
     <string name="hasil_memproses">Membaca nota…</string>

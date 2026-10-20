@@ -55,8 +55,10 @@ import com.danibanan.notakulakan.ui.komponen.ChipStatus
 import com.danibanan.notakulakan.ui.komponen.DataKosong
 import com.danibanan.notakulakan.ui.komponen.FotoNota
 import com.danibanan.notakulakan.ui.komponen.JenisKosong
+import com.danibanan.notakulakan.ui.komponen.JenisPesan
 import com.danibanan.notakulakan.ui.komponen.KondisiGalat
 import com.danibanan.notakulakan.ui.komponen.PemisahBaris
+import com.danibanan.notakulakan.ui.komponen.PesanPeriksa
 import com.danibanan.notakulakan.ui.komponen.SkeletonBarisBarang
 import com.danibanan.notakulakan.ui.komponen.SpandukOffline
 import com.danibanan.notakulakan.ui.komponen.StatusBaris
