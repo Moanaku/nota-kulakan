@@ -88,9 +88,10 @@ Sudah diputuskan (alasan di `docs/KEPUTUSAN.md`):
 3. Distribusi lewat GitHub Releases, bukan Play Store. Tidak ada tester dan tidak ada closed test.
 
 Masih terbuka:
-4. **Model ekstraksi dan ukuran foto.** Diputuskan dari evaluasi set uji.
+4. **Model ekstraksi dan ukuran foto.** Diputuskan: `gemini-3.1-flash-lite`, 1024 px (`docs/KEPUTUSAN.md` 19).
 5. **Perlindungan backend untuk APK di luar Play.** App Check Play Integrity tidak berlaku
-   (`docs/KEPUTUSAN.md` 17).
+   (`docs/KEPUTUSAN.md` 17). Dijawab dengan tidak menyediakan backend publik: APK rilis memakai mode contoh
+   (`docs/KEPUTUSAN.md` 20).
 6. **Skema `Nota` v1** (`backend/src/nota/schema.py`) menunggu tinjauan Dani.
 
 ## 7a. Tambahan di dalam Lapisan 1
@@ -122,14 +123,15 @@ Urut menurut nilai per usaha, menunggu Lapisan 1 terukur:
 
 - Prompt bisa overfit ke set evaluasi, sehingga pemisahan dev dan uji wajib.
 - Perlindungan replay App Check tidak tersedia untuk Python. Tulis sebagai batasan.
-- APK di luar Play tidak lolos App Check Play Integrity, jadi backend publik perlu perlindungan lain.
+- APK di luar Play tidak lolos App Check Play Integrity, jadi tidak ada backend publik (`docs/KEPUTUSAN.md` 20).
 - Satu foto berisi dua nota digabung menjadi satu nota tanpa peringatan (nota 007, D3).
 - Harga dan daftar model berubah. Catat tanggal pengukuran biaya.
 - Foto nota dikirim ke server dan layanan AI. Catatan rilis di GitHub Releases dan README harus menyebutnya. Selama memakai tier gratis Gemini (Google boleh memakai isinya untuk memperbaiki produk), nota yang dikirim hanya yang memuat nama toko, nama toko penerima, daftar barang, dan harga; nomor telepon, alamat pribadi, dan nomor rekening dipotong atau ditutup dulu.
 
 ## 9. Definisi selesai Lapisan 1
 
-- Alur F1 sampai F5 berjalan di HP asli terhadap backend yang sudah deploy.
+- Alur F1 sampai F5 berjalan di HP asli terhadap backend asli di laptop (hari lapangan, `docs/LAPANGAN.md`), dan APK rilis
+  menjalankannya dalam mode contoh tanpa server (`docs/KEPUTUSAN.md` 20).
 - Unit test backend dan Android (ditulis Claude, ditinjau dan dipahami Dani) hijau di CI.
 - Tabel akurasi dari set uji ada di README, per jenis nota dan per model.
 - Biaya per nota terukur dari penggunaan token nyata.

@@ -18,7 +18,7 @@ tercatat, sehingga kenaikan harga modal tidak terlihat.
 
 ```mermaid
 flowchart TD
-  A[Foto nota] --> B[Kompres di HP<br/>1600 px, JPEG 85]
+  A[Foto nota] --> B[Kompres di HP<br/>1024 px, JPEG 85]
   B --> C[Backend FastAPI<br/>saat ini lokal]
   C -.-> R[Rencana, belum dideploy:<br/>Cloud Run + App Check]
   C --> D[Gemini<br/>menyalin teks nota]

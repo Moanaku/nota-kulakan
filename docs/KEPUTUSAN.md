@@ -61,8 +61,8 @@ interview dan ditinjau ulang bila datanya berubah. Format: keputusan, alternatif
 - **Risiko terbuka:** APK yang dipasang di luar Play mungkin tidak lolos Play Integrity.
 
 ## 10. Foto
-- Dikompres di HP ke sisi 1600 px, JPEG 85, sebelum diunggah. Parameter ini variabel evaluasi; harness
-  meniru kompresi yang sama.
+- Dikompres di HP ke sisi 1024 px, JPEG 85, sebelum diunggah (semula 1600 px; diubah di keputusan 19).
+  Parameter ini variabel evaluasi; harness meniru kompresi yang sama.
 - Kamera lewat aplikasi kamera sistem dan galeri lewat Photo Picker: tanpa izin CAMERA dan izin
   penyimpanan.
 - Server tidak menyimpan foto. Di HP, foto disimpan bersama nota untuk audit, tetapi tidak ikut cadangan
@@ -138,3 +138,31 @@ interview dan ditinjau ulang bila datanya berubah. Format: keputusan, alternatif
 - **Cara menguji:** evaluasi set uji di Fase 5. Bila akurasi nota tulis jauh di bawah nota cetak,
   keputusan 1 dan 18 ditinjau ulang.
 - **Catatan (19 Okt 2026):** hipotesis tulisan tangan belum bisa diuji dengan nota milik sendiri karena set utama cetak semua.
+
+## 19. Konfigurasi akhir: gemini-3.1-flash-lite, foto 1024 px
+- **Keputusan (20 Okt 2026):** model `gemini-3.1-flash-lite` (nilai bawaan `NOTA_MODEL`) dan foto dikecilkan ke
+  sisi terpanjang 1024 px, JPEG 85 (`FOTO_MAX_SISI` di `app/build.gradle.kts`, semula 1600).
+- **Alasan:** aturan yang ditetapkan sebelum uji dijalankan (EVALUASI 9) diterapkan apa adanya (EVALUASI 10, 12).
+  3.5-flash-lite unggul 1 nota sempurna, syaratnya >= 2, jadi model tidak berganti. 1024 px (5/12) tidak lebih
+  rendah dari 1600 px (6/12) lebih dari 1 nota, jadi 1024 px dipakai: foto 88 KB lawan 193 KB. 3.8-flash tidak
+  selesai dievaluasi (waktu habis dan kuota harian) dan tidak dipilih.
+- **Batas bukti:** 5/12 nota sempurna (42%, Wilson 19-68%); selisih antar konfigurasi 1 nota tidak bermakna
+  secara statistik. Pilihan ini hasil aturan, bukan klaim bahwa 1024 px lebih akurat.
+- **Cara menguji:** `KonfigurasiFotoTest` (Android) dan `test_config.py` (backend) mengunci nilainya.
+
+## 20. APK rilis tanpa backend publik: mode contoh di dalam APK
+- **Keputusan (20 Okt 2026):** APK di GitHub Releases tidak terhubung ke backend publik. Ia membawa mode
+  contoh: nota sintetis berlabel "contoh" yang diproses tanpa server dan tanpa kunci. Kemampuan AI yang asli
+  ditunjukkan lewat video dan angka evaluasi; siapa pun yang ingin mencoba AI asli menjalankan backend sendiri
+  mengikuti README.
+- **Alasan:** (1) privasi: tier gratis Gemini boleh memakai isi nota untuk memperbaiki produk (keputusan 16),
+  jadi nota milik orang lain tidak boleh lewat kunci ini; (2) penyalahgunaan: App Check Play Integrity tidak
+  berlaku untuk APK di luar Play (keputusan 9 dan 17), jadi backend publik terbuka bagi siapa pun yang punya
+  APK; (3) biaya: tier berbayar diperlukan untuk rilis ke pengguna lain.
+- **Akibat:** kriteria PRD 9 "berjalan terhadap backend yang sudah deploy" diganti: alur F1 sampai F5 berjalan
+  di HP asli terhadap backend asli di laptop (hari lapangan, `docs/LAPANGAN.md`) dan dalam mode contoh pada APK
+  rilis. Mode contoh belum diimplementasikan di aplikasi; itu tugas terpisah.
+- **Alternatif:** backend publik di Cloud Run dengan App Check (butuh Play); backend publik tanpa perlindungan
+  (ditolak: kuota dan privasi).
+- **Cara menguji:** APK rilis di HP tanpa jaringan ke server mana pun menampilkan nota contoh berlabel dan
+  menyelesaikan alur simpan.
