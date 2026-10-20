@@ -1,0 +1,18 @@
+{
+  "label": "SINTETIS: nota buatan sendiri, bukan nota nyata dan bukan hasil AI",
+  "jenis_nota": "cetak",
+  "nota": {
+    "supplier": "Grosir Contoh Abadi",
+    "tanggal_tertulis": "16/10/2026",
+    "items": [
+      {"nama": "Sabun Cuci", "qty": "3", "satuan": "dus", "harga_satuan": "80.000", "jumlah": "230.000", "diskon_baris": "10.000"},
+      {"nama": "Shampo Sachet", "qty": "5", "satuan": "renceng", "harga_satuan": "24.000", "jumlah": "120.000", "diskon_baris": "0"},
+      {"nama": "Pasta Gigi", "qty": "2", "satuan": "dus", "harga_satuan": "150.000", "jumlah": "300.000", "diskon_baris": "0"}
+    ],
+    "subtotal": "650.000",
+    "diskon": "15.000",
+    "pajak": "0",
+    "biaya_lain": "25.000",
+    "total": "660.000"
+  }
+}

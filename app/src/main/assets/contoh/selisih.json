@@ -1,0 +1,18 @@
+{
+  "label": "SINTETIS: nota buatan sendiri, bukan nota nyata dan bukan hasil AI. Harga satuan Gula Pasir sengaja salah baca (60, di nota tertulis 60.000)",
+  "jenis_nota": "cetak",
+  "nota": {
+    "supplier": "Grosir Contoh Makmur",
+    "tanggal_tertulis": "14/10/2026",
+    "items": [
+      {"nama": "Gula Pasir", "qty": "2", "satuan": "bal", "harga_satuan": "60", "jumlah": "120.000", "diskon_baris": "0"},
+      {"nama": "Kopi Sachet", "qty": "4", "satuan": "renceng", "harga_satuan": "28.000", "jumlah": "112.000", "diskon_baris": "0"},
+      {"nama": "Susu Kental Manis", "qty": "2", "satuan": "dus", "harga_satuan": "95.000", "jumlah": "190.000", "diskon_baris": "0"}
+    ],
+    "subtotal": "422.000",
+    "diskon": "0",
+    "pajak": "0",
+    "biaya_lain": "0",
+    "total": "422.000"
+  }
+}

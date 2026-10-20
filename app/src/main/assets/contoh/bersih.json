@@ -1,0 +1,18 @@
+{
+  "label": "SINTETIS: nota buatan sendiri, bukan nota nyata dan bukan hasil AI",
+  "jenis_nota": "cetak",
+  "nota": {
+    "supplier": "Grosir Contoh Sejahtera",
+    "tanggal_tertulis": "12/10/2026",
+    "items": [
+      {"nama": "Mie Goreng", "qty": "2", "satuan": "dus", "harga_satuan": "110.000", "jumlah": "220.000", "diskon_baris": "0"},
+      {"nama": "Minyak Goreng 2L", "qty": "1", "satuan": "karton", "harga_satuan": "215.000", "jumlah": "215.000", "diskon_baris": "0"},
+      {"nama": "Teh Celup", "qty": "3", "satuan": "dus", "harga_satuan": "45.000", "jumlah": "135.000", "diskon_baris": "0"}
+    ],
+    "subtotal": "570.000",
+    "diskon": "0",
+    "pajak": "0",
+    "biaya_lain": "0",
+    "total": "570.000"
+  }
+}
