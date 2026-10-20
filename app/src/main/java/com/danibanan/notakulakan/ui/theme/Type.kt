@@ -15,13 +15,10 @@ val SourceSans3 = FontFamily(
 
 val Newsreader = FontFamily(Font(R.font.newsreader_semibold, FontWeight.SemiBold))
 
-private const val ANGKA_TABULAR = "tnum"
-
-/** Enam ukuran docs/DESIGN.md bagian 2. Angka memakai Source Sans 3 dengan `tnum`. */
+/** Enam ukuran docs/DESIGN.md bagian 2. Angka memakai Source Sans 3 (angka bawaannya sudah tabular). */
 object GayaNota {
     val angkaBesar = TextStyle(
         fontFamily = SourceSans3, fontWeight = FontWeight.SemiBold, fontSize = 32.sp, lineHeight = 40.sp,
-        fontFeatureSettings = ANGKA_TABULAR,
     )
     val judulLayar = TextStyle(
         fontFamily = Newsreader, fontWeight = FontWeight.SemiBold, fontSize = 24.sp, lineHeight = 32.sp,
@@ -42,9 +39,6 @@ object GayaNota {
         fontFamily = SourceSans3, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, lineHeight = 16.sp,
     )
 }
-
-/** Gaya yang sama dengan angka tabular: pakai untuk semua teks rupiah, qty, dan total. */
-fun TextStyle.angka(): TextStyle = copy(fontFeatureSettings = ANGKA_TABULAR)
 
 /**
  * Seluruh 15 peran Material di-override ke enam ukuran DESIGN.md:

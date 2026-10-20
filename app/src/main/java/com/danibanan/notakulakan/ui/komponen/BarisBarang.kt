@@ -20,7 +20,6 @@ import androidx.compose.ui.text.style.TextAlign
 import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
 import com.danibanan.notakulakan.ui.theme.Ukuran
-import com.danibanan.notakulakan.ui.theme.angka
 
 /**
  * Satu baris barang dengan tiga tingkat: nama (isi-tebal), qty x harga (keterangan, teks-sekunder),
@@ -49,13 +48,13 @@ fun BarisBarang(
                 Text(nama, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                 Text(
                     qtyHarga,
-                    style = MaterialTheme.typography.bodySmall.angka(),
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             Text(
                 jumlah,
-                style = MaterialTheme.typography.titleMedium.angka(),
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.End,
                 modifier = Modifier.widthIn(min = Spasi.xxxl),

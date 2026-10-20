@@ -38,9 +38,4 @@ class TipografiTemaTest {
         val kecil = semuaPeran.filter { it.value.fontSize.value < 14f }.keys
         assertEquals(setOf("labelSmall"), kecil)
     }
-
-    @Test
-    fun peranAngkaBesarTabular() {
-        assertEquals("tnum", TipografiNota.displaySmall.fontFeatureSettings)
-    }
 }

@@ -28,7 +28,6 @@ import com.danibanan.notakulakan.R
 import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
 import com.danibanan.notakulakan.ui.theme.Ukuran
-import com.danibanan.notakulakan.ui.theme.angka
 
 @Composable
 private fun kolomWarna() = MaterialTheme.colorScheme.let { w ->
@@ -120,7 +119,7 @@ fun KolomRupiah(
         enabled = enabled,
         label = { Text(label) },
         prefix = { Text(stringResource(R.string.input_rupiah_awalan)) },
-        textStyle = MaterialTheme.typography.bodyLarge.angka().copy(textAlign = TextAlign.End),
+        textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.End),
         isError = galat != null,
         supportingText = (galat ?: bantuan)?.let { pesan ->
             { if (galat != null) PesanGalat(pesan) else Text(pesan) }

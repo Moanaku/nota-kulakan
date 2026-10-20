@@ -21,7 +21,6 @@ import com.danibanan.notakulakan.ui.theme.GayaNota
 import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
 import com.danibanan.notakulakan.ui.theme.Ukuran
-import com.danibanan.notakulakan.ui.theme.angka
 
 /**
  * Baris label + nilai rupiah (subtotal, diskon, PPN). Dengan [dominan] = true dipakai untuk total nota:
@@ -47,7 +46,7 @@ fun BarisRingkasanTotal(
         )
         Text(
             nilai,
-            style = if (dominan) GayaNota.angkaBesar else MaterialTheme.typography.bodyLarge.angka(),
+            style = if (dominan) GayaNota.angkaBesar else MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.End,
         )
@@ -91,7 +90,7 @@ fun KartuRingkasanNota(
                 Text(
                     total,
                     modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.titleMedium.angka(),
+                    style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 ChipStatus(status)
