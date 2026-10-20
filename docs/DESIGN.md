@@ -65,12 +65,13 @@ Pemisah (1,41 / 1,43) sengaja tipis karena dekoratif, bukan batas komponen inter
 
 - **Newsreader** (berseri): hanya judul layar dan judul bagian. **Source Sans 3**: semua lainnya.
   Keduanya berlisensi OFL; berkas font dibundel di aplikasi.
-- Angka (rupiah, qty, total): Source Sans 3 dengan fitur `tnum` (angka tabular) di SEMUA teks angka,
-  rata kanan di kolom jumlah.
+- Angka (rupiah, qty, total): Source Sans 3. Fitur `tnum` TIDAK ada di font ini (dicek di tabel GSUB
+  2026-10-20), tetapi lebar glyph angka 0-9 identik (Regular 497, SemiBold 513), jadi angka bawaannya
+  sudah tabular. Jangan mengaktifkan `pnum` (proporsional). Rata kanan di kolom jumlah.
 
 | Peran | Ukuran / tinggi baris | Keluarga, bobot |
 |---|---|---|
-| angka-besar (total nota) | 32 / 40 sp | Source Sans 3, 600, tnum |
+| angka-besar (total nota) | 32 / 40 sp | Source Sans 3, 600 |
 | judul-layar | 24 / 32 sp | Newsreader, 600 |
 | judul-bagian | 20 / 28 sp | Newsreader, 600 |
 | isi | 16 / 24 sp | Source Sans 3, 400 |
