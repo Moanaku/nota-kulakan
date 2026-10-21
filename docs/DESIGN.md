@@ -1,7 +1,7 @@
 # DESIGN.md: token visual Nota Kulakan (arah A, "Buku kas", v2)
 
 Status: DISETUJUI Dani 2026-10-21, v2 (token dari `DESIGN-USULAN-v2.md`, diterapkan di TUGAS-19; v1 disetujui 2026-10-20
-lewat TUGAS-6). Sumber kebenaran token;
+lewat TUGAS-6). Bahasa visual v2 diterapkan ke semua layar di TUGAS-20 (peta layar di bagian 5). Sumber kebenaran token;
 `Theme.kt` (Compose) hanya menerjemahkan berkas ini. Nilai di luar berkas ini tidak boleh dipakai di
 layar: kalau butuh nilai baru, ubah berkas ini dulu.
 
@@ -65,6 +65,7 @@ Rasio kontras (dihitung dengan rumus WCAG 2.x; teks normal >= 4,5, batas kontrol
 | di-atas-aksen-container / aksen-container | 8,12 | 8,97 |
 | aksen / aksen-container | 5,25 | 5,99 |
 | galat / latar | 5,67 | 9,27 |
+| galat / container (Hapus baris di sheet, tombol galat di dialog) | 5,06 | 8,46 |
 | di-atas-galat-container / galat-container | 8,43 | 10,47 |
 Pemisah (1,39 / 1,47) sengaja tipis karena dekoratif, bukan batas komponen interaktif.
 
@@ -95,7 +96,8 @@ Teks tidak lebih kecil dari 12 sp (12 sp hanya label bilah navigasi), dan teks y
 - **Radius** (3 nilai): 4 dp (input, chip), 8 dp (tombol, baris yang bisa diketuk), 16 dp (kartu terisi, sheet
   bawah, jendela dialog, tombol tengah bilah navigasi). Tidak ada lingkaran atau pil, kecuali penanda aktif bilah (pil 64x32, radius 16) dan titik status 8 dp.
 - **Elevasi** (2 tingkat): 0 dp (default; kartu = terisi `container` + garis `pemisah`, tanpa bayangan) dan 2 dp (hanya
-  sheet bawah dan dialog).
+  sheet bawah dan dialog). Sheet dan dialog berlatar `container` (bukan `container-high`): teks galat di atas
+  `container-high` hanya 4,49 (terang), di bawah ambang 4,5; di atas `container` 5,06.
 - **Hierarki baris barang** (tiga tingkat, tidak lebih): nama barang 16 sp isi-tebal `teks`; qty x harga
   14 sp keterangan `teks-sekunder`; jumlah 16 sp isi-tebal rata kanan, tabular; status sebagai chip.
   Jarak antar baris (16 dp) lebih besar daripada jarak di dalam baris (4 dp).
@@ -117,6 +119,11 @@ spanduk offline. Layar hanya merakit komponen ini. Komponen baru butuh izin Dani
 Komponen yang sudah disetujui dan dipakai (kondisinya ada di katalog debug, `KatalogKomponen`):
 - `BarAtas`: bilah judul layar; tombol kembali hanya bila `onKembali` diberikan. Tinggi minimum, bukan tetap:
   judul panjang atau skala font besar membungkus ke baris berikutnya.
+- `BarAksiBawah`: bilah aksi tetap di dasar layar alur (Catat nota, Periksa, Tersimpan, Gagal). Latar container, garis atas
+  pemisah, padding 16; satu tombol utama lebar penuh setinggi 56 dp (`Ukuran.tombolAksi`, nilai yang sama dengan tombol
+  tengah bilah) dan satu tombol teks sekunder opsional; naik di atas keyboard dan area gestur (`safeDrawing`).
+  Slot `catatan` di atas tombol memuat alasan tombol nonaktif atau galat simpan, jadi alasannya tertulis dekat tombol.
+  Layar tingkat atas memakai `BarBawahTengah`, tidak pernah keduanya.
 - `BarisNota`: satu nota di daftar Riwayat (baris + divider). `KartuRingkasanNota` tetap untuk satu nota yang
   berdiri sendiri.
 - `BarBawahTengah`: bilah navigasi tiga posisi, tinggi 72 dp, latar container, garis atas pemisah. Stok dan Riwayat
@@ -131,20 +138,58 @@ Komponen yang sudah disetujui dan dipakai (kondisinya ada di katalog debug, `Kat
 - `SheetPilihan`: sheet bawah untuk memilih satu pilihan (mis. produk), turunan gaya `SheetKoreksi`. Tanpa
   Simpan/Batal; sheet selalu tampil penuh. Isi memuat daftar tanpa `verticalScroll`.
 - Parameter tambahan `KondisiGalat(teksAksi = ...)`: bawaannya "Coba lagi". Aksi yang bukan mengulang
-  panggilan memakai label lain: "Foto ulang" untuk foto yang salah.
+  panggilan memakai label lain: "Foto ulang" untuk foto yang salah. `onCobaLagi = null` = tanpa tombol (layar alur
+  menaruh aksinya di `BarAksiBawah`). `DataKosong(isi = ...)` mengganti kalimat penjelas bawaan.
+- `TombolTeks(galat = true)`: teks berwarna galat untuk aksi yang menghapus (Hapus nota, Hapus baris ini, Hapus data contoh).
+- `SheetKoreksi`: judul dan isi menggulir, baris aksi (Batal, Simpan) disematkan di dasar sheet; tampil penuh, tidak
+  setengah tinggi. Di skala font >= 1,5 aksi ditumpuk (Simpan di atas Batal). Latar kolom input transparan, jadi label
+  yang memotong garis kolom memakai permukaan sheet yang sama dan tidak ada tambalan warna lain.
+- `BarisRingkasanTotal(dominan = true)`: yang dominan hanya angka-besar; labelnya tetap isi 16 `teks-sekunder`.
 
 Chip status pada kartu Riwayat dan Stok belum ada: kolom `dikonfirmasi` belum tersimpan (ditolak sementara).
 
 Status baris selalu ganda: ikon + teks + warna (tidak pernah warna saja).
 
-## 5. Keputusan desain sadar
+## 5. Peta layar (v2, TUGAS-20)
+
+Layar tingkat atas: judul-layar (serif 24) + keterangan 16 sekunder ikut menggulir bersama daftar, `BarBawahTengah`
+di bawah, daftar menggulir sampai di bawah bilah dengan padding bawah setinggi bilah + 16. Layar alur: `BarAtas` dengan
+tombol kembali, tanpa bilah bawah tengah, aksi utama di `BarAksiBawah` bila ada.
+
+| Layar | Jenis | Bilah bawah | Elemen dominan | Aksi utama | Kondisi (kosong / memuat / galat / offline) |
+|---|---|---|---|---|---|
+| Stok | tingkat atas | `BarBawahTengah` | daftar barang | Catat nota (tombol tengah) | ajakan catat nota / skeleton / Coba lagi / spanduk |
+| Riwayat | tingkat atas | `BarBawahTengah` | daftar nota | Catat nota (tombol tengah) | "Belum ada nota tercatat" / skeleton / Coba lagi / spanduk |
+| Catat nota (Foto) | alur | `BarAksiBawah` | aksi ambil foto | Ambil foto nota (tanpa server: Coba dengan nota contoh) | galat kamera tidak ada; offline spanduk; mode contoh banner INFO |
+| Memproses | alur | tanpa (tombol Batal membaca nota di isi) | skeleton baris barang | Batal membaca nota | memuat = layar ini |
+| Gagal | alur | `BarAksiBawah` | sebab galat | Coba lagi / Foto ulang; sekunder Isi manual | galat = layar ini; offline spanduk |
+| Isi manual, Periksa nota | alur | `BarAksiBawah` | total nota (angka-besar) | Simpan nota ke stok | daftar kosong ajakan Tambah baris; offline tidak berlaku |
+| Tersimpan | alur | `BarAksiBawah` | total + jumlah baris masuk stok | Lihat stok; sekunder Catat nota lain | tidak memuat data |
+| Detail nota | alur | tanpa (tidak ada aksi utama) | total nota (angka-besar) | Hapus nota (tombol teks galat di ujung daftar) | memuat / galat; nota hilang menutup layar |
+| Lembar koreksi, Pilih produk, Pilih nota contoh | sheet | aksi tersemat di sheet | kolom yang dikoreksi | Simpan koreksi (Pilih: memilih baris menutup sheet) | hasil filter kosong di Pilih produk |
+| Dialog duplikat, hapus nota, hapus data contoh | dialog | aksi di dialog | konsekuensi | Hapus ... berwarna galat; Batal | tidak berlaku |
+
+Offline di Stok dan Riwayat hanya spanduk informasi: data dibaca dari HP, yang belum bisa hanya membaca nota baru.
+
+## 6. Keputusan desain sadar
 
 Angka dianggap isi utama aplikasi, bukan hiasan: semua rupiah memakai angka tabular rata kanan dan
 bobot 600 pada kolom jumlah, jadi selisih hitungan terlihat dari bentuk kolomnya sebelum dibaca.
 Hijau dipakai hanya untuk "cocok" dan aksi utama; semua masalah memakai galat + ikon + kalimat
 penjelas, bukan sekadar merah.
 
-## 6. Do dan Don't (ringkas; aturan lengkap ada di instruksi project UI)
+Per kelompok layar (TUGAS-20):
+- Tingkat atas (Stok, Riwayat): daftar adalah layarnya. Judul ikut menggulir, jadi di skala font 200% layar tidak
+  habis oleh judul; tombol tengah bilah sengaja menimpa jalur transparan di atas bilah, bukan membuang ruang.
+- Alur pengambilan (Catat nota, Memproses, Gagal): satu aksi dominan di dasar layar tempat ibu jari berada;
+  tanpa server, nota contoh menjadi aksi utama karena kamera dan galeri tidak ada gunanya.
+- Pemeriksaan (Isi manual, Periksa, Tersimpan, Detail): total nota adalah satu-satunya angka besar, dan pesan status
+  (PesanPeriksa) tepat di bawahnya, jadi "cocok atau tidak" terbaca sebelum daftar. Konfirmasi ketidakcocokan ada
+  di bawah pesan masalahnya, bukan di bilah bawah; bilah hanya memuat alasan tombol nonaktif.
+- Sheet dan dialog: latar `container` untuk semuanya (kontras galat), aksi tersemat supaya terjangkau di skala besar;
+  aksi yang menghapus berwarna galat, aksi lain hijau.
+
+## 7. Do dan Don't (ringkas; aturan lengkap ada di instruksi project UI)
 
 Do: aksen hanya untuk "cocok" dan aksi utama; angka tabular rata kanan; ikon `Icons.Outlined.*`;
 daftar = baris + divider; skeleton berbentuk baris barang; pesan galat menyebut sebab + "Coba lagi";
@@ -154,7 +199,7 @@ Don't: gradien, Inter/Poppins/Roboto, dynamic color, `fromSeed`, `Icons.Default`
 (campur gaya), `Card` untuk setiap baris, tiga kartu seragam berjajar, spinner tengah layar sebagai
 satu-satunya loading, `Opacity` untuk teks sekunder, "Oops"/"No data"/"Submit", pesan exception mentah.
 
-## 7. Yang belum diputuskan
+## 8. Yang belum diputuskan
 
 Teks Indonesia terpanjang untuk uji pemotongan label, dan nama layar akhir, ditentukan saat komponen
 dibangun. 
