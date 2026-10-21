@@ -49,6 +49,7 @@ import com.danibanan.notakulakan.domain.model.Isu
 import com.danibanan.notakulakan.domain.model.ItemBaris
 import com.danibanan.notakulakan.domain.model.Tingkat
 import com.danibanan.notakulakan.domain.repo.JenisGagal
+import com.danibanan.notakulakan.ui.komponen.BarAksiBawah
 import com.danibanan.notakulakan.ui.komponen.BarAtas
 import com.danibanan.notakulakan.ui.komponen.BarisBarang
 import com.danibanan.notakulakan.ui.komponen.BarisRingkasanTotal
@@ -100,12 +101,15 @@ fun HasilScreen(
     }
 }
 
-/** Memuat: kalimat yang menyebut objeknya + skeleton berbentuk baris barang (bukan spinner tengah layar). */
+/**
+ * Memuat: kalimat yang menyebut objeknya, tombol batal, dan skeleton berbentuk baris barang (bukan spinner tengah
+ * layar). Tahap yang lebih rinci tidak dilacak ViewModel, jadi hanya satu teks tahap.
+ */
 @Composable
-private fun LayarMemproses(onKembali: () -> Unit) {
+internal fun LayarMemproses(onKembali: () -> Unit) {
     Scaffold(topBar = { BarAtas(stringResource(R.string.periksa_judul), onKembali = onKembali) }) { padding ->
         Column(
-            Modifier.fillMaxSize().padding(padding).padding(horizontal = Spasi.l),
+            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = Spasi.l),
             verticalArrangement = Arrangement.spacedBy(Spasi.s),
         ) {
             Text(
@@ -118,7 +122,8 @@ private fun LayarMemproses(onKembali: () -> Unit) {
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            SkeletonBarisBarang(Modifier.padding(top = Spasi.l), jumlahBaris = 4)
+            TombolTeks(stringResource(R.string.batal_membaca), onClick = onKembali, sejajarMargin = true)
+            SkeletonBarisBarang(Modifier.padding(top = Spasi.s), jumlahBaris = 4)
         }
     }
 }
@@ -136,33 +141,43 @@ private fun pesanGagal(jenis: JenisGagal, tersambung: Boolean): Int = when (jeni
     JenisGagal.GANGGUAN_SERVER -> R.string.gagal_server
 }
 
+/**
+ * Gagal: sebab spesifik per jenis di tengah, aksi utama di [BarAksiBawah] ("Coba lagi", atau "Foto ulang" bila foto
+ * yang salah), "Isi manual" sebagai aksi sekunder. "Ganti foto nota" tetap ada sebagai tombol teks bila aksi
+ * utamanya mengulang panggilan.
+ */
 @Composable
-private fun LayarGagal(
+internal fun LayarGagal(
     s: HasilUi.Gagal,
     onKembali: () -> Unit,
     onUlang: () -> Unit,
     onGantiFoto: () -> Unit,
     onManual: () -> Unit,
+    tersambung: Boolean = rememberTersambung(),
 ) {
-    val tersambung = rememberTersambung()
-    Scaffold(topBar = { BarAtas(stringResource(R.string.periksa_judul), onKembali = onKembali) }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())) {
-            SpandukOffline(tampil = s.jenis == JenisGagal.TANPA_JARINGAN && !tersambung)
-            KondisiGalat(
-                sebab = stringResource(pesanGagal(s.jenis, tersambung)),
+    Scaffold(
+        topBar = { BarAtas(stringResource(R.string.periksa_judul), onKembali = onKembali) },
+        bottomBar = {
+            BarAksiBawah(
                 // Foto yang salah tidak membaik dengan diulang: aksi utamanya memilih foto lain.
-                onCobaLagi = if (s.bisaUlang) onUlang else onGantiFoto,
-                judul = stringResource(R.string.gagal_judul),
-                teksAksi = stringResource(if (s.bisaUlang) R.string.galat_coba_lagi else R.string.galat_foto_ulang),
+                teksUtama = stringResource(if (s.bisaUlang) R.string.galat_coba_lagi else R.string.galat_foto_ulang),
+                onUtama = if (s.bisaUlang) onUlang else onGantiFoto,
+                teksSekunder = stringResource(R.string.isi_manual),
+                onSekunder = onManual,
             )
-            Column(
-                Modifier.fillMaxWidth().padding(horizontal = Spasi.l),
-                verticalArrangement = Arrangement.spacedBy(Spasi.s),
-            ) {
-                if (s.bisaUlang) {
-                    TombolSekunder(stringResource(R.string.ganti_foto), onClick = onGantiFoto, modifier = Modifier.fillMaxWidth())
+        },
+    ) { padding ->
+        Column(Modifier.fillMaxSize().padding(padding)) {
+            SpandukOffline(tampil = s.jenis == JenisGagal.TANPA_JARINGAN && !tersambung)
+            Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
+                Column(Modifier.verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
+                    KondisiGalat(
+                        sebab = stringResource(pesanGagal(s.jenis, tersambung)),
+                        onCobaLagi = null,
+                        judul = stringResource(R.string.gagal_judul),
+                    )
+                    if (s.bisaUlang) TombolTeks(stringResource(R.string.ganti_foto), onClick = onGantiFoto)
                 }
-                TombolTeks(stringResource(R.string.isi_manual), onClick = onManual, modifier = Modifier.fillMaxWidth())
             }
         }
     }

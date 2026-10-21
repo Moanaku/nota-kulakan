@@ -55,6 +55,9 @@ object Ukuran {
     val tombolTengah: Dp = 56.dp
     val cincinTombolTengah: Dp = 4.dp
 
+    /** Tinggi tombol utama di [BarAksiBawah] (nilai sama dengan [tombolTengah], sudah disetujui di DESIGN.md). */
+    val tombolAksi: Dp = 56.dp
+
     /** Titik penanda status "Harga tetap". */
     val titikStatus: Dp = 8.dp
 }

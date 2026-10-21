@@ -35,15 +35,14 @@ import com.danibanan.notakulakan.BuildConfig
 import com.danibanan.notakulakan.R
 import com.danibanan.notakulakan.domain.repo.IdContoh
 import com.danibanan.notakulakan.ui.hasil.BarisPilihan
+import com.danibanan.notakulakan.ui.komponen.BarAksiBawah
 import com.danibanan.notakulakan.ui.komponen.BarAtas
 import com.danibanan.notakulakan.ui.komponen.JenisPesan
 import com.danibanan.notakulakan.ui.komponen.PemisahBaris
 import com.danibanan.notakulakan.ui.komponen.PesanPeriksa
 import com.danibanan.notakulakan.ui.komponen.SheetPilihan
 import com.danibanan.notakulakan.ui.komponen.SpandukOffline
-import com.danibanan.notakulakan.ui.komponen.TombolSekunder
 import com.danibanan.notakulakan.ui.komponen.TombolTeks
-import com.danibanan.notakulakan.ui.komponen.TombolUtama
 import com.danibanan.notakulakan.ui.komponen.rememberTersambung
 import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
@@ -55,11 +54,13 @@ import java.util.UUID
  * Kamera lewat aplikasi kamera sistem (TakePicture) dan galeri lewat Photo Picker. Keduanya
  * tidak butuh izin CAMERA atau izin penyimpanan, sehingga tidak ada dialog izin yang membingungkan.
  *
- * Tanpa server ([punyaServer] false: build rilis tanpa alamat server) kamera dan galeri nonaktif; nota contoh dari APK
- * dan isi manual tetap jalan.
+ * Tanpa server ([punyaServer] false: build rilis tanpa alamat server) kamera dan galeri disembunyikan dan nota contoh
+ * dari APK menjadi aksi utama; isi manual tetap jalan.
  *
  * Layar ini tidak memuat data, jadi kondisi kosong dan memuat tidak berlaku. Kondisi yang ada: offline
- * (spanduk; foto tetap bisa diambil, tetapi nota belum bisa dibaca) dan galat (tidak ada aplikasi kamera).
+ * (spanduk; foto tetap bisa diambil, tetapi nota belum bisa dibaca), galat (tidak ada aplikasi kamera: sebab + jalan
+ * keluar galeri atau isi manual) dan mode contoh (banner info). Izin kamera tidak diminta (kamera sistem), jadi
+ * "izin ditolak" tidak ada.
  */
 @Composable
 fun FotoScreen(
@@ -95,7 +96,27 @@ fun FotoScreen(
         }
     }
 
-    Scaffold(topBar = { BarAtas(stringResource(R.string.catat_nota), onKembali = onKembali) }) { padding ->
+    Scaffold(
+        topBar = { BarAtas(stringResource(R.string.catat_nota), onKembali = onKembali) },
+        bottomBar = {
+            // Satu aksi dominan. Tanpa server kamera dan galeri tidak ada gunanya, jadi nota contoh yang menjadi aksi utama.
+            if (punyaServer) {
+                BarAksiBawah(
+                    teksUtama = stringResource(R.string.foto_ambil),
+                    onUtama = ::bukaKamera,
+                    teksSekunder = stringResource(R.string.foto_galeri),
+                    onSekunder = { galeri.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                )
+            } else {
+                BarAksiBawah(
+                    teksUtama = stringResource(R.string.foto_contoh),
+                    onUtama = { pilihContoh = true },
+                    teksSekunder = stringResource(R.string.foto_manual),
+                    onSekunder = onIsiManual,
+                )
+            }
+        },
+    ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
             SpandukOffline(tampil = !tersambung)
             Column(
@@ -110,64 +131,57 @@ fun FotoScreen(
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                Text(
-                    stringResource(R.string.foto_isi),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Box(
-                    Modifier
-                        .padding(vertical = Spasi.s)
-                        .fillMaxWidth()
-                        .height(Spasi.xxxl * 4)
-                        .border(BorderStroke(Ukuran.garis, MaterialTheme.colorScheme.outline), RoundedCornerShape(Radius.besar))
-                        .padding(Spasi.l),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        stringResource(R.string.foto_bingkai),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-                for (tips in listOf(R.string.foto_tips_1, R.string.foto_tips_2, R.string.foto_tips_3)) {
-                    Text(
-                        "•  " + stringResource(tips),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
-                if (kameraTidakAda) {
-                    PesanPeriksa(stringResource(R.string.foto_tidak_ada_kamera), JenisPesan.GALAT, Modifier.padding(top = Spasi.s))
-                }
-                TombolUtama(
-                    stringResource(R.string.foto_ambil),
-                    onClick = ::bukaKamera,
-                    modifier = Modifier.fillMaxWidth().padding(top = Spasi.m),
-                    enabled = punyaServer,
-                )
-                TombolSekunder(
-                    stringResource(R.string.foto_galeri),
-                    onClick = { galeri.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = punyaServer,
-                )
-                if (!punyaServer) {
-                    Text(
-                        stringResource(R.string.foto_tanpa_server),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                TombolTeks(stringResource(R.string.foto_contoh), onClick = { pilihContoh = true }, modifier = Modifier.fillMaxWidth())
-                TombolTeks(stringResource(R.string.foto_manual), onClick = onIsiManual, modifier = Modifier.fillMaxWidth())
                 if (punyaServer) {
+                    Text(
+                        stringResource(R.string.foto_isi),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                } else {
+                    PesanPeriksa(stringResource(R.string.foto_tanpa_server), JenisPesan.INFO)
+                }
+                if (kameraTidakAda) PesanPeriksa(stringResource(R.string.foto_tidak_ada_kamera), JenisPesan.GALAT)
+                if (punyaServer) {
+                    Box(
+                        Modifier
+                            .padding(vertical = Spasi.s)
+                            .fillMaxWidth()
+                            .height(Spasi.xxxl * 4)
+                            .border(BorderStroke(Ukuran.garis, MaterialTheme.colorScheme.outline), RoundedCornerShape(Radius.besar))
+                            .padding(Spasi.l),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            stringResource(R.string.foto_bingkai),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                    for (tips in listOf(R.string.foto_tips_1, R.string.foto_tips_2, R.string.foto_tips_3)) {
+                        Text(
+                            "•  " + stringResource(tips),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                    Column {
+                        TombolTeks(
+                            stringResource(R.string.foto_manual),
+                            onClick = onIsiManual,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        TombolTeks(
+                            stringResource(R.string.foto_contoh),
+                            onClick = { pilihContoh = true },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
                     Text(
                         stringResource(R.string.foto_privasi),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = Spasi.xl),
+                        modifier = Modifier.padding(bottom = Spasi.l),
                     )
                 }
             }

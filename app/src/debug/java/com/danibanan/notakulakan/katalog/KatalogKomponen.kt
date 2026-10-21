@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.danibanan.notakulakan.ui.komponen.BarAksiBawah
 import com.danibanan.notakulakan.ui.komponen.BarAtas
 import com.danibanan.notakulakan.ui.komponen.BarBawahTengah
 import com.danibanan.notakulakan.ui.komponen.BarisBarang
@@ -88,6 +89,7 @@ fun KatalogKomponen() {
             TombolSekunder("Ambil ulang foto nota", onClick = {}, modifier = Modifier.fillMaxWidth())
             TombolSekunder("Ambil ulang (nonaktif)", onClick = {}, enabled = false, modifier = Modifier.fillMaxWidth())
             TombolTeks("Lewati pemeriksaan hitungan nota", onClick = {})
+            TombolTeks("Hapus nota", onClick = {}, galat = true)
         }
 
         Bagian("Kolom input") {
@@ -116,6 +118,16 @@ fun KatalogKomponen() {
         Bagian("Navigasi bawah tengah (BarBawahTengah; tombol tengah = aksi, bukan tab)") {
             BarBawahTengah(aktif = Tab.STOK, onStok = {}, onRiwayat = {}, onCatatNota = {})
             BarBawahTengah(aktif = Tab.RIWAYAT, onStok = {}, onRiwayat = {}, onCatatNota = {})
+        }
+
+        Bagian("Bilah aksi bawah (BarAksiBawah; layar alur)") {
+            BarAksiBawah("Simpan nota ke stok", onUtama = {}, teksSekunder = "Isi manual", onSekunder = {})
+            BarAksiBawah(
+                "Simpan nota ke stok",
+                onUtama = {},
+                utamaAktif = false,
+                catatan = { PesanPeriksa("Lengkapi baris yang ditandai merah dulu", JenisPesan.GALAT) },
+            ) // kondisi: nonaktif, alasannya tertulis di dekat tombol
         }
 
         Bagian("Chip status") {
@@ -187,6 +199,13 @@ fun KatalogKomponen() {
 
         Bagian("Kondisi: kosong (belum ada data)") {
             DataKosong(JenisKosong.BELUM_ADA_DATA, objek = "nota", teksAksi = "Foto nota pertama", onAksi = {})
+            DataKosong(
+                JenisKosong.BELUM_ADA_DATA,
+                objek = "nota tercatat",
+                teksAksi = "Catat nota",
+                onAksi = {},
+                isi = "Foto nota kulakan pertama. Nota yang tersimpan tampil di sini.",
+            ) // kondisi: kalimat penjelas khusus layar
         }
         Bagian("Kondisi: kosong (hasil filter)") {
             DataKosong(JenisKosong.HASIL_FILTER_KOSONG, objek = "nota", onAksi = {})

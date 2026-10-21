@@ -43,7 +43,8 @@ enum class JenisKosong { BELUM_ADA_DATA, HASIL_FILTER_KOSONG }
 
 /**
  * Kondisi data kosong. [objek] adalah kata benda tanpa artikel ("nota", "barang"). [teksAksi] mis. "Foto nota"
- * untuk BELUM_ADA_DATA; untuk HASIL_FILTER_KOSONG bawaannya "Hapus filter".
+ * untuk BELUM_ADA_DATA; untuk HASIL_FILTER_KOSONG bawaannya "Hapus filter". [isi] mengganti kalimat penjelas bawaan
+ * dengan yang menyebut apa yang harus dilakukan di layar itu.
  */
 @Composable
 fun DataKosong(
@@ -52,12 +53,13 @@ fun DataKosong(
     modifier: Modifier = Modifier,
     teksAksi: String? = null,
     onAksi: (() -> Unit)? = null,
+    isi: String? = null,
 ) {
     val belumAda = jenis == JenisKosong.BELUM_ADA_DATA
     PesanTengah(
         ikon = if (belumAda) Icons.Outlined.Info else Icons.Outlined.Search,
         judul = stringResource(if (belumAda) R.string.kosong_belum_ada_judul else R.string.kosong_filter_judul, objek),
-        isi = stringResource(if (belumAda) R.string.kosong_belum_ada_isi else R.string.kosong_filter_isi, objek),
+        isi = isi ?: stringResource(if (belumAda) R.string.kosong_belum_ada_isi else R.string.kosong_filter_isi, objek),
         modifier = modifier,
         teksAksi = teksAksi ?: if (belumAda) null else stringResource(R.string.kosong_hapus_filter),
         onAksi = onAksi,
@@ -67,11 +69,12 @@ fun DataKosong(
 /**
  * Galat: sebab dalam kalimat Indonesia (bukan pesan exception) + tombol aksi. Bawaannya "Coba lagi"; [teksAksi]
  * diganti bila aksinya bukan mengulang panggilan (mis. "Foto ulang" untuk foto yang salah). [judul] menyebut objek yang gagal.
+ * [onCobaLagi] null = tanpa tombol (layar alur menaruh aksinya di [BarAksiBawah]).
  */
 @Composable
 fun KondisiGalat(
     sebab: String,
-    onCobaLagi: () -> Unit,
+    onCobaLagi: (() -> Unit)?,
     modifier: Modifier = Modifier,
     judul: String = stringResource(R.string.galat_judul),
     teksAksi: String = stringResource(R.string.galat_coba_lagi),
@@ -81,7 +84,7 @@ fun KondisiGalat(
         judul = judul,
         isi = sebab,
         modifier = modifier,
-        teksAksi = teksAksi,
+        teksAksi = if (onCobaLagi != null) teksAksi else null,
         onAksi = onCobaLagi,
         galat = true,
     )

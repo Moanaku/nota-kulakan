@@ -88,7 +88,8 @@ fun TombolSekunder(
 
 /**
  * Aksi ringan tanpa wadah (mis. "Batal"). [sejajarMargin] = true membuang padding horizontal supaya teks rata
- * dengan margin layar (tombol yang berdiri sendiri di bawah teks lain).
+ * dengan margin layar (tombol yang berdiri sendiri di bawah teks lain). [galat] = true mewarnai teks dengan warna
+ * galat untuk aksi yang menghapus (mis. "Hapus nota").
  */
 @Composable
 fun TombolTeks(
@@ -98,6 +99,7 @@ fun TombolTeks(
     enabled: Boolean = true,
     ikon: ImageVector? = null,
     sejajarMargin: Boolean = false,
+    galat: Boolean = false,
 ) {
     val w = MaterialTheme.colorScheme
     TextButton(
@@ -106,7 +108,7 @@ fun TombolTeks(
         enabled = enabled,
         shape = BentukTombol,
         colors = ButtonDefaults.textButtonColors(
-            contentColor = w.primary,
+            contentColor = if (galat) w.error else w.primary,
             disabledContentColor = w.onSurfaceVariant,
         ),
         contentPadding = if (sejajarMargin) PaddingTombolSejajar else PaddingTombol,

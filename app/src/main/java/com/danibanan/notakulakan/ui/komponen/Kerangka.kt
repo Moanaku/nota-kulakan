@@ -2,6 +2,9 @@ package com.danibanan.notakulakan.ui.komponen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -18,6 +21,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -64,6 +68,46 @@ fun BarAtas(judul: String, modifier: Modifier = Modifier, onKembali: (() -> Unit
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface,
         )
+    }
+}
+
+/**
+ * Bilah aksi tetap di dasar layar alur (Catat nota, Periksa, Tersimpan): latar container, garis atas pemisah,
+ * padding 16, satu [TombolUtama] lebar penuh setinggi [Ukuran.tombolAksi] dan satu [TombolTeks] sekunder opsional.
+ * Naik di atas keyboard dan area gestur. [catatan] (slot di atas tombol) memuat alasan tombol nonaktif atau
+ * pesan galat simpan, supaya alasannya tertulis di dekat tombol, bukan hanya tombol yang abu-abu.
+ * Dipakai sebagai `bottomBar` Scaffold; layar tingkat atas memakai [BarBawahTengah], bukan ini.
+ */
+@Composable
+fun BarAksiBawah(
+    teksUtama: String,
+    onUtama: () -> Unit,
+    modifier: Modifier = Modifier,
+    utamaAktif: Boolean = true,
+    teksSekunder: String? = null,
+    onSekunder: (() -> Unit)? = null,
+    catatan: (@Composable ColumnScope.() -> Unit)? = null,
+) {
+    val w = MaterialTheme.colorScheme
+    Column(
+        modifier
+            .fillMaxWidth()
+            .background(w.surfaceContainer)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)),
+    ) {
+        HorizontalDivider(thickness = Ukuran.garis, color = w.outlineVariant)
+        Column(Modifier.fillMaxWidth().padding(Spasi.l), verticalArrangement = Arrangement.spacedBy(Spasi.s)) {
+            catatan?.invoke(this)
+            TombolUtama(
+                teksUtama,
+                onClick = onUtama,
+                modifier = Modifier.fillMaxWidth().heightIn(min = Ukuran.tombolAksi),
+                enabled = utamaAktif,
+            )
+            if (teksSekunder != null && onSekunder != null) {
+                TombolTeks(teksSekunder, onClick = onSekunder, modifier = Modifier.fillMaxWidth())
+            }
+        }
     }
 }
 

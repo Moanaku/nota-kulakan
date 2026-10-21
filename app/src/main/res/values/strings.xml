@@ -34,7 +34,7 @@
     <string name="foto_tips_1">Taruh nota di permukaan rata</string>
     <string name="foto_tips_2">Cahaya cukup dan tanpa bayangan</string>
     <string name="foto_tips_3">Angka di kolom harga harus terlihat jelas</string>
-    <string name="foto_ambil">Ambil foto</string>
+    <string name="foto_ambil">Ambil foto nota</string>
     <string name="foto_galeri">Pilih dari galeri</string>
     <string name="foto_manual">Isi manual tanpa foto</string>
     <string name="foto_privasi">Foto dikecilkan dulu, lalu dikirim ke server dan layanan AI untuk dibaca. Foto disimpan hanya di HP ini.</string>
@@ -55,6 +55,7 @@
     <!-- Hasil: memproses dan gagal -->
     <string name="hasil_memproses">Membaca nota…</string>
     <string name="hasil_memproses_isi">Biasanya beberapa detik. Pastikan internet aktif.</string>
+    <string name="batal_membaca">Batal membaca nota</string>
     <string name="gagal_judul">Nota belum terbaca</string>
     <string name="gagal_tanpa_jaringan">Tidak ada koneksi internet. Periksa data seluler atau Wi-Fi, lalu coba lagi.</string>
     <string name="gagal_layanan_tak_terjangkau">Layanan pembaca nota tidak terjangkau. Coba lagi sebentar lagi.</string>
@@ -65,7 +66,7 @@
     <string name="gagal_foto_terlalu_besar">Foto terlalu besar untuk dikirim. Pilih foto lain.</string>
     <string name="gagal_aplikasi_ditolak">Server menolak aplikasi ini. Pastikan memakai versi dari Play Store.</string>
     <string name="gagal_server">Terjadi gangguan di server. Coba lagi, atau isi manual.</string>
-    <string name="ganti_foto">Ganti foto</string>
+    <string name="ganti_foto">Ganti foto nota</string>
     <string name="isi_manual">Isi manual</string>
 
     <!-- Hasil: draf -->
