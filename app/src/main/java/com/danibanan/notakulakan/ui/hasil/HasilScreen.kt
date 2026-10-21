@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -37,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -238,10 +240,11 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
                             Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(Radius.sedang))
-                                .clickable { vm.setKonfirmasi(!d.konfirmasi) },
+                                // Satu elemen untuk pembaca layar: baris + kotak, dengan label dari teks di dalamnya.
+                                .toggleable(value = d.konfirmasi, role = Role.Checkbox, onValueChange = vm::setKonfirmasi),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Checkbox(checked = d.konfirmasi, onCheckedChange = vm::setKonfirmasi)
+                            Checkbox(checked = d.konfirmasi, onCheckedChange = null)
                             Text(
                                 stringResource(R.string.konfirmasi_tidak_cocok),
                                 style = MaterialTheme.typography.bodySmall,
