@@ -373,7 +373,7 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
         AlertDialog(
             onDismissRequest = vm::tutupDuplikat,
             shape = RoundedCornerShape(Radius.besar),
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
             tonalElevation = Elevasi.tinggi,
             title = { Text(stringResource(R.string.duplikat_judul), style = MaterialTheme.typography.headlineSmall) },
             text = {

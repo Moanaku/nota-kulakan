@@ -127,17 +127,14 @@ fun BarisNota(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(Radius.sedang))
-            .let { if (onClick != null) it.clickable(onClick = onClick) else it }
-            .defaultMinSize(minHeight = Ukuran.sentuhMin)
-            .padding(vertical = Spasi.s),
-        horizontalArrangement = Arrangement.spacedBy(Spasi.l),
-        verticalAlignment = Alignment.Top,
-    ) {
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
+    val dasar = modifier
+        .fillMaxWidth()
+        .clip(RoundedCornerShape(Radius.sedang))
+        .let { if (onClick != null) it.clickable(onClick = onClick) else it }
+        .defaultMinSize(minHeight = Ukuran.sentuhMin)
+        .padding(vertical = Spasi.s)
+    val kiri: @Composable (Modifier) -> Unit = {
+        Column(it, verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
             Text(toko, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
             Text(
                 "$tanggal · $jumlahBarang",
@@ -145,12 +142,26 @@ fun BarisNota(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+    }
+    val kanan: @Composable (Modifier) -> Unit = {
         Text(
             total,
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.End,
-            modifier = Modifier.widthIn(min = Spasi.xxxl),
+            modifier = it,
         )
+    }
+    if (LocalDensity.current.fontScale >= SKALA_FONT_SUSUN_VERTIKAL) {
+        // Skala besar: total pindah ke bawah, supaya nama toko tidak terhimpit menjadi satu kata per baris.
+        Column(dasar, verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
+            kiri(Modifier)
+            kanan(Modifier)
+        }
+    } else {
+        Row(dasar, horizontalArrangement = Arrangement.spacedBy(Spasi.l), verticalAlignment = Alignment.Top) {
+            kiri(Modifier.weight(1f))
+            kanan(Modifier.widthIn(min = Spasi.xxxl))
+        }
     }
 }

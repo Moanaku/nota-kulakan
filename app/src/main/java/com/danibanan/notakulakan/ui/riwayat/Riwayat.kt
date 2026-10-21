@@ -245,7 +245,7 @@ internal fun DialogHapusContoh(onBatal: () -> Unit, onHapus: () -> Unit) {
     AlertDialog(
         onDismissRequest = onBatal,
         shape = RoundedCornerShape(Radius.besar),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         tonalElevation = Elevasi.tinggi,
         title = { Text(stringResource(R.string.hapus_contoh_judul), style = MaterialTheme.typography.headlineSmall) },
         text = { Text(stringResource(R.string.hapus_contoh_isi), style = MaterialTheme.typography.bodyLarge) },
@@ -360,7 +360,7 @@ internal fun DialogHapusNota(onBatal: () -> Unit, onHapus: () -> Unit) {
     AlertDialog(
         onDismissRequest = onBatal,
         shape = RoundedCornerShape(Radius.besar),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         tonalElevation = Elevasi.tinggi,
         title = { Text(stringResource(R.string.hapus_nota_judul), style = MaterialTheme.typography.headlineSmall) },
         text = { Text(stringResource(R.string.hapus_nota_isi), style = MaterialTheme.typography.bodyLarge) },

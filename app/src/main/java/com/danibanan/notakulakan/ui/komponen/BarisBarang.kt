@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
@@ -44,8 +45,8 @@ fun BarisBarang(
         .defaultMinSize(minHeight = Ukuran.sentuhMin)
         .padding(vertical = Spasi.s)
     Column(dasar, verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(Spasi.l), verticalAlignment = Alignment.Top) {
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
+        val kiri: @Composable (Modifier) -> Unit = {
+            Column(it, verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
                 Text(nama, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                 Text(
                     qtyHarga,
@@ -53,13 +54,25 @@ fun BarisBarang(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+        }
+        val kanan: @Composable (Modifier) -> Unit = {
             Text(
                 jumlah,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.End,
-                modifier = Modifier.widthIn(min = Spasi.xxxl),
+                modifier = it,
             )
+        }
+        if (LocalDensity.current.fontScale >= SKALA_FONT_SUSUN_VERTIKAL) {
+            // Skala besar: jumlah di bawah nama, supaya nama dan hitungan tidak terhimpit satu kata per baris.
+            kiri(Modifier)
+            kanan(Modifier)
+        } else {
+            Row(horizontalArrangement = Arrangement.spacedBy(Spasi.l), verticalAlignment = Alignment.Top) {
+                kiri(Modifier.weight(1f))
+                kanan(Modifier.widthIn(min = Spasi.xxxl))
+            }
         }
         ChipStatus(status, teks = teksStatus)
     }
