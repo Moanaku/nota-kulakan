@@ -93,7 +93,7 @@ Teks tidak lebih kecil dari 12 sp (12 sp hanya label bilah navigasi), dan teks y
 
 - **Spasi**: 4 / 8 / 12 / 16 / 24 / 32 / 48 dp. Tidak ada nilai lain. Gutter layar 16 dp.
 - **Radius** (3 nilai): 4 dp (input, chip), 8 dp (tombol, baris yang bisa diketuk), 16 dp (kartu terisi, sheet
-  bawah, jendela dialog, tombol tengah bilah navigasi). Tidak ada lingkaran atau pil, kecuali penanda aktif bilah (pil 64x32, radius 16).
+  bawah, jendela dialog, tombol tengah bilah navigasi). Tidak ada lingkaran atau pil, kecuali penanda aktif bilah (pil 64x32, radius 16) dan titik status 8 dp.
 - **Elevasi** (2 tingkat): 0 dp (default; kartu = terisi `container` + garis `pemisah`, tanpa bayangan) dan 2 dp (hanya
   sheet bawah dan dialog).
 - **Hierarki baris barang** (tiga tingkat, tidak lebih): nama barang 16 sp isi-tebal `teks`; qty x harga
@@ -122,7 +122,7 @@ Komponen yang sudah disetujui dan dipakai (kondisinya ada di katalog debug, `Kat
 - `BarBawahTengah`: bilah navigasi tiga posisi, tinggi 72 dp, latar container, garis atas pemisah. Stok dan Riwayat
   adalah tab (penanda aktif = pil aksen-container 64x32, radius 16); "Catat nota" di tengah adalah AKSI, bukan
   tab: persegi bulat 56x56 radius 16, isi aksen, ikon plus 24 di-atas-aksen, cincin 4 dp warna latar, terangkat
-  24 dp di atas bilah, tanpa bayangan, label 12 sp. Semantik: tombol berlabel "Catat nota". Menggantikan
+  24 dp di atas bilah (cincin memakai radius 16 juga), tanpa bayangan, label 12 sp. Ukuran 72/64/56/32/8 dp ada sebagai token di `Ukuran` (`Dimens.kt`). Semantik: tombol berlabel "Catat nota". Menggantikan
   `TombolCatatNota` (FAB) dan `BarBawah` (dihapus).
 - `PesanPeriksa` (`JenisPesan` GALAT / INFO / COCOK): pesan pemeriksaan satu baris atau nota.
 - `statusHarga` dan `ChipSelisihHarga`: perubahan harga modal. Naik = selisih, turun = cocok, tetap = titik 8 dp +
