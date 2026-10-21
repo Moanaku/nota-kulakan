@@ -4,6 +4,28 @@ import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
+import com.danibanan.notakulakan.ui.theme.Ukuran
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,9 +35,6 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,7 +47,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import com.danibanan.notakulakan.R
 import com.danibanan.notakulakan.domain.UkuranFoto
-import com.danibanan.notakulakan.ui.theme.Elevasi
 import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
 import java.io.File
@@ -47,31 +65,105 @@ fun formatTanggal(milidetik: Long): String =
 
 enum class Tab { STOK, RIWAYAT }
 
-/** Navigasi bawah: dua area nyata aplikasi (stok dan riwayat), tidak lebih. */
+/**
+ * Navigasi bawah tiga posisi (DESIGN.md `BarBawahTengah`): Stok dan Riwayat adalah tab; "Catat nota" di tengah
+ * adalah AKSI (membuka alur foto), bukan tab, jadi tidak pernah ditandai aktif. Tombol tengah terangkat di atas
+ * bilah tanpa bayangan, dikelilingi cincin warna latar. Bagian yang terangkat ada di dalam batas komponen (jalur
+ * transparan setinggi [Spasi.xxl] di atas bilah) supaya tetap bisa diketuk.
+ */
 @Composable
-fun BarBawah(aktif: Tab, onStok: () -> Unit, onRiwayat: () -> Unit) {
+fun BarBawahTengah(aktif: Tab, onStok: () -> Unit, onRiwayat: () -> Unit, onCatatNota: () -> Unit) {
     val w = MaterialTheme.colorScheme
-    val warna = NavigationBarItemDefaults.colors(
-        selectedIconColor = w.onPrimaryContainer,
-        selectedTextColor = w.onSurface,
-        indicatorColor = w.primaryContainer,
-        unselectedIconColor = w.onSurfaceVariant,
-        unselectedTextColor = w.onSurfaceVariant,
-    )
-    NavigationBar(containerColor = w.surfaceContainer, tonalElevation = Elevasi.nol) {
-        NavigationBarItem(
-            selected = aktif == Tab.STOK,
-            onClick = onStok,
-            icon = { Icon(Icons.Outlined.ShoppingCart, contentDescription = null) },
-            label = { Text(stringResource(R.string.tab_stok), style = MaterialTheme.typography.bodySmall) },
-            colors = warna,
-        )
-        NavigationBarItem(
-            selected = aktif == Tab.RIWAYAT,
-            onClick = onRiwayat,
-            icon = { Icon(Icons.Outlined.DateRange, contentDescription = null) },
-            label = { Text(stringResource(R.string.tab_riwayat), style = MaterialTheme.typography.bodySmall) },
-            colors = warna,
+    Box(Modifier.fillMaxWidth()) {
+        Column(Modifier.fillMaxWidth()) {
+            Spacer(Modifier.height(Spasi.xxl))
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .background(w.surfaceContainer)
+                    .windowInsetsPadding(
+                        WindowInsets.navigationBars.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
+                    ),
+            ) {
+                HorizontalDivider(thickness = Ukuran.garis, color = w.outlineVariant)
+                Row(Modifier.fillMaxWidth().heightIn(min = Ukuran.bilahNavigasi)) {
+                    ItemTab(
+                        Icons.Outlined.ShoppingCart, stringResource(R.string.tab_stok),
+                        aktif == Tab.STOK, onStok, Modifier.weight(1f),
+                    )
+                    Spacer(Modifier.weight(1f))
+                    ItemTab(
+                        Icons.Outlined.DateRange, stringResource(R.string.tab_riwayat),
+                        aktif == Tab.RIWAYAT, onRiwayat, Modifier.weight(1f),
+                    )
+                }
+            }
+        }
+        Column(
+            Modifier
+                .align(Alignment.TopCenter)
+                .widthIn(min = Ukuran.penandaLebar)
+                .clickable(role = Role.Button, onClick = onCatatNota)
+                .semantics(mergeDescendants = true) {},
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            // Cincin: kotak bulat warna latar mengelilingi tombol; tombol naik 24 dp di atas tepi bilah.
+            Box(
+                Modifier
+                    .padding(top = Spasi.xs)
+                    .size(Ukuran.tombolTengah + Ukuran.cincinTombolTengah * 2)
+                    .background(w.background, RoundedCornerShape(Radius.besar))
+                    .padding(Ukuran.cincinTombolTengah)
+                    .background(w.primary, RoundedCornerShape(Radius.besar)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    Icons.Outlined.Add,
+                    contentDescription = null,
+                    tint = w.onPrimary,
+                    modifier = Modifier.size(Ukuran.ikon),
+                )
+            }
+            Text(
+                stringResource(R.string.catat_nota),
+                style = MaterialTheme.typography.labelSmall,
+                color = w.onSurface,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = Spasi.s), // sebaris dengan label tab
+            )
+        }
+    }
+}
+
+@Composable
+private fun ItemTab(ikon: ImageVector, label: String, aktif: Boolean, onClick: () -> Unit, modifier: Modifier) {
+    val w = MaterialTheme.colorScheme
+    Column(
+        modifier
+            .heightIn(min = Ukuran.bilahNavigasi)
+            .selectable(selected = aktif, onClick = onClick, role = Role.Tab)
+            .padding(top = Spasi.s),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(
+            Modifier
+                .size(Ukuran.penandaLebar, Ukuran.penandaTinggi)
+                .background(if (aktif) w.primaryContainer else Color.Transparent, RoundedCornerShape(Radius.besar)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                ikon,
+                contentDescription = null,
+                tint = if (aktif) w.onPrimaryContainer else w.onSurfaceVariant,
+                modifier = Modifier.size(Ukuran.ikon),
+            )
+        }
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            color = if (aktif) w.onSurface else w.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = Spasi.xs),
         )
     }
 }

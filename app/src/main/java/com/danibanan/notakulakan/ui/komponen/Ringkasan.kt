@@ -25,7 +25,10 @@ import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
 import com.danibanan.notakulakan.ui.theme.Ukuran
 
-private const val SKALA_FONT_SUSUN_VERTIKAL = 1.5f
+internal const val SKALA_FONT_SUSUN_VERTIKAL = 1.5f
+
+/** Kartu dan judul bagian dengan keterangan di kanan lebih sempit daripada baris total: susun lebih awal. */
+internal const val SKALA_FONT_SUSUN_SEMPIT = 1.25f
 
 /**
  * Baris label + nilai rupiah (subtotal, diskon, PPN). Dengan [dominan] = true dipakai untuk total nota:
@@ -63,8 +66,10 @@ fun BarisRingkasanTotal(
 }
 
 /**
- * Ringkasan satu nota (objek yang berdiri sendiri, jadi boleh berbentuk kartu): toko, tanggal, jumlah barang,
- * total, status ([status] null = tidak ditampilkan, mis. riwayat yang belum menyimpan status). Kartu = outline `pemisah`, elevasi 0, tanpa bayangan.
+ * Ringkasan satu nota (objek yang berdiri sendiri, jadi boleh berbentuk kartu): kartu terisi `container` dengan garis
+ * `pemisah`, radius 16, padding 16, elevasi 0. Toko (isi-tebal); tanggal dan jumlah barang (keterangan) di kiri,
+ * total (isi-tebal) rata kanan; di skala font besar total pindah ke baris sendiri. [status] null = tidak ditampilkan
+ * (mis. riwayat yang belum menyimpan status).
  */
 @Composable
 fun KartuRingkasanNota(
@@ -76,34 +81,34 @@ fun KartuRingkasanNota(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
-    val bentuk = RoundedCornerShape(Radius.sedang)
+    val bentuk = RoundedCornerShape(Radius.besar)
+    val w = MaterialTheme.colorScheme
+    val rincian: @Composable (Modifier) -> Unit = {
+        Text("$tanggal · $jumlahBarang", style = MaterialTheme.typography.bodySmall, color = w.onSurfaceVariant, modifier = it)
+    }
+    val jumlah: @Composable (Modifier) -> Unit = {
+        Text(total, style = MaterialTheme.typography.titleMedium, color = w.onSurface, textAlign = TextAlign.End, modifier = it)
+    }
     Surface(
         modifier = modifier.fillMaxWidth().clip(bentuk).let { if (onClick != null) it.clickable(onClick = onClick) else it },
         shape = bentuk,
-        color = MaterialTheme.colorScheme.surface,
+        color = w.surfaceContainer,
         tonalElevation = Elevasi.nol,
         shadowElevation = Elevasi.nol,
-        border = BorderStroke(Ukuran.garis, MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(Ukuran.garis, w.outlineVariant),
     ) {
-        Column(Modifier.padding(Spasi.l), verticalArrangement = Arrangement.spacedBy(Spasi.s)) {
-            Text(toko, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-            Text(
-                "$tanggal · $jumlahBarang",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(Spasi.l),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    total,
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                if (status != null) ChipStatus(status)
+        Column(Modifier.padding(Spasi.l), verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
+            Text(toko, style = MaterialTheme.typography.titleMedium, color = w.onSurface)
+            if (LocalDensity.current.fontScale >= SKALA_FONT_SUSUN_SEMPIT) {
+                rincian(Modifier)
+                jumlah(Modifier)
+            } else {
+                Row(horizontalArrangement = Arrangement.spacedBy(Spasi.l), verticalAlignment = Alignment.Top) {
+                    rincian(Modifier.weight(1f))
+                    jumlah(Modifier)
+                }
             }
+            if (status != null) ChipStatus(status, Modifier.padding(top = Spasi.xs))
         }
     }
 }

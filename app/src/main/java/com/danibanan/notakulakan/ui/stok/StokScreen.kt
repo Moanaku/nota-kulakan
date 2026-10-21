@@ -1,8 +1,14 @@
 package com.danibanan.notakulakan.ui.stok
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -10,8 +16,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -23,8 +32,7 @@ import com.danibanan.notakulakan.domain.Rupiah
 import com.danibanan.notakulakan.domain.repo.NotaRepository
 import com.danibanan.notakulakan.domain.repo.StokProduk
 import com.danibanan.notakulakan.ui.komponen.BarAtas
-import com.danibanan.notakulakan.ui.komponen.BarBawah
-import com.danibanan.notakulakan.ui.komponen.BarisBarang
+import com.danibanan.notakulakan.ui.komponen.BarBawahTengah
 import com.danibanan.notakulakan.ui.komponen.DataKosong
 import com.danibanan.notakulakan.ui.komponen.JenisKosong
 import com.danibanan.notakulakan.ui.komponen.KartuRingkasanNota
@@ -32,11 +40,13 @@ import com.danibanan.notakulakan.ui.komponen.KondisiGalat
 import com.danibanan.notakulakan.ui.komponen.PemisahBaris
 import com.danibanan.notakulakan.ui.komponen.SkeletonBarisBarang
 import com.danibanan.notakulakan.ui.komponen.Tab
-import com.danibanan.notakulakan.ui.komponen.TombolCatatNota
 import com.danibanan.notakulakan.ui.komponen.formatTanggal
-import com.danibanan.notakulakan.ui.komponen.paddingBawahFab
+import com.danibanan.notakulakan.ui.komponen.SKALA_FONT_SUSUN_SEMPIT
+import com.danibanan.notakulakan.ui.komponen.SKALA_FONT_SUSUN_VERTIKAL
+import com.danibanan.notakulakan.ui.komponen.StatusHargaBaris
 import com.danibanan.notakulakan.ui.komponen.statusHarga
 import com.danibanan.notakulakan.ui.theme.Spasi
+import com.danibanan.notakulakan.ui.theme.Ukuran
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -85,8 +95,7 @@ fun StokScreen(
     val ui by vm.ui.collectAsStateWithLifecycle()
     Scaffold(
         topBar = { BarAtas(stringResource(R.string.stok_judul)) },
-        bottomBar = { BarBawah(Tab.STOK, onStok = {}, onRiwayat = onKeRiwayat) },
-        floatingActionButton = { TombolCatatNota(onCatatNota) },
+        bottomBar = { BarBawahTengah(Tab.STOK, onStok = {}, onRiwayat = onKeRiwayat, onCatatNota = onCatatNota) },
     ) { padding ->
         when (val s = ui) {
             StokUi.Memuat -> SkeletonBarisBarang(Modifier.padding(padding).padding(horizontal = Spasi.l), jumlahBaris = 5)
@@ -116,7 +125,7 @@ fun StokScreen(
 private fun DaftarStok(s: StokUi.Ada, modifier: Modifier) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(start = Spasi.l, end = Spasi.l, top = Spasi.s, bottom = paddingBawahFab()),
+        contentPadding = PaddingValues(start = Spasi.l, end = Spasi.l, top = Spasi.s, bottom = Spasi.l),
     ) {
         item {
             Text(
@@ -143,14 +152,7 @@ private fun DaftarStok(s: StokUi.Ada, modifier: Modifier) {
                 )
             }
         }
-        item {
-            Text(
-                stringResource(R.string.stok_daftar_judul),
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(top = Spasi.xl, bottom = Spasi.s),
-            )
-        }
+        item { JudulDaftarBarang() }
         items(s.stok, key = { "${it.produkId}-${it.satuan}" }) { p ->
             BarisStok(p)
             PemisahBaris()
@@ -158,16 +160,68 @@ private fun DaftarStok(s: StokUi.Ada, modifier: Modifier) {
     }
 }
 
+/** Judul bagian + keterangan kolom di kanan ("Harga modal per satuan"); di skala font besar keterangan pindah ke bawah. */
+@Composable
+private fun JudulDaftarBarang() {
+    val w = MaterialTheme.colorScheme
+    val judul = stringResource(R.string.stok_daftar_judul)
+    val kolom = stringResource(R.string.stok_kolom_harga)
+    val modifier = Modifier.fillMaxWidth().padding(top = Spasi.xl, bottom = Spasi.s)
+    if (LocalDensity.current.fontScale >= SKALA_FONT_SUSUN_SEMPIT) {
+        Column(modifier, verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
+            Text(judul, style = MaterialTheme.typography.headlineSmall, color = w.onSurface)
+            Text(kolom, style = MaterialTheme.typography.bodySmall, color = w.onSurfaceVariant)
+        }
+    } else {
+        Row(modifier, horizontalArrangement = Arrangement.spacedBy(Spasi.l), verticalAlignment = Alignment.Bottom) {
+            Text(judul, style = MaterialTheme.typography.headlineSmall, color = w.onSurface)
+            Text(
+                kolom,
+                style = MaterialTheme.typography.bodySmall,
+                color = w.onSurfaceVariant,
+                textAlign = TextAlign.End,
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+/**
+ * Satu barang: kiri nama (isi-tebal), total masuk (keterangan), status harga; kanan harga modal (isi-tebal, rata kanan)
+ * dan "per satuan" (keterangan). Di skala font besar kolom kanan turun ke bawah kolom kiri supaya nama tidak terhimpit.
+ */
 @Composable
 private fun BarisStok(p: StokProduk) {
+    val w = MaterialTheme.colorScheme
     val masuk = stringResource(R.string.stok_total_masuk, listOfNotNull(Qty.format(p.totalMasuk), p.satuan).joinToString(" "))
-    val hargaModal = p.satuan?.let { stringResource(R.string.stok_harga_modal_per, it) }
     val harga = statusHarga(p.selisihHarga, adaRiwayat = p.selisihHarga != null)
-    BarisBarang(
-        nama = p.nama,
-        qtyHarga = listOfNotNull(masuk, hargaModal).joinToString(" · "),
-        jumlah = p.hargaTerakhir?.let(Rupiah::format) ?: "-",
-        status = harga.status,
-        teksStatus = harga.teks,
-    )
+    val hargaModal = p.hargaTerakhir?.let(Rupiah::format) ?: "-"
+    val perSatuan = p.satuan?.let { stringResource(R.string.stok_per_satuan, it) }
+    val kiri: @Composable (Modifier) -> Unit = {
+        Column(it, verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
+            Text(p.nama, style = MaterialTheme.typography.titleMedium, color = w.onSurface)
+            Text(masuk, style = MaterialTheme.typography.bodySmall, color = w.onSurfaceVariant)
+            StatusHargaBaris(harga, Modifier.padding(top = Spasi.xs))
+        }
+    }
+    val kanan: @Composable (Modifier, Alignment.Horizontal) -> Unit = { m, rata ->
+        Column(m, horizontalAlignment = rata, verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
+            Text(hargaModal, style = MaterialTheme.typography.titleMedium, color = w.onSurface, textAlign = TextAlign.End)
+            if (perSatuan != null) {
+                Text(perSatuan, style = MaterialTheme.typography.bodySmall, color = w.onSurfaceVariant, textAlign = TextAlign.End)
+            }
+        }
+    }
+    val dasar = Modifier.fillMaxWidth().defaultMinSize(minHeight = Ukuran.sentuhMin).padding(vertical = Spasi.s)
+    if (LocalDensity.current.fontScale >= SKALA_FONT_SUSUN_VERTIKAL) {
+        Column(dasar, verticalArrangement = Arrangement.spacedBy(Spasi.s)) {
+            kiri(Modifier)
+            kanan(Modifier, Alignment.Start)
+        }
+    } else {
+        Row(dasar, horizontalArrangement = Arrangement.spacedBy(Spasi.l), verticalAlignment = Alignment.Top) {
+            kiri(Modifier.weight(1f))
+            kanan(Modifier.widthIn(min = Spasi.xxxl), Alignment.End)
+        }
+    }
 }

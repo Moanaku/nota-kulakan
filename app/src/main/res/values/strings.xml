@@ -16,7 +16,8 @@
     <string name="stok_penjelasan">Jumlah dihitung dari nota kulakan yang dicatat. Penjualan belum dikurangi.</string>
     <string name="stok_nota_terakhir">Nota terakhir</string>
     <string name="stok_total_masuk">Total masuk %1$s</string>
-    <string name="stok_harga_modal_per">harga modal per %1$s</string>
+    <string name="stok_per_satuan">per %1$s</string>
+    <string name="stok_kolom_harga">Harga modal per satuan</string>
     <string name="stok_daftar_judul">Daftar barang</string>
     <string name="galat_stok">Stok tidak bisa dihitung dari nota di HP ini. Coba lagi.</string>
 

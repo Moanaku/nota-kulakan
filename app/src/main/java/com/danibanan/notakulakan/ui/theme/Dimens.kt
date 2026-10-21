@@ -43,6 +43,20 @@ object Ukuran {
 
     /** Tebal garis outline (kartu, input, tombol sekunder, divider). */
     val garis: Dp = 1.dp
+
+    /** Tinggi minimum bilah navigasi bawah (DESIGN.md `BarBawahTengah`). */
+    val bilahNavigasi: Dp = 72.dp
+
+    /** Penanda tab aktif: pil 64 x 32 dp, radius [Radius.besar]. */
+    val penandaLebar: Dp = 64.dp
+    val penandaTinggi: Dp = 32.dp
+
+    /** Tombol aksi tengah bilah: persegi bulat 56 dp, cincin 4 dp warna latar, terangkat 24 dp. */
+    val tombolTengah: Dp = 56.dp
+    val cincinTombolTengah: Dp = 4.dp
+
+    /** Titik penanda status "Harga tetap". */
+    val titikStatus: Dp = 8.dp
 }
 
 /** Satu easing untuk semua transisi dalam layar: cubic-bezier(0.2, 0, 0, 1). */

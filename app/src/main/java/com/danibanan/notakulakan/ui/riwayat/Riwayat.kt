@@ -38,7 +38,7 @@ import com.danibanan.notakulakan.domain.repo.NotaRepository
 import com.danibanan.notakulakan.domain.repo.adalahDataContoh
 import com.danibanan.notakulakan.domain.repo.NotaTersimpan
 import com.danibanan.notakulakan.ui.komponen.BarAtas
-import com.danibanan.notakulakan.ui.komponen.BarBawah
+import com.danibanan.notakulakan.ui.komponen.BarBawahTengah
 import com.danibanan.notakulakan.ui.komponen.BarisBarang
 import com.danibanan.notakulakan.ui.komponen.BarisNota
 import com.danibanan.notakulakan.ui.komponen.BarisRingkasanTotal
@@ -53,11 +53,9 @@ import com.danibanan.notakulakan.ui.komponen.PesanPeriksa
 import com.danibanan.notakulakan.ui.komponen.SkeletonBarisBarang
 import com.danibanan.notakulakan.ui.komponen.StatusBaris
 import com.danibanan.notakulakan.ui.komponen.Tab
-import com.danibanan.notakulakan.ui.komponen.TombolCatatNota
 import com.danibanan.notakulakan.ui.komponen.TombolSekunder
 import com.danibanan.notakulakan.ui.komponen.TombolTeks
 import com.danibanan.notakulakan.ui.komponen.formatTanggal
-import com.danibanan.notakulakan.ui.komponen.paddingBawahFab
 import com.danibanan.notakulakan.ui.theme.Elevasi
 import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
@@ -133,8 +131,7 @@ fun RiwayatScreen(
     var tanyaHapusContoh by remember { mutableStateOf(false) }
     Scaffold(
         topBar = { BarAtas(stringResource(R.string.riwayat_judul)) },
-        bottomBar = { BarBawah(Tab.RIWAYAT, onStok = onKeStok, onRiwayat = {}) },
-        floatingActionButton = { TombolCatatNota(onCatatNota) },
+        bottomBar = { BarBawahTengah(Tab.RIWAYAT, onStok = onKeStok, onRiwayat = {}, onCatatNota = onCatatNota) },
     ) { padding ->
         when (val s = ui) {
             RiwayatUi.Memuat -> SkeletonBarisBarang(Modifier.padding(padding).padding(horizontal = Spasi.l), jumlahBaris = 4)
@@ -156,7 +153,7 @@ fun RiwayatScreen(
             } else {
                 LazyColumn(
                     Modifier.fillMaxSize().padding(padding),
-                    contentPadding = PaddingValues(start = Spasi.l, end = Spasi.l, top = Spasi.s, bottom = paddingBawahFab()),
+                    contentPadding = PaddingValues(start = Spasi.l, end = Spasi.l, top = Spasi.s, bottom = Spasi.l),
                 ) {
                     items(s.daftar, key = { it.id }) { n ->
                         BarisNota(

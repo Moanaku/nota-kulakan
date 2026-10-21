@@ -20,7 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.danibanan.notakulakan.ui.komponen.BarAtas
-import com.danibanan.notakulakan.ui.komponen.BarBawah
+import com.danibanan.notakulakan.ui.komponen.BarBawahTengah
 import com.danibanan.notakulakan.ui.komponen.BarisBarang
 import com.danibanan.notakulakan.ui.komponen.BarisNota
 import com.danibanan.notakulakan.ui.komponen.BarisRingkasanTotal
@@ -42,7 +42,6 @@ import com.danibanan.notakulakan.ui.komponen.SkeletonBarisBarang
 import com.danibanan.notakulakan.ui.komponen.SpandukOffline
 import com.danibanan.notakulakan.ui.komponen.StatusBaris
 import com.danibanan.notakulakan.ui.komponen.Tab
-import com.danibanan.notakulakan.ui.komponen.TombolCatatNota
 import com.danibanan.notakulakan.ui.komponen.TombolSekunder
 import com.danibanan.notakulakan.ui.komponen.TombolTeks
 import com.danibanan.notakulakan.ui.komponen.TombolUtama
@@ -74,8 +73,8 @@ fun KatalogKomponen() {
 
         Bagian("Tipografi") {
             Text("Angka besar Rp 12.345.678", style = MaterialTheme.typography.displaySmall)
-            Text("Judul layar (Newsreader)", style = MaterialTheme.typography.headlineMedium)
-            Text("Judul bagian (Newsreader)", style = MaterialTheme.typography.titleLarge)
+            Text("Judul layar (Source Serif 4)", style = MaterialTheme.typography.headlineMedium)
+            Text("Judul bagian (Source Serif 4)", style = MaterialTheme.typography.titleLarge)
             Text("Isi 16 sp: Gula pasir kristal putih", style = MaterialTheme.typography.bodyLarge)
             Text("Isi tebal 16 sp: Gula pasir", style = MaterialTheme.typography.titleMedium)
             Text("Keterangan 14 sp", style = MaterialTheme.typography.bodySmall)
@@ -114,13 +113,9 @@ fun KatalogKomponen() {
             BarAtas("Periksa nota", onKembali = {})
         }
 
-        Bagian("Tombol catat nota (TombolCatatNota)") {
-            TombolCatatNota(onClick = {})
-        }
-
-        Bagian("Navigasi bawah (BarBawah)") {
-            BarBawah(aktif = Tab.STOK, onStok = {}, onRiwayat = {})
-            BarBawah(aktif = Tab.RIWAYAT, onStok = {}, onRiwayat = {})
+        Bagian("Navigasi bawah tengah (BarBawahTengah; tombol tengah = aksi, bukan tab)") {
+            BarBawahTengah(aktif = Tab.STOK, onStok = {}, onRiwayat = {}, onCatatNota = {})
+            BarBawahTengah(aktif = Tab.RIWAYAT, onStok = {}, onRiwayat = {}, onCatatNota = {})
         }
 
         Bagian("Chip status") {
