@@ -102,9 +102,9 @@
     <string name="ubah_total_supplier">Ubah total dan supplier</string>
     <string name="total_nota">Total nota</string>
     <string name="konfirmasi_tidak_cocok">Angka sudah saya cocokkan dengan nota fisik. Hitungan di nota memang tidak cocok.</string>
-    <string name="terhalang_lengkapi">Lengkapi baris yang ditandai merah dulu</string>
-    <string name="terhalang_centang">Centang kotak konfirmasi di atas untuk menyimpan nota.</string>
-    <string name="terhalang_nama">Setiap baris harus punya nama barang</string>
+    <string name="terhalang_lengkapi">Lengkapi baris bertanda merah dulu.</string>
+    <string name="terhalang_centang">Centang konfirmasi dulu.</string>
+    <string name="terhalang_nama">Isi nama semua barang dulu.</string>
     <string name="galat_simpan">Gagal menyimpan. Coba lagi.</string>
 
     <!-- Lembar edit baris -->

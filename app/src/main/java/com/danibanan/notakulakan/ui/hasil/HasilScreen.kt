@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -218,7 +219,7 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
             // Satu elemen dominan: total nota. Status keseluruhan (PesanPeriksa) tepat di bawahnya.
             item {
                 val jumlahGalat = d.validasi.isu.count { it.tingkat == Tingkat.GALAT }
-                Column(Modifier.padding(bottom = Spasi.l), verticalArrangement = Arrangement.spacedBy(Spasi.s)) {
+                Column(Modifier.padding(bottom = Spasi.m), verticalArrangement = Arrangement.spacedBy(Spasi.s)) {
                     BarisRingkasanTotal(
                         label = stringResource(R.string.total_tertulis),
                         nilai = d.nota.total?.let(Rupiah::format) ?: stringResource(R.string.belum_diisi),
@@ -254,9 +255,6 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
                     }
                 }
             }
-            if (d.contoh) {
-                item { PesanPeriksa(stringResource(R.string.periksa_contoh), JenisPesan.INFO, Modifier.padding(bottom = Spasi.m)) }
-            }
             d.catatanModel?.let { catatan ->
                 item {
                     Text(
@@ -267,47 +265,22 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
                     )
                 }
             }
-            if (d.fotoPath != null) {
-                item {
-                    Column(Modifier.padding(bottom = Spasi.s)) {
-                        TombolTeks(
-                            teks = stringResource(if (tampilFoto) R.string.sembunyikan_foto else R.string.lihat_foto),
-                            onClick = { tampilFoto = !tampilFoto },
-                            sejajarMargin = true,
-                        )
-                        if (tampilFoto) FotoNota(d.fotoPath)
-                    }
-                }
-            }
             item {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(Radius.sedang))
-                        .clickable { lembar = Lembar.Total }
-                        .defaultMinSize(minHeight = Ukuran.sentuhMin),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Spasi.m),
-                ) {
-                    Text(
-                        d.nota.supplier?.let { stringResource(R.string.supplier) + ": " + it } ?: stringResource(R.string.supplier_kosong),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Icon(
-                        Icons.Outlined.Edit,
-                        contentDescription = stringResource(R.string.ubah_total_supplier),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                BarisSupplierFoto(
+                    supplier = d.nota.supplier,
+                    adaFoto = d.fotoPath != null,
+                    tampilFoto = tampilFoto,
+                    onUbah = { lembar = Lembar.Total },
+                    onToggleFoto = { tampilFoto = !tampilFoto },
+                )
+                if (tampilFoto && d.fotoPath != null) FotoNota(d.fotoPath, Modifier.padding(bottom = Spasi.s))
             }
             item {
                 Text(
                     stringResource(R.string.hasil_barang_judul),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(top = Spasi.l, bottom = Spasi.s),
+                    modifier = Modifier.padding(top = Spasi.m, bottom = Spasi.s),
                 )
             }
             if (d.nota.items.isEmpty()) {
@@ -329,6 +302,9 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
                     onGantiProduk = { lembar = Lembar.Produk(i) },
                 )
                 PemisahBaris()
+            }
+            if (d.contoh) {
+                item { PesanPeriksa(stringResource(R.string.periksa_contoh), JenisPesan.INFO, Modifier.padding(top = Spasi.s)) }
             }
             if (d.nota.items.isNotEmpty()) {
                 item {
@@ -396,6 +372,60 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
     }
 }
 
+/**
+ * Supplier dan "Lihat foto nota" dalam satu baris: kiri supplier (membungkus bila panjang) + pensil ubah, kanan tombol
+ * foto. Keduanya tetap >= 48 dp dan berlabel. Mulai skala font [SKALA_FONT_SUSUN_VERTIKAL] tombol foto turun ke baris
+ * sendiri, karena di sebelah supplier ia hanya menyisakan beberapa huruf per baris.
+ */
+@Composable
+private fun BarisSupplierFoto(
+    supplier: String?,
+    adaFoto: Boolean,
+    tampilFoto: Boolean,
+    onUbah: () -> Unit,
+    onToggleFoto: () -> Unit,
+) {
+    val ubah: @Composable (Modifier) -> Unit = { m ->
+        Row(
+            m.clip(RoundedCornerShape(Radius.sedang)).clickable(onClick = onUbah).defaultMinSize(minHeight = Ukuran.sentuhMin),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                supplier?.let { stringResource(R.string.supplier) + ": " + it } ?: stringResource(R.string.supplier_kosong),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            Box(Modifier.size(Ukuran.sentuhMin), contentAlignment = Alignment.Center) {
+                Icon(
+                    Icons.Outlined.Edit,
+                    contentDescription = stringResource(R.string.ubah_total_supplier),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+    val foto: @Composable () -> Unit = {
+        TombolTeks(
+            teks = stringResource(if (tampilFoto) R.string.sembunyikan_foto else R.string.lihat_foto),
+            onClick = onToggleFoto,
+            // Rata dengan margin kanan/kiri layar; tanpa padding datar supaya supplier tidak ikut membungkus tanpa perlu.
+            sejajarMargin = true,
+        )
+    }
+    if (adaFoto && LocalDensity.current.fontScale >= SKALA_FONT_SUSUN_VERTIKAL) {
+        Column(Modifier.fillMaxWidth()) {
+            ubah(Modifier.fillMaxWidth())
+            Row { foto() }
+        }
+    } else {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            ubah(Modifier.weight(1f))
+            if (adaFoto) foto()
+        }
+    }
+}
+
 /** Satu baris draf: [BarisBarang] + pesan pemeriksaan + produk tujuan. Daftar = baris + divider. */
 @Composable
 private fun BarisDraf(
@@ -456,7 +486,7 @@ private fun RingkasanTotal(d: DrafUi, onUbah: () -> Unit) {
 private fun Long?.rupiahAtauKosong(): String = this?.let(Rupiah::format) ?: stringResource(R.string.belum_diisi)
 
 /**
- * Bilah aksi "Simpan nota". Bila tombol nonaktif, alasannya tertulis di atas tombol (bukan hanya tombol yang abu-abu);
+ * Bilah aksi "Simpan nota". Bila tombol nonaktif, alasannya tertulis satu kalimat di atas tombol (bukan hanya tombol abu-abu);
  * galat simpan juga tampil di sini, dekat tombol yang baru ditekan.
  */
 @Composable
@@ -466,11 +496,15 @@ private fun BarSimpan(d: DrafUi, onSimpan: () -> Unit) {
         onUtama = onSimpan,
         utamaAktif = d.bolehSimpan,
         catatan = {
-            when {
-                d.namaKosong -> PesanPeriksa(stringResource(R.string.terhalang_nama), JenisPesan.GALAT)
-                d.status == StatusSimpan.TERHALANG -> PesanPeriksa(stringResource(R.string.terhalang_lengkapi), JenisPesan.GALAT)
-                d.status == StatusSimpan.PERLU_KONFIRMASI && !d.konfirmasi ->
-                    PesanPeriksa(stringResource(R.string.terhalang_centang), JenisPesan.INFO)
+            val alasan = when {
+                d.namaKosong -> R.string.terhalang_nama
+                d.status == StatusSimpan.TERHALANG -> R.string.terhalang_lengkapi
+                d.status == StatusSimpan.PERLU_KONFIRMASI && !d.konfirmasi -> R.string.terhalang_centang
+                else -> null
+            }
+            // Satu kalimat polos (14 sekunder): kotak centang dan baris merah sudah menjelaskan sisanya di atas.
+            alasan?.let {
+                Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             if (d.galatSimpan) PesanPeriksa(stringResource(R.string.galat_simpan), JenisPesan.GALAT)
         },

@@ -122,7 +122,8 @@ Komponen yang sudah disetujui dan dipakai (kondisinya ada di katalog debug, `Kat
 - `BarAksiBawah`: bilah aksi tetap di dasar layar alur (Catat nota, Periksa, Tersimpan, Gagal). Latar container, garis atas
   pemisah, padding 16; satu tombol utama lebar penuh setinggi 56 dp (`Ukuran.tombolAksi`, nilai yang sama dengan tombol
   tengah bilah) dan satu tombol teks sekunder opsional; naik di atas keyboard dan area gestur (`safeDrawing`).
-  Slot `catatan` di atas tombol memuat alasan tombol nonaktif atau galat simpan, jadi alasannya tertulis dekat tombol.
+  Slot `catatan` di atas tombol memuat alasan tombol nonaktif (satu kalimat pendek, teks 14 sekunder, tanpa kotak atau ikon)
+  atau galat simpan, jadi alasannya tertulis dekat tombol.
   Layar tingkat atas memakai `BarBawahTengah`, tidak pernah keduanya.
 - `BarisNota`: satu nota di daftar Riwayat (baris + divider). `KartuRingkasanNota` tetap untuk satu nota yang
   berdiri sendiri.
@@ -162,11 +163,11 @@ tombol kembali, tanpa bilah bawah tengah, aksi utama di `BarAksiBawah` bila ada.
 | Riwayat | tingkat atas | `BarBawahTengah` | daftar nota | Catat nota (tombol tengah) | "Belum ada nota tercatat" / skeleton / Coba lagi / spanduk |
 | Catat nota (Foto) | alur | `BarAksiBawah` | aksi ambil foto | Ambil foto nota (tanpa server: Coba dengan nota contoh) | galat kamera tidak ada; offline spanduk; mode contoh banner INFO |
 | Memproses | alur | tanpa (tombol Batal membaca nota di isi) | skeleton baris barang | Batal membaca nota | memuat = layar ini |
-| Gagal | alur | `BarAksiBawah` | sebab galat | Coba lagi / Foto ulang; sekunder Isi manual | galat = layar ini; offline spanduk |
+| Gagal | alur | `BarAksiBawah` | sebab galat | Coba lagi / Foto ulang; sekunder Isi manual | galat = layar ini; tanpa spanduk offline (kalimat galat jaringan sudah menjelaskan) |
 | Isi manual, Periksa nota | alur | `BarAksiBawah` | total nota (angka-besar) | Simpan nota ke stok | daftar kosong ajakan Tambah baris; offline tidak berlaku |
 | Tersimpan | alur | `BarAksiBawah` | total + jumlah baris masuk stok | Lihat stok; sekunder Catat nota lain | tidak memuat data |
 | Detail nota | alur | tanpa (tidak ada aksi utama) | total nota (angka-besar) | Hapus nota (tombol teks galat di ujung daftar) | memuat / galat; nota hilang menutup layar |
-| Lembar koreksi, Pilih produk, Pilih nota contoh | sheet | aksi tersemat di sheet | kolom yang dikoreksi | Simpan koreksi (Pilih: memilih baris menutup sheet) | hasil filter kosong di Pilih produk |
+| Lembar koreksi, Pilih produk, Pilih nota contoh | sheet | aksi tersemat di sheet | kolom yang dikoreksi | Simpan baris / Simpan total (objek disebut, singkat; Pilih: memilih baris menutup sheet) | hasil filter kosong di Pilih produk |
 | Dialog duplikat, hapus nota, hapus data contoh | dialog | aksi di dialog | konsekuensi | Hapus ... berwarna galat; Batal | tidak berlaku |
 
 Offline di Stok dan Riwayat hanya spanduk informasi: data dibaca dari HP, yang belum bisa hanya membaca nota baru.
@@ -186,6 +187,13 @@ Per kelompok layar (TUGAS-20):
 - Pemeriksaan (Isi manual, Periksa, Tersimpan, Detail): total nota adalah satu-satunya angka besar, dan pesan status
   (PesanPeriksa) tepat di bawahnya, jadi "cocok atau tidak" terbaca sebelum daftar. Konfirmasi ketidakcocokan ada
   di bawah pesan masalahnya, bukan di bilah bawah; bilah hanya memuat alasan tombol nonaktif.
+- Periksa nota (TUGAS-21): urutan isi total > pesan masalah > kotak centang > supplier dan foto > daftar barang > banner
+  contoh, supaya baris barang, tempat memeriksa hasil baca, mulai setinggi mungkin. Supplier dan "Lihat foto nota" satu
+  baris: kiri supplier + pensil ubah (satu target, membungkus bila panjang), kanan tombol foto rata margin; mulai skala
+  1,5 tombol foto turun ke baris sendiri karena di sebelah supplier ia hanya menyisakan beberapa huruf per baris.
+  Banner "Nota contoh..." (pernyataan kejujuran mode contoh, kalimat tidak diubah) pindah ke tepat di bawah baris barang
+  terakhir, bukan ke ujung layar, supaya masih terbaca di nota pendek. Bilah bawah hanya satu kalimat pendek alasan
+  tombol nonaktif ("Centang konfirmasi dulu."), tanpa kotak, karena kotak centang tepat di atas sudah menjelaskan.
 - Sheet dan dialog: latar `container` untuk semuanya (kontras galat), aksi tersemat supaya terjangkau di skala besar;
   aksi yang menghapus berwarna galat, aksi lain hijau.
 
