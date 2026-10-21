@@ -1,6 +1,7 @@
-# DESIGN.md: token visual Nota Kulakan (arah A, "Buku kas")
+# DESIGN.md: token visual Nota Kulakan (arah A, "Buku kas", v2)
 
-Status: DISETUJUI Dani (2026-10-20, lewat TUGAS-6). Sumber kebenaran token;
+Status: DISETUJUI Dani 2026-10-21, v2 (token dari `DESIGN-USULAN-v2.md`, diterapkan di TUGAS-19; v1 disetujui 2026-10-20
+lewat TUGAS-6). Sumber kebenaran token;
 `Theme.kt` (Compose) hanya menerjemahkan berkas ini. Nilai di luar berkas ini tidak boleh dipakai di
 layar: kalau butuh nilai baru, ubah berkas ini dulu.
 
@@ -8,32 +9,38 @@ layar: kalau butuh nilai baru, ubah berkas ini dulu.
 (tidak harus saat toko buka), lalu memeriksa angka. Prioritas: angka rupiah mudah dibaca, koreksi
 tidak mudah salah tekan, status "cocok / tidak cocok" jelas tanpa bergantung pada warna saja.
 
-**Alasan aksen.** Hijau botol dipilih karena aplikasi ini soal catatan dagang: hijau dibaca sebagai
-"tercatat / cocok" (seperti tinta buku kas), dan jauh dari merah galat sehingga status tidak tertukar.
-Kalau alasan ini tidak berlaku lagi, aksennya yang harus diganti, bukan alasannya diubah diam-diam.
+**Alasan aksen.** Hijau daun (#38683F terang, #8FCB9B gelap) dipilih karena aplikasi ini soal catatan dagang: hijau
+dibaca sebagai "tercatat / cocok" (seperti tinta buku kas), dan jauh dari merah galat sehingga status tidak
+tertukar. v2 menggantikan hijau botol #1F5A45: nilainya lebih cerah dan lebih hidup, kontrasnya terhadap latar
+tetap >= 4,5 (6,10 terang, 9,78 gelap). Kalau alasan ini tidak berlaku lagi, aksennya yang harus diganti, bukan
+alasannya diubah diam-diam. Chip "Harga baru" memakai aksen-container (bukan netral); ia dibedakan dari "cocok"
+oleh teks dan tidak memakai ikon centang.
+
+**Alasan v2.** Keluhan Dani 2026-10-20: teks dan latar krem terasa menyatu, mata capek. v2 menaikkan kontras
+(teks-sekunder jauh lebih gelap, garis-kontrol >= 3:1 terhadap semua permukaan terang, latar sedikit lebih terang).
 
 **Larangan tetap.** Tanpa gradien latar, tanpa dynamic color, tanpa `fromSeed` (seluruh `ColorScheme`
 ditulis eksplisit), tanpa Inter/Poppins/Roboto, tanpa emoji sebagai ikon, tanpa hex mentah di widget.
 
-## 1. Warna (satu aksen: hijau botol)
+## 1. Warna (satu aksen: hijau daun)
 
 | Peran | Terang | Gelap |
 |---|---|---|
-| latar (permukaan 1) | #F4F0E7 | #1B1712 |
-| container (permukaan 2) | #EBE6DA | #241F18 |
-| container-high (permukaan 3) | #E0DACB | #2E281F |
-| teks | #2A2118 | #EDE6D8 |
-| teks-sekunder | #5E5446 | #B7AC99 |
-| garis-kontrol (batas input, tombol sekunder) | #867B69 | #8F8472 |
-| pemisah (divider, dekoratif) | #D3CCBB | #3A3328 |
-| aksen | #1F5A45 | #7FC3A3 |
-| di-atas-aksen | #F7F4EC | #0F2A20 |
-| aksen-container | #D3E5DA | #1F3F31 |
-| di-atas-aksen-container | #12382A | #CDE8DA |
-| galat | #A63A2B | #F0A294 |
+| latar (permukaan 1) | #FBF7EF | #17140F |
+| container (permukaan 2) | #F1EADB | #211D16 |
+| container-high (permukaan 3) | #E6DDC8 | #2B261D |
+| teks | #231F18 | #F3ECDD |
+| teks-sekunder | #4A4234 | #D2C8B3 |
+| garis-kontrol (batas input, tombol sekunder) | #756B58 | #A09580 |
+| pemisah (dekoratif) | #DDD3BE | #3A3328 |
+| aksen | #38683F | #8FCB9B |
+| di-atas-aksen | #FFFDF8 | #0F2A18 |
+| aksen-container | #DCEBD6 | #24412B |
+| di-atas-aksen-container | #234A28 | #D6EBD8 |
+| galat | #B3361E | #F2A596 |
 | di-atas-galat | #FFF8F6 | #3A0F08 |
-| galat-container | #F3D9D3 | #4A1D15 |
-| di-atas-galat-container | #5E1A10 | #F7D6CF |
+| galat-container | #FBE3DC | #4A1D15 |
+| di-atas-galat-container | #7A1F10 | #F7D6CF |
 
 Warna galat bukan aksen kedua: ia peran status. Status "info" tidak punya warna sendiri: container-high
 + teks-sekunder + ikon. Teks sekunder selalu lewat peran `teks-sekunder`, bukan Opacity.
@@ -42,28 +49,28 @@ Rasio kontras (dihitung dengan rumus WCAG 2.x; teks normal >= 4,5, batas kontrol
 
 | Pasangan | Terang | Gelap |
 |---|---|---|
-| teks / latar | 13,89 | 14,36 |
-| teks / container | 12,69 | 13,17 |
-| teks / container-high | 11,33 | 11,75 |
-| teks-sekunder / latar | 6,52 | 7,96 |
-| teks-sekunder / container | 5,95 | 7,30 |
-| teks-sekunder / container-high | 5,32 | 6,51 |
-| garis-kontrol / latar | 3,66 | 4,85 |
-| garis-kontrol / container | 3,34 | 4,45 |
-| aksen (teks/ikon) / latar | 7,08 | 8,69 |
-| aksen / container | 6,47 | 7,97 |
-| di-atas-aksen / aksen | 7,33 | 7,46 |
-| di-atas-aksen-container / aksen-container | 9,84 | 8,91 |
-| galat (teks/ikon) / latar | 5,66 | 8,75 |
-| galat / container | 5,17 | 8,02 |
-| di-atas-galat / galat | 6,14 | 8,23 |
-| di-atas-galat-container / galat-container | 9,61 | 10,47 |
-
-Pemisah (1,41 / 1,43) sengaja tipis karena dekoratif, bukan batas komponen interaktif.
+| teks / latar | 15,35 | 15,61 |
+| teks / container | 13,69 | 14,26 |
+| teks / container-high | 12,14 | 12,77 |
+| teks-sekunder / latar | 9,27 | 11,07 |
+| teks-sekunder / container | 8,27 | 10,11 |
+| teks-sekunder / container-high | 7,33 | 9,05 |
+| garis-kontrol / latar | 4,91 | 6,21 |
+| garis-kontrol / container | 4,38 | 5,68 |
+| garis-kontrol / container-high | 3,88 | 5,08 |
+| aksen (teks/ikon) / latar | 6,10 | 9,78 |
+| aksen / container | 5,44 | 8,93 |
+| aksen / container-high | 4,83 | 8,00 |
+| di-atas-aksen / aksen | 6,42 | 8,20 |
+| di-atas-aksen-container / aksen-container | 8,12 | 8,97 |
+| aksen / aksen-container | 5,25 | 5,99 |
+| galat / latar | 5,67 | 9,27 |
+| di-atas-galat-container / galat-container | 8,43 | 10,47 |
+Pemisah (1,39 / 1,47) sengaja tipis karena dekoratif, bukan batas komponen interaktif.
 
 ## 2. Tipografi (2 keluarga, 6 ukuran, seluruh skala di-override)
 
-- **Newsreader** (berseri): hanya judul layar dan judul bagian. **Source Sans 3**: semua lainnya.
+- **Source Serif 4** (berseri, SemiBold statis): hanya judul layar dan judul bagian. **Source Sans 3**: semua lainnya.
   Keduanya berlisensi OFL; berkas font dibundel di aplikasi.
 - Angka (rupiah, qty, total): Source Sans 3. Fitur `tnum` TIDAK ada di font ini (dicek di tabel GSUB
   2026-10-20), tetapi lebar glyph angka 0-9 identik (Regular 497, SemiBold 513), jadi angka bawaannya
@@ -71,23 +78,23 @@ Pemisah (1,41 / 1,43) sengaja tipis karena dekoratif, bukan batas komponen inter
 
 | Peran | Ukuran / tinggi baris | Keluarga, bobot |
 |---|---|---|
-| angka-besar (total nota) | 32 / 40 sp | Source Sans 3, 600 |
-| judul-layar | 24 / 32 sp | Newsreader, 600 |
-| judul-bagian | 20 / 28 sp | Newsreader, 600 |
+| angka-besar (total nota) | 28 / 36 sp | Source Sans 3, 600 |
+| judul-layar | 24 / 32 sp | Source Serif 4, 600 |
+| judul-bagian | 20 / 28 sp | Source Serif 4, 600 |
 | isi | 16 / 24 sp | Source Sans 3, 400 |
 | isi-tebal (nama barang, label tombol) | 16 / 24 sp | Source Sans 3, 600 |
 | keterangan | 14 / 20 sp | Source Sans 3, 400 |
 | label-kecil | 12 / 16 sp | Source Sans 3, 600 |
 
-Teks tidak lebih kecil dari 12 sp, dan teks yang harus dibaca pengguna untuk mengambil keputusan
+Teks tidak lebih kecil dari 12 sp (12 sp hanya label bilah navigasi), dan teks yang harus dibaca pengguna untuk mengambil keputusan
 (angka, status, pesan galat) tidak lebih kecil dari 14 sp.
 
 ## 3. Spasi, bentuk, elevasi, motion
 
 - **Spasi**: 4 / 8 / 12 / 16 / 24 / 32 / 48 dp. Tidak ada nilai lain. Gutter layar 16 dp.
-- **Radius** (3 nilai): 4 dp (input, chip), 8 dp (tombol, baris yang bisa diketuk), 16 dp (sheet bawah,
-  jendela dialog).
-- **Elevasi** (2 tingkat): 0 dp (default; kartu = outline `pemisah`, tanpa bayangan) dan 2 dp (hanya
+- **Radius** (3 nilai): 4 dp (input, chip), 8 dp (tombol, baris yang bisa diketuk), 16 dp (kartu terisi, sheet
+  bawah, jendela dialog, tombol tengah bilah navigasi). Tidak ada lingkaran atau pil, kecuali penanda aktif bilah (pil 64x32, radius 16).
+- **Elevasi** (2 tingkat): 0 dp (default; kartu = terisi `container` + garis `pemisah`, tanpa bayangan) dan 2 dp (hanya
   sheet bawah dan dialog).
 - **Hierarki baris barang** (tiga tingkat, tidak lebih): nama barang 16 sp isi-tebal `teks`; qty x harga
   14 sp keterangan `teks-sekunder`; jumlah 16 sp isi-tebal rata kanan, tabular; status sebagai chip.
@@ -112,11 +119,14 @@ Komponen yang sudah disetujui dan dipakai (kondisinya ada di katalog debug, `Kat
   judul panjang atau skala font besar membungkus ke baris berikutnya.
 - `BarisNota`: satu nota di daftar Riwayat (baris + divider). `KartuRingkasanNota` tetap untuk satu nota yang
   berdiri sendiri.
-- `TombolCatatNota`: aksi utama di Stok dan Riwayat; datar, warna aksen.
-- `BarBawah`: navigasi dua area (Stok, Riwayat); `Tab` menandai area aktif.
+- `BarBawahTengah`: bilah navigasi tiga posisi, tinggi 72 dp, latar container, garis atas pemisah. Stok dan Riwayat
+  adalah tab (penanda aktif = pil aksen-container 64x32, radius 16); "Catat nota" di tengah adalah AKSI, bukan
+  tab: persegi bulat 56x56 radius 16, isi aksen, ikon plus 24 di-atas-aksen, cincin 4 dp warna latar, terangkat
+  24 dp di atas bilah, tanpa bayangan, label 12 sp. Semantik: tombol berlabel "Catat nota". Menggantikan
+  `TombolCatatNota` (FAB) dan `BarBawah` (dihapus).
 - `PesanPeriksa` (`JenisPesan` GALAT / INFO / COCOK): pesan pemeriksaan satu baris atau nota.
-- `statusHarga` dan `ChipSelisihHarga`: perubahan harga modal. Naik = selisih, turun = cocok, tetap atau
-  produk baru = info.
+- `statusHarga` dan `ChipSelisihHarga`: perubahan harga modal. Naik = selisih, turun = cocok, tetap = titik 8 dp +
+  teks 14 sp (netral), produk baru = chip aksen-container.
 - `FotoNota`: foto nota dari berkas lokal; tanpa berkas tampil placeholder.
 - `SheetPilihan`: sheet bawah untuk memilih satu pilihan (mis. produk), turunan gaya `SheetKoreksi`. Tanpa
   Simpan/Batal; sheet selalu tampil penuh. Isi memuat daftar tanpa `verticalScroll`.
@@ -147,4 +157,4 @@ satu-satunya loading, `Opacity` untuk teks sekunder, "Oops"/"No data"/"Submit", 
 ## 7. Yang belum diputuskan
 
 Teks Indonesia terpanjang untuk uji pemotongan label, dan nama layar akhir, ditentukan saat komponen
-dibangun. Berkas font dan `Theme.kt` dibuat setelah berkas ini disetujui.
+dibangun. 

@@ -4,7 +4,7 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 
 /**
- * Peran warna persis dari docs/DESIGN.md bagian 1. Nama mengikuti tabel di sana.
+ * Peran warna persis dari docs/DESIGN.md bagian 1 (v2). Nama mengikuti tabel di sana.
  *
  * Pemetaan ke peran Material (lihat [Palet.skema]):
  * - latar -> background/surface; container -> surfaceContainer/surfaceVariant; container-high -> surfaceContainerHigh/Highest
@@ -33,36 +33,36 @@ class Palet(
 )
 
 val PaletTerang = Palet(
-    latar = Color(0xFFF4F0E7),
-    container = Color(0xFFEBE6DA),
-    containerHigh = Color(0xFFE0DACB),
-    teks = Color(0xFF2A2118),
-    teksSekunder = Color(0xFF5E5446),
-    garisKontrol = Color(0xFF867B69),
-    pemisah = Color(0xFFD3CCBB),
-    aksen = Color(0xFF1F5A45),
-    diAtasAksen = Color(0xFFF7F4EC),
-    aksenContainer = Color(0xFFD3E5DA),
-    diAtasAksenContainer = Color(0xFF12382A),
-    galat = Color(0xFFA63A2B),
+    latar = Color(0xFFFBF7EF),
+    container = Color(0xFFF1EADB),
+    containerHigh = Color(0xFFE6DDC8),
+    teks = Color(0xFF231F18),
+    teksSekunder = Color(0xFF4A4234),
+    garisKontrol = Color(0xFF756B58),
+    pemisah = Color(0xFFDDD3BE),
+    aksen = Color(0xFF38683F),
+    diAtasAksen = Color(0xFFFFFDF8),
+    aksenContainer = Color(0xFFDCEBD6),
+    diAtasAksenContainer = Color(0xFF234A28),
+    galat = Color(0xFFB3361E),
     diAtasGalat = Color(0xFFFFF8F6),
-    galatContainer = Color(0xFFF3D9D3),
-    diAtasGalatContainer = Color(0xFF5E1A10),
+    galatContainer = Color(0xFFFBE3DC),
+    diAtasGalatContainer = Color(0xFF7A1F10),
 )
 
 val PaletGelap = Palet(
-    latar = Color(0xFF1B1712),
-    container = Color(0xFF241F18),
-    containerHigh = Color(0xFF2E281F),
-    teks = Color(0xFFEDE6D8),
-    teksSekunder = Color(0xFFB7AC99),
-    garisKontrol = Color(0xFF8F8472),
+    latar = Color(0xFF17140F),
+    container = Color(0xFF211D16),
+    containerHigh = Color(0xFF2B261D),
+    teks = Color(0xFFF3ECDD),
+    teksSekunder = Color(0xFFD2C8B3),
+    garisKontrol = Color(0xFFA09580),
     pemisah = Color(0xFF3A3328),
-    aksen = Color(0xFF7FC3A3),
-    diAtasAksen = Color(0xFF0F2A20),
-    aksenContainer = Color(0xFF1F3F31),
-    diAtasAksenContainer = Color(0xFFCDE8DA),
-    galat = Color(0xFFF0A294),
+    aksen = Color(0xFF8FCB9B),
+    diAtasAksen = Color(0xFF0F2A18),
+    aksenContainer = Color(0xFF24412B),
+    diAtasAksenContainer = Color(0xFFD6EBD8),
+    galat = Color(0xFFF2A596),
     diAtasGalat = Color(0xFF3A0F08),
     galatContainer = Color(0xFF4A1D15),
     diAtasGalatContainer = Color(0xFFF7D6CF),
