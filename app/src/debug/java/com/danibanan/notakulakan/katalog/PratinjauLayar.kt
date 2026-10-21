@@ -7,6 +7,7 @@ import com.danibanan.notakulakan.domain.model.Nota
 import com.danibanan.notakulakan.domain.repo.HasilSimpan
 import com.danibanan.notakulakan.domain.repo.NotaTersimpan
 import com.danibanan.notakulakan.domain.repo.PerubahanTersimpan
+import com.danibanan.notakulakan.ui.hasil.DialogDuplikat
 import com.danibanan.notakulakan.ui.hasil.LayarTersimpan
 import com.danibanan.notakulakan.domain.repo.StokProduk
 import com.danibanan.notakulakan.ui.riwayat.DetailLayar
@@ -27,7 +28,7 @@ import com.danibanan.notakulakan.ui.hasil.LayarMemproses
 /**
  * Layar sungguhan dengan data palsu untuk potret verifikasi. Nama dipakai di `adb shell am start ... --es layar <nama>`:
  * foto-server, foto-contoh, memproses, gagal-<jaringan|tak-terjangkau|waktu|sibuk|bukan-nota|foto|besar|ditolak|server>,
- * tersimpan, tersimpan-tanpa-perubahan, riwayat-<memuat|galat|kosong|ada|ada-contoh|offline>, dialog-hapus-contoh,
+ * tersimpan, tersimpan-tanpa-perubahan, duplikat (data palsu, tidak menyimpan apa pun), riwayat-<memuat|galat|kosong|ada|ada-contoh|offline>, dialog-hapus-contoh,
  * detail-<memuat|galat|ada|ada-konfirmasi>, dialog-hapus-nota, stok-<memuat|galat|kosong|ada|ada-panjang|offline>.
  */
 
@@ -78,6 +79,11 @@ fun PratinjauLayar(nama: String) {
         nama == "foto-server" -> FotoScreen({}, {}, {}, {}, punyaServer = true)
         nama == "foto-contoh" -> FotoScreen({}, {}, {}, {}, punyaServer = false)
         nama == "memproses" -> LayarMemproses(onKembali = {})
+        nama == "duplikat" -> {
+            // Latar: layar Memproses supaya dialog tampil di atas isi sungguhan; tidak ada nota yang disimpan.
+            LayarMemproses(onKembali = {})
+            DialogDuplikat(ringkas(4, SUPPLIER_PANJANG, 895_000, 4), onTetapSimpan = {}, onBatal = {})
+        }
         nama.startsWith("stok-") -> {
             val v = nama.removePrefix("stok-")
             val ui = when (v) {

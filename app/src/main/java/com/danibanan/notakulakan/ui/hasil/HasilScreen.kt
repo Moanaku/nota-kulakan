@@ -46,6 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.danibanan.notakulakan.R
 import com.danibanan.notakulakan.domain.PilihanProduk
 import com.danibanan.notakulakan.domain.Qty
+import com.danibanan.notakulakan.domain.RingkasNota
 import com.danibanan.notakulakan.domain.Rupiah
 import com.danibanan.notakulakan.domain.StatusSimpan
 import com.danibanan.notakulakan.domain.model.Isu
@@ -346,28 +347,32 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
         null -> Unit
     }
 
-    d.duplikat?.let { dup ->
-        AlertDialog(
-            onDismissRequest = vm::tutupDuplikat,
-            shape = RoundedCornerShape(Radius.besar),
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            tonalElevation = Elevasi.tinggi,
-            title = { Text(stringResource(R.string.duplikat_judul), style = MaterialTheme.typography.headlineSmall) },
-            text = {
-                Text(
-                    stringResource(
-                        R.string.duplikat_isi,
-                        dup.total?.let(Rupiah::format) ?: "-",
-                        dup.jumlahBaris,
-                        formatTanggal(dup.dibuatPada),
-                    ),
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-            },
-            confirmButton = { TombolTeks(stringResource(R.string.tetap_simpan), onClick = { vm.simpan(paksa = true) }) },
-            dismissButton = { TombolTeks(stringResource(R.string.batal), onClick = vm::tutupDuplikat) },
-        )
-    }
+    d.duplikat?.let { dup -> DialogDuplikat(dup, onTetapSimpan = { vm.simpan(paksa = true) }, onBatal = vm::tutupDuplikat) }
+}
+
+/** Dialog elevasi 2, radius 16: nota yang tampak sama sudah ada; konsekuensi tertulis di isi, aksi menyebut objeknya. */
+@Composable
+internal fun DialogDuplikat(dup: RingkasNota, onTetapSimpan: () -> Unit, onBatal: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onBatal,
+        shape = RoundedCornerShape(Radius.besar),
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        tonalElevation = Elevasi.tinggi,
+        title = { Text(stringResource(R.string.duplikat_judul), style = MaterialTheme.typography.headlineSmall) },
+        text = {
+            Text(
+                stringResource(
+                    R.string.duplikat_isi,
+                    dup.total?.let(Rupiah::format) ?: "-",
+                    dup.jumlahBaris,
+                    formatTanggal(dup.dibuatPada),
+                ),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        },
+        confirmButton = { TombolTeks(stringResource(R.string.tetap_simpan), onClick = onTetapSimpan) },
+        dismissButton = { TombolTeks(stringResource(R.string.batal), onClick = onBatal) },
+    )
 }
 
 /**
