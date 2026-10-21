@@ -146,7 +146,9 @@
 
     <!-- Riwayat -->
     <string name="riwayat_judul">Riwayat nota</string>
-    <string name="objek_nota">nota</string>
+    <string name="objek_nota_tercatat">nota tercatat</string>
+    <string name="riwayat_penjelasan">Nota kulakan yang sudah tersimpan di HP ini, dari yang terbaru.</string>
+    <string name="riwayat_kosong_isi">Foto nota kulakan pertama. Nota yang sudah tersimpan tampil di sini.</string>
     <string name="galat_riwayat">Daftar nota tidak bisa dibaca dari HP ini. Coba lagi.</string>
     <string name="galat_detail">Nota ini tidak bisa dibuka. Coba lagi.</string>
     <string name="galat_hapus">Nota belum terhapus. Coba lagi.</string>
@@ -171,6 +173,7 @@
     <string name="galat_foto_ulang">Foto ulang</string>
     <string name="galat_judul">Tidak bisa memuat</string>
     <string name="skeleton_memuat_barang">Memuat daftar barang</string>
+    <string name="offline_spanduk_data">Sedang offline. Data di HP tetap bisa dibuka; nota baru belum bisa dibaca sampai HP tersambung.</string>
     <string name="offline_spanduk">Sedang offline. Nota baru belum bisa dibaca sampai HP tersambung.</string>
     <string name="input_rupiah_awalan">Rp</string>
 </resources>

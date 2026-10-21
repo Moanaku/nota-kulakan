@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.danibanan.notakulakan.R
@@ -46,6 +49,7 @@ import com.danibanan.notakulakan.domain.model.Isu
 import com.danibanan.notakulakan.domain.model.ItemBaris
 import com.danibanan.notakulakan.domain.model.Tingkat
 import com.danibanan.notakulakan.domain.repo.JenisGagal
+import com.danibanan.notakulakan.domain.repo.PerubahanTersimpan
 import com.danibanan.notakulakan.ui.komponen.BarAksiBawah
 import com.danibanan.notakulakan.ui.komponen.BarAtas
 import com.danibanan.notakulakan.ui.komponen.BarisBarang
@@ -59,6 +63,7 @@ import com.danibanan.notakulakan.ui.komponen.JenisPesan
 import com.danibanan.notakulakan.ui.komponen.KondisiGalat
 import com.danibanan.notakulakan.ui.komponen.PemisahBaris
 import com.danibanan.notakulakan.ui.komponen.PesanPeriksa
+import com.danibanan.notakulakan.ui.komponen.SKALA_FONT_SUSUN_VERTIKAL
 import com.danibanan.notakulakan.ui.komponen.SkeletonBarisBarang
 import com.danibanan.notakulakan.ui.komponen.SpandukOffline
 import com.danibanan.notakulakan.ui.komponen.StatusBaris
@@ -91,7 +96,7 @@ fun HasilScreen(
         HasilUi.Memproses -> LayarMemproses(onKembali)
         is HasilUi.Gagal -> LayarGagal(s, onKembali, onUlang = vm::proses, onGantiFoto = onGantiFoto, onManual = vm::mulaiManual)
         is HasilUi.Draf -> LayarDraf(s.draf, vm, onKembali)
-        is HasilUi.Tersimpan -> LayarTersimpan(s, onLihatStok, onCatatLagi)
+        is HasilUi.Tersimpan -> LayarTersimpan(s, onKembali, onLihatStok, onCatatLagi)
     }
 }
 
@@ -469,58 +474,85 @@ private fun BarSimpan(d: DrafUi, onSimpan: () -> Unit) {
     )
 }
 
+/**
+ * Tersimpan: ringkasan hasil dominan (total angka-besar + jumlah baris yang masuk stok), perubahan harga modal sebagai
+ * baris + pemisah, "Lihat stok" sebagai aksi utama di [BarAksiBawah] dan "Catat nota lain" sebagai tombol teks.
+ * Tanpa konfeti atau ilustrasi.
+ */
 @Composable
-private fun LayarTersimpan(s: HasilUi.Tersimpan, onLihatStok: () -> Unit, onCatatLagi: () -> Unit) {
-    Scaffold { padding ->
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = Spasi.l, vertical = Spasi.xl),
-            verticalArrangement = Arrangement.spacedBy(Spasi.s),
+internal fun LayarTersimpan(s: HasilUi.Tersimpan, onKembali: () -> Unit, onLihatStok: () -> Unit, onCatatLagi: () -> Unit) {
+    Scaffold(
+        topBar = { BarAtas(stringResource(R.string.tersimpan_judul), onKembali = onKembali) },
+        bottomBar = {
+            BarAksiBawah(
+                teksUtama = stringResource(R.string.lihat_stok),
+                onUtama = onLihatStok,
+                teksSekunder = stringResource(R.string.catat_nota_lain),
+                onSekunder = onCatatLagi,
+            )
+        },
+    ) { padding ->
+        LazyColumn(
+            Modifier.fillMaxSize().padding(padding),
+            contentPadding = PaddingValues(start = Spasi.l, end = Spasi.l, top = Spasi.s, bottom = Spasi.l),
         ) {
-            ChipStatus(StatusBaris.COCOK, teks = stringResource(R.string.tersimpan_judul))
-            BarisRingkasanTotal(
-                label = stringResource(R.string.total_nota),
-                nilai = Rupiah.format(s.total),
-                dominan = true,
-                modifier = Modifier.padding(top = Spasi.s),
-            )
-            Text(
-                stringResource(R.string.tersimpan_isi, s.jumlahBaris),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(Spasi.s)) {
+                    BarisRingkasanTotal(
+                        label = stringResource(R.string.total_nota),
+                        nilai = Rupiah.format(s.total),
+                        dominan = true,
+                    )
+                    PesanPeriksa(stringResource(R.string.tersimpan_isi, s.jumlahBaris), JenisPesan.COCOK)
+                }
+            }
             if (s.hasil.perubahan.isNotEmpty()) {
-                Text(
-                    stringResource(R.string.tersimpan_perubahan),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(top = Spasi.xl, bottom = Spasi.s),
-                )
-                for (p in s.hasil.perubahan) {
-                    Column(Modifier.fillMaxWidth().padding(vertical = Spasi.s), verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
-                        Text(p.namaProduk, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-                        Text(
-                            Rupiah.format(p.hargaSekarang) + (p.satuan?.let { " / $it" } ?: ""),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        ChipSelisihHarga(
-                            selisih = p.hargaSebelumnya?.let { p.hargaSekarang - it },
-                            adaRiwayat = p.hargaSebelumnya != null,
-                        )
-                    }
+                item {
+                    Text(
+                        stringResource(R.string.tersimpan_perubahan),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(top = Spasi.xl, bottom = Spasi.s),
+                    )
+                }
+                items(s.hasil.perubahan) { p ->
+                    BarisPerubahanHarga(p)
                     PemisahBaris()
                 }
             }
-            TombolUtama(
-                stringResource(R.string.lihat_stok),
-                onClick = onLihatStok,
-                modifier = Modifier.fillMaxWidth().padding(top = Spasi.xl),
+        }
+    }
+}
+
+/** Satu produk yang harga modalnya berubah: kiri nama dan status, kanan harga baru (rata kanan) dan satuannya. */
+@Composable
+private fun BarisPerubahanHarga(p: PerubahanTersimpan) {
+    val w = MaterialTheme.colorScheme
+    val kiri: @Composable (Modifier) -> Unit = {
+        Column(it, verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
+            Text(p.namaProduk, style = MaterialTheme.typography.titleMedium, color = w.onSurface)
+            ChipSelisihHarga(
+                selisih = p.hargaSebelumnya?.let { p.hargaSekarang - it },
+                adaRiwayat = p.hargaSebelumnya != null,
             )
-            TombolSekunder(stringResource(R.string.catat_nota_lain), onClick = onCatatLagi, modifier = Modifier.fillMaxWidth())
+        }
+    }
+    val kanan: @Composable (Modifier, Alignment.Horizontal) -> Unit = { m, rata ->
+        Column(m, horizontalAlignment = rata, verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
+            Text(Rupiah.format(p.hargaSekarang), style = MaterialTheme.typography.titleMedium, color = w.onSurface, textAlign = TextAlign.End)
+            p.satuan?.let { Text(stringResource(R.string.stok_per_satuan, it), style = MaterialTheme.typography.bodySmall, color = w.onSurfaceVariant) }
+        }
+    }
+    val dasar = Modifier.fillMaxWidth().defaultMinSize(minHeight = Ukuran.sentuhMin).padding(vertical = Spasi.s)
+    if (LocalDensity.current.fontScale >= SKALA_FONT_SUSUN_VERTIKAL) {
+        Column(dasar, verticalArrangement = Arrangement.spacedBy(Spasi.s)) {
+            kiri(Modifier)
+            kanan(Modifier, Alignment.Start)
+        }
+    } else {
+        Row(dasar, horizontalArrangement = Arrangement.spacedBy(Spasi.l)) {
+            kiri(Modifier.weight(1f))
+            kanan(Modifier.widthIn(min = Spasi.xxxl), Alignment.End)
         }
     }
 }
