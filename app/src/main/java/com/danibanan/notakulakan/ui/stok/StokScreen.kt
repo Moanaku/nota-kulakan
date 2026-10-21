@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -20,6 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
@@ -31,7 +34,6 @@ import com.danibanan.notakulakan.domain.RingkasNota
 import com.danibanan.notakulakan.domain.Rupiah
 import com.danibanan.notakulakan.domain.repo.NotaRepository
 import com.danibanan.notakulakan.domain.repo.StokProduk
-import com.danibanan.notakulakan.ui.komponen.BarAtas
 import com.danibanan.notakulakan.ui.komponen.BarBawahTengah
 import com.danibanan.notakulakan.ui.komponen.DataKosong
 import com.danibanan.notakulakan.ui.komponen.JenisKosong
@@ -39,11 +41,13 @@ import com.danibanan.notakulakan.ui.komponen.KartuRingkasanNota
 import com.danibanan.notakulakan.ui.komponen.KondisiGalat
 import com.danibanan.notakulakan.ui.komponen.PemisahBaris
 import com.danibanan.notakulakan.ui.komponen.SkeletonBarisBarang
+import com.danibanan.notakulakan.ui.komponen.SpandukOffline
 import com.danibanan.notakulakan.ui.komponen.Tab
 import com.danibanan.notakulakan.ui.komponen.formatTanggal
 import com.danibanan.notakulakan.ui.komponen.SKALA_FONT_SUSUN_SEMPIT
 import com.danibanan.notakulakan.ui.komponen.SKALA_FONT_SUSUN_VERTIKAL
 import com.danibanan.notakulakan.ui.komponen.StatusHargaBaris
+import com.danibanan.notakulakan.ui.komponen.rememberTersambung
 import com.danibanan.notakulakan.ui.komponen.statusHarga
 import com.danibanan.notakulakan.ui.theme.Spasi
 import com.danibanan.notakulakan.ui.theme.Ukuran
@@ -84,7 +88,8 @@ class StokViewModel @Inject constructor(repo: NotaRepository) : ViewModel() {
 
 /**
  * Empat kondisi: memuat (skeleton), kosong (belum ada nota; tidak ada filter), galat (gagal membaca basis data
- * lokal), offline tidak berlaku (stok dihitung dari nota yang tersimpan di HP).
+ * lokal) dan offline (spanduk: stok tetap dari HP, hanya nota baru yang belum bisa dibaca). Judul dan keterangan
+ * ikut menggulir bersama daftar.
  */
 @Composable
 fun StokScreen(
@@ -93,70 +98,101 @@ fun StokScreen(
     vm: StokViewModel = hiltViewModel(),
 ) {
     val ui by vm.ui.collectAsStateWithLifecycle()
+    StokLayar(
+        ui = ui,
+        tersambung = rememberTersambung(),
+        onCatatNota = onCatatNota,
+        onKeRiwayat = onKeRiwayat,
+        onCobaLagi = vm::cobaLagi,
+    )
+}
+
+/** Isi layar Stok tanpa ViewModel, supaya setiap kondisinya bisa dipotret lewat katalog debug. */
+@Composable
+internal fun StokLayar(
+    ui: StokUi,
+    tersambung: Boolean,
+    onCatatNota: () -> Unit,
+    onKeRiwayat: () -> Unit,
+    onCobaLagi: () -> Unit,
+) {
     Scaffold(
-        topBar = { BarAtas(stringResource(R.string.stok_judul)) },
         bottomBar = { BarBawahTengah(Tab.STOK, onStok = {}, onRiwayat = onKeRiwayat, onCatatNota = onCatatNota) },
     ) { padding ->
-        when (val s = ui) {
-            StokUi.Memuat -> SkeletonBarisBarang(Modifier.padding(padding).padding(horizontal = Spasi.l), jumlahBaris = 5)
+        Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
+            SpandukOffline(tampil = !tersambung, teks = stringResource(R.string.offline_spanduk_data))
+            // Daftar bergulir sampai di bawah bilah; padding bawah = tinggi bilah + 16 supaya baris terakhir tidak tertutup.
+            LazyColumn(
+                Modifier.fillMaxWidth().weight(1f),
+                contentPadding = PaddingValues(
+                    start = Spasi.l,
+                    end = Spasi.l,
+                    top = Spasi.s,
+                    bottom = padding.calculateBottomPadding() + Spasi.l,
+                ),
+            ) {
+                item {
+                    Text(
+                        stringResource(R.string.stok_judul),
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.semantics { heading() },
+                    )
+                    Text(
+                        stringResource(R.string.stok_penjelasan),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = Spasi.xs, bottom = Spasi.l),
+                    )
+                }
+                when (ui) {
+                    StokUi.Memuat -> item { SkeletonBarisBarang(jumlahBaris = 5) }
 
-            StokUi.Galat -> KondisiGalat(
-                sebab = stringResource(R.string.galat_stok),
-                onCobaLagi = vm::cobaLagi,
-                modifier = Modifier.padding(padding),
-            )
+                    StokUi.Galat -> item {
+                        KondisiGalat(sebab = stringResource(R.string.galat_stok), onCobaLagi = onCobaLagi)
+                    }
 
-            is StokUi.Ada -> if (s.stok.isEmpty()) {
-                DataKosong(
-                    jenis = JenisKosong.BELUM_ADA_DATA,
-                    objek = stringResource(R.string.objek_barang),
-                    modifier = Modifier.padding(padding),
-                    teksAksi = stringResource(R.string.catat_nota),
-                    onAksi = onCatatNota,
-                )
-            } else {
-                DaftarStok(s, Modifier.fillMaxSize().padding(padding))
+                    is StokUi.Ada -> if (ui.stok.isEmpty()) {
+                        item {
+                            DataKosong(
+                                jenis = JenisKosong.BELUM_ADA_DATA,
+                                objek = stringResource(R.string.objek_barang),
+                                teksAksi = stringResource(R.string.catat_nota),
+                                onAksi = onCatatNota,
+                                isi = stringResource(R.string.stok_kosong_isi),
+                            )
+                        }
+                    } else {
+                        daftarStok(ui)
+                    }
+                }
             }
         }
     }
 }
 
-@Composable
-private fun DaftarStok(s: StokUi.Ada, modifier: Modifier) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(start = Spasi.l, end = Spasi.l, top = Spasi.s, bottom = Spasi.l),
-    ) {
+private fun LazyListScope.daftarStok(s: StokUi.Ada) {
+    s.notaTerakhir?.let { n ->
         item {
             Text(
-                stringResource(R.string.stok_penjelasan),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = Spasi.l),
+                stringResource(R.string.stok_nota_terakhir),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = Spasi.s),
+            )
+            KartuRingkasanNota(
+                toko = n.supplier ?: stringResource(R.string.supplier_kosong),
+                tanggal = formatTanggal(n.dibuatPada),
+                jumlahBarang = stringResource(R.string.riwayat_baris, n.jumlahBaris),
+                total = n.total?.let(Rupiah::format) ?: "-",
+                status = null, // RingkasNota belum menyimpan status; lihat LAPORAN.
             )
         }
-        s.notaTerakhir?.let { n ->
-            item {
-                Text(
-                    stringResource(R.string.stok_nota_terakhir),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(bottom = Spasi.s),
-                )
-                KartuRingkasanNota(
-                    toko = n.supplier ?: stringResource(R.string.supplier_kosong),
-                    tanggal = formatTanggal(n.dibuatPada),
-                    jumlahBarang = stringResource(R.string.riwayat_baris, n.jumlahBaris),
-                    total = n.total?.let(Rupiah::format) ?: "-",
-                    status = null, // RingkasNota belum menyimpan status; lihat LAPORAN.
-                )
-            }
-        }
-        item { JudulDaftarBarang() }
-        items(s.stok, key = { "${it.produkId}-${it.satuan}" }) { p ->
-            BarisStok(p)
-            PemisahBaris()
-        }
+    }
+    item { JudulDaftarBarang() }
+    items(s.stok, key = { "${it.produkId}-${it.satuan}" }) { p ->
+        BarisStok(p)
+        PemisahBaris()
     }
 }
 

@@ -8,7 +8,10 @@ import com.danibanan.notakulakan.domain.repo.HasilSimpan
 import com.danibanan.notakulakan.domain.repo.NotaTersimpan
 import com.danibanan.notakulakan.domain.repo.PerubahanTersimpan
 import com.danibanan.notakulakan.ui.hasil.LayarTersimpan
+import com.danibanan.notakulakan.domain.repo.StokProduk
 import com.danibanan.notakulakan.ui.riwayat.DetailLayar
+import com.danibanan.notakulakan.ui.stok.StokLayar
+import com.danibanan.notakulakan.ui.stok.StokUi
 import com.danibanan.notakulakan.ui.riwayat.DetailUi
 import com.danibanan.notakulakan.ui.riwayat.DialogHapusContoh
 import com.danibanan.notakulakan.ui.riwayat.DialogHapusNota
@@ -25,7 +28,7 @@ import com.danibanan.notakulakan.ui.hasil.LayarMemproses
  * Layar sungguhan dengan data palsu untuk potret verifikasi. Nama dipakai di `adb shell am start ... --es layar <nama>`:
  * foto-server, foto-contoh, memproses, gagal-<jaringan|tak-terjangkau|waktu|sibuk|bukan-nota|foto|besar|ditolak|server>,
  * tersimpan, tersimpan-tanpa-perubahan, riwayat-<memuat|galat|kosong|ada|ada-contoh|offline>, dialog-hapus-contoh,
- * detail-<memuat|galat|ada|ada-konfirmasi>, dialog-hapus-nota.
+ * detail-<memuat|galat|ada|ada-konfirmasi>, dialog-hapus-nota, stok-<memuat|galat|kosong|ada|ada-panjang|offline>.
  */
 
 private val WAKTU = 1_792_000_000_000L // Okt 2026
@@ -58,12 +61,33 @@ private val NOTA_DETAIL = NotaTersimpan(
     dikonfirmasiMeskiTidakCocok = false,
 )
 
+private fun stok(nama: String, satuan: String?, masuk: String, harga: Long?, selisih: Long?) =
+    StokProduk(produkId = nama.hashCode().toLong(), nama = nama, satuan = satuan, totalMasuk = BigDecimal(masuk), hargaTerakhir = harga, selisihHarga = selisih)
+
+private val DAFTAR_STOK = listOf(
+    stok("Air Mineral 600ml", "dus", "9", 45_000, 0),
+    stok("Golda", "botol", "2", 3_500, null),
+    stok("Minyak Goreng Kemasan Pouch 2 Liter Isi 12 Merek Lokal", "dus", "24", 112_000, 2_000),
+    stok("Gula Pasir 1 kg", "kg", "120", 14_000, -500),
+    stok("Kecap Manis", null, "6", null, null),
+)
+
 @Composable
 fun PratinjauLayar(nama: String) {
     when {
         nama == "foto-server" -> FotoScreen({}, {}, {}, {}, punyaServer = true)
         nama == "foto-contoh" -> FotoScreen({}, {}, {}, {}, punyaServer = false)
         nama == "memproses" -> LayarMemproses(onKembali = {})
+        nama.startsWith("stok-") -> {
+            val v = nama.removePrefix("stok-")
+            val ui = when (v) {
+                "memuat" -> StokUi.Memuat
+                "galat" -> StokUi.Galat
+                "kosong" -> StokUi.Ada(emptyList(), null)
+                else -> StokUi.Ada(DAFTAR_STOK, DAFTAR_RIWAYAT.first())
+            }
+            StokLayar(ui, tersambung = v != "offline", onCatatNota = {}, onKeRiwayat = {}, onCobaLagi = {})
+        }
         nama == "tersimpan" || nama == "tersimpan-tanpa-perubahan" -> LayarTersimpan(
             HasilUi.Tersimpan(
                 HasilSimpan(
