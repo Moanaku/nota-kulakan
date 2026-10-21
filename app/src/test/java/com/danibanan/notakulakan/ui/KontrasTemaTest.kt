@@ -12,8 +12,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Rasio kontras WCAG 2.x dari konstanta tema, dibandingkan dengan tabel di docs/DESIGN.md bagian 1.
- * Ambang: teks normal >= 4,5; garis kontrol >= 3. Nilai "harapan" ditulis tangan dari tabel DESIGN.md.
+ * Rasio kontras WCAG 2.x dari konstanta tema, dibandingkan dengan tabel di docs/DESIGN.md bagian 1 (v2).
+ * Ambang: teks normal >= 4,5; garis kontrol (batas input, tombol sekunder) >= 3. Nilai "harapan" ditulis tangan dari tabel DESIGN.md.
  */
 class KontrasTemaTest {
     private class Pasangan(
@@ -29,28 +29,35 @@ class KontrasTemaTest {
     private val garis = 3.0
 
     private val tabel = listOf(
-        Pasangan("teks / latar", { it.teks }, { it.latar }, teks, 13.89, 14.36),
-        Pasangan("teks / container", { it.teks }, { it.container }, teks, 12.69, 13.17),
-        Pasangan("teks / container-high", { it.teks }, { it.containerHigh }, teks, 11.33, 11.75),
-        Pasangan("teks-sekunder / latar", { it.teksSekunder }, { it.latar }, teks, 6.52, 7.96),
-        Pasangan("teks-sekunder / container", { it.teksSekunder }, { it.container }, teks, 5.95, 7.30),
-        Pasangan("teks-sekunder / container-high", { it.teksSekunder }, { it.containerHigh }, teks, 5.32, 6.51),
-        Pasangan("garis-kontrol / latar", { it.garisKontrol }, { it.latar }, garis, 3.66, 4.85),
-        Pasangan("garis-kontrol / container", { it.garisKontrol }, { it.container }, garis, 3.34, 4.45),
-        Pasangan("aksen / latar", { it.aksen }, { it.latar }, teks, 7.08, 8.69),
-        Pasangan("aksen / container", { it.aksen }, { it.container }, teks, 6.47, 7.97),
-        Pasangan("di-atas-aksen / aksen", { it.diAtasAksen }, { it.aksen }, teks, 7.33, 7.46),
+        Pasangan("teks / latar", { it.teks }, { it.latar }, teks, 15.35, 15.61),
+        Pasangan("teks / container", { it.teks }, { it.container }, teks, 13.69, 14.26),
+        Pasangan("teks / container-high", { it.teks }, { it.containerHigh }, teks, 12.14, 12.77),
+        Pasangan("teks-sekunder / latar", { it.teksSekunder }, { it.latar }, teks, 9.27, 11.07),
+        Pasangan("teks-sekunder / container", { it.teksSekunder }, { it.container }, teks, 8.27, 10.11),
+        Pasangan("teks-sekunder / container-high", { it.teksSekunder }, { it.containerHigh }, teks, 7.33, 9.05),
+        Pasangan("garis-kontrol / latar", { it.garisKontrol }, { it.latar }, garis, 4.91, 6.21),
+        Pasangan("garis-kontrol / container", { it.garisKontrol }, { it.container }, garis, 4.38, 5.68),
+        Pasangan("garis-kontrol / container-high", { it.garisKontrol }, { it.containerHigh }, garis, 3.88, 5.08),
+        Pasangan("aksen / latar", { it.aksen }, { it.latar }, teks, 6.10, 9.78),
+        Pasangan("aksen / container", { it.aksen }, { it.container }, teks, 5.44, 8.93),
+        Pasangan("aksen / container-high", { it.aksen }, { it.containerHigh }, teks, 4.83, 8.00),
+        Pasangan("di-atas-aksen / aksen", { it.diAtasAksen }, { it.aksen }, teks, 6.42, 8.20),
         Pasangan(
             "di-atas-aksen-container / aksen-container",
-            { it.diAtasAksenContainer }, { it.aksenContainer }, teks, 9.84, 8.91,
+            { it.diAtasAksenContainer }, { it.aksenContainer }, teks, 8.12, 8.97,
         ),
-        Pasangan("galat / latar", { it.galat }, { it.latar }, teks, 5.66, 8.75),
-        Pasangan("galat / container", { it.galat }, { it.container }, teks, 5.17, 8.02),
-        Pasangan("di-atas-galat / galat", { it.diAtasGalat }, { it.galat }, teks, 6.14, 8.23),
+        Pasangan("aksen / aksen-container", { it.aksen }, { it.aksenContainer }, teks, 5.25, 5.99),
+        Pasangan("galat / latar", { it.galat }, { it.latar }, teks, 5.67, 9.27),
         Pasangan(
             "di-atas-galat-container / galat-container",
-            { it.diAtasGalatContainer }, { it.galatContainer }, teks, 9.61, 10.47,
+            { it.diAtasGalatContainer }, { it.galatContainer }, teks, 8.43, 10.47,
         ),
+    )
+
+    /** Pasangan yang dipakai di aplikasi tetapi tidak ada di tabel DESIGN.md v2: hanya ambang, tanpa nilai harapan. */
+    private val tanpaNilaiTabel = listOf(
+        Triple("galat / container", { p: Palet -> p.galat } to { p: Palet -> p.container }, teks),
+        Triple("di-atas-galat / galat", { p: Palet -> p.diAtasGalat } to { p: Palet -> p.galat }, teks),
     )
 
     private fun cahaya(c: Color): Double {
@@ -81,6 +88,16 @@ class KontrasTemaTest {
     }
 
     @Test
+    fun pasanganTanpaNilaiTabelMemenuhiAmbang() {
+        for ((mode, palet) in listOf("terang" to PaletTerang, "gelap" to PaletGelap)) {
+            for ((nama, fg, minimum) in tanpaNilaiTabel) {
+                val r = rasio(fg.first(palet), fg.second(palet))
+                assertTrue("$nama ($mode) = ${"%.2f".format(r)} < $minimum", r >= minimum)
+            }
+        }
+    }
+
+    @Test
     fun rasioKodeSamaDenganTabelDesignMd() {
         val selisih = mutableListOf<String>()
         for ((mode, palet) in listOf("terang" to PaletTerang, "gelap" to PaletGelap)) {
@@ -97,8 +114,8 @@ class KontrasTemaTest {
 
     @Test
     fun pemisahSengajaTipisTapiTerlihat() {
-        // DESIGN.md: pemisah 1,41 (terang) dan 1,43 (gelap) terhadap latar; dekoratif, bukan batas kontrol.
-        assertEquals(1.41, rasio(PaletTerang.pemisah, PaletTerang.latar), 0.011)
-        assertEquals(1.43, rasio(PaletGelap.pemisah, PaletGelap.latar), 0.011)
+        // DESIGN.md: pemisah 1,39 (terang) dan 1,47 (gelap) terhadap latar; dekoratif, bukan batas kontrol.
+        assertEquals(1.39, rasio(PaletTerang.pemisah, PaletTerang.latar), 0.011)
+        assertEquals(1.47, rasio(PaletGelap.pemisah, PaletGelap.latar), 0.011)
     }
 }
