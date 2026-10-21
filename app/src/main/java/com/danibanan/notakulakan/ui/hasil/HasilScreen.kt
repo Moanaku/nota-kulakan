@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -21,11 +20,9 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -74,9 +71,6 @@ import com.danibanan.notakulakan.ui.theme.Elevasi
 import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
 import com.danibanan.notakulakan.ui.theme.Ukuran
-
-/** Pada skala font ini ke atas, panel simpan menjadi item terakhir daftar. */
-private const val SKALA_FONT_PANEL_MENGGULIR = 1.5f
 
 private sealed interface Lembar {
     data class Baris(val indeks: Int) : Lembar
@@ -206,19 +200,15 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
 
     LaunchedEffect(Unit) { vm.muatProduk() }
 
-    // Skala font besar: panel simpan ikut menggulir sebagai item terakhir, tidak menempel memakan layar.
-    val panelMenempel = LocalDensity.current.fontScale < SKALA_FONT_PANEL_MENGGULIR
-    val panel: @Composable () -> Unit = { PanelSimpan(d, menempel = panelMenempel, onKonfirmasi = vm::setKonfirmasi, onSimpan = { vm.simpan() }) }
-
     Scaffold(
         topBar = { BarAtas(stringResource(R.string.periksa_judul), onKembali = onKembali) },
-        bottomBar = { if (panelMenempel) panel() },
+        bottomBar = { BarSimpan(d, onSimpan = { vm.simpan() }) },
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(horizontal = Spasi.l, vertical = Spasi.s),
+            contentPadding = PaddingValues(start = Spasi.l, end = Spasi.l, top = Spasi.s, bottom = Spasi.l),
         ) {
-            // Satu elemen dominan: total nota. Status keseluruhan tepat di bawahnya.
+            // Satu elemen dominan: total nota. Status keseluruhan (PesanPeriksa) tepat di bawahnya.
             item {
                 val jumlahGalat = d.validasi.isu.count { it.tingkat == Tingkat.GALAT }
                 Column(Modifier.padding(bottom = Spasi.l), verticalArrangement = Arrangement.spacedBy(Spasi.s)) {
@@ -233,9 +223,26 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
                     )
                     when {
                         d.manual && d.status == StatusSimpan.TERHALANG ->
-                            ChipStatus(StatusBaris.BELUM_TERBACA, teks = stringResource(R.string.status_isi_manual))
-                        jumlahGalat == 0 -> ChipStatus(StatusBaris.COCOK, teks = stringResource(R.string.status_cocok))
-                        else -> ChipStatus(StatusBaris.SELISIH, teks = stringResource(R.string.status_perlu_cek, jumlahGalat))
+                            PesanPeriksa(stringResource(R.string.status_isi_manual), JenisPesan.INFO)
+                        jumlahGalat == 0 -> PesanPeriksa(stringResource(R.string.status_cocok), JenisPesan.COCOK)
+                        else -> PesanPeriksa(stringResource(R.string.status_perlu_cek, jumlahGalat), JenisPesan.GALAT)
+                    }
+                    // Konfirmasi tepat di bawah masalahnya; tombol simpan di bilah bawah baru aktif setelah dicentang.
+                    if (d.status == StatusSimpan.PERLU_KONFIRMASI) {
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(Radius.sedang))
+                                .clickable { vm.setKonfirmasi(!d.konfirmasi) },
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Checkbox(checked = d.konfirmasi, onCheckedChange = vm::setKonfirmasi)
+                            Text(
+                                stringResource(R.string.konfirmasi_tidak_cocok),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
                     }
                 }
             }
@@ -317,16 +324,16 @@ private fun LayarDraf(d: DrafUi, vm: HasilViewModel, onKembali: () -> Unit) {
             }
             if (d.nota.items.isNotEmpty()) {
                 item {
-                    TombolSekunder(
+                    TombolTeks(
                         teks = stringResource(R.string.tambah_baris),
                         onClick = vm::tambahBaris,
-                        modifier = Modifier.fillMaxWidth().padding(top = Spasi.l),
+                        modifier = Modifier.padding(top = Spasi.s),
                         ikon = Icons.Outlined.Add,
+                        sejajarMargin = true,
                     )
                 }
             }
             item { RingkasanTotal(d, onUbah = { lembar = Lembar.Total }) }
-            if (!panelMenempel) item { Box(Modifier.padding(top = Spasi.xl)) { panel() } }
         }
     }
 
@@ -440,48 +447,26 @@ private fun RingkasanTotal(d: DrafUi, onUbah: () -> Unit) {
 @Composable
 private fun Long?.rupiahAtauKosong(): String = this?.let(Rupiah::format) ?: stringResource(R.string.belum_diisi)
 
+/**
+ * Bilah aksi "Simpan nota". Bila tombol nonaktif, alasannya tertulis di atas tombol (bukan hanya tombol yang abu-abu);
+ * galat simpan juga tampil di sini, dekat tombol yang baru ditekan.
+ */
 @Composable
-private fun PanelSimpan(d: DrafUi, menempel: Boolean, onKonfirmasi: (Boolean) -> Unit, onSimpan: () -> Unit) {
-    Surface(color = MaterialTheme.colorScheme.background, tonalElevation = Elevasi.nol, shadowElevation = Elevasi.nol) {
-        Column {
-            HorizontalDivider(thickness = Ukuran.garis, color = MaterialTheme.colorScheme.outlineVariant)
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    // Sebagai item daftar, gutter 16 dp sudah dari contentPadding daftar.
-                    .let { if (menempel) it.padding(horizontal = Spasi.l) else it }
-                    .padding(vertical = Spasi.m),
-                verticalArrangement = Arrangement.spacedBy(Spasi.s),
-            ) {
-                when {
-                    d.namaKosong -> PesanPeriksa(stringResource(R.string.terhalang_nama), JenisPesan.GALAT)
-                    d.status == StatusSimpan.TERHALANG -> PesanPeriksa(stringResource(R.string.terhalang_lengkapi), JenisPesan.GALAT)
-                    d.status == StatusSimpan.PERLU_KONFIRMASI -> Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(Radius.sedang))
-                            .clickable { onKonfirmasi(!d.konfirmasi) },
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Checkbox(checked = d.konfirmasi, onCheckedChange = onKonfirmasi)
-                        Text(
-                            stringResource(R.string.konfirmasi_tidak_cocok),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                }
-                if (d.galatSimpan) PesanPeriksa(stringResource(R.string.galat_simpan), JenisPesan.GALAT)
-                TombolUtama(
-                    teks = stringResource(if (d.menyimpan) R.string.menyimpan_nota else R.string.simpan_ke_stok),
-                    onClick = onSimpan,
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = d.bolehSimpan,
-                )
+private fun BarSimpan(d: DrafUi, onSimpan: () -> Unit) {
+    BarAksiBawah(
+        teksUtama = stringResource(if (d.menyimpan) R.string.menyimpan_nota else R.string.simpan_ke_stok),
+        onUtama = onSimpan,
+        utamaAktif = d.bolehSimpan,
+        catatan = {
+            when {
+                d.namaKosong -> PesanPeriksa(stringResource(R.string.terhalang_nama), JenisPesan.GALAT)
+                d.status == StatusSimpan.TERHALANG -> PesanPeriksa(stringResource(R.string.terhalang_lengkapi), JenisPesan.GALAT)
+                d.status == StatusSimpan.PERLU_KONFIRMASI && !d.konfirmasi ->
+                    PesanPeriksa(stringResource(R.string.terhalang_centang), JenisPesan.INFO)
             }
-        }
-    }
+            if (d.galatSimpan) PesanPeriksa(stringResource(R.string.galat_simpan), JenisPesan.GALAT)
+        },
+    )
 }
 
 @Composable

@@ -102,6 +102,7 @@
     <string name="total_nota">Total nota</string>
     <string name="konfirmasi_tidak_cocok">Angka sudah saya cocokkan dengan nota fisik. Hitungan di nota memang tidak cocok.</string>
     <string name="terhalang_lengkapi">Lengkapi baris yang ditandai merah dulu</string>
+    <string name="terhalang_centang">Centang kotak konfirmasi di atas untuk menyimpan nota.</string>
     <string name="terhalang_nama">Setiap baris harus punya nama barang</string>
     <string name="galat_simpan">Gagal menyimpan. Coba lagi.</string>
 

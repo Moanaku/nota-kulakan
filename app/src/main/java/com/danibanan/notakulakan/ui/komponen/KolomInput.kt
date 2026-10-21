@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
@@ -35,9 +36,11 @@ private fun kolomWarna() = MaterialTheme.colorScheme.let { w ->
         focusedTextColor = w.onSurface,
         unfocusedTextColor = w.onSurface,
         errorTextColor = w.onSurface,
-        focusedContainerColor = w.surface,
-        unfocusedContainerColor = w.surface,
-        errorContainerColor = w.surface,
+        // Transparan: kolom dan tambalan label memakai permukaan tempat kolom berada (sheet = container), jadi
+        // tidak ada tambalan warna lain di sekitar label.
+        focusedContainerColor = Color.Transparent,
+        unfocusedContainerColor = Color.Transparent,
+        errorContainerColor = Color.Transparent,
         cursorColor = w.primary,
         errorCursorColor = w.error,
         focusedBorderColor = w.primary,

@@ -41,8 +41,9 @@ fun BarisRingkasanTotal(
     modifier: Modifier = Modifier,
     dominan: Boolean = false,
 ) {
-    val labelGaya = if (dominan) MaterialTheme.typography.titleLarge else MaterialTheme.typography.bodyLarge
-    val labelWarna = if (dominan) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+    // Label total tetap isi 16 teks-sekunder: yang dominan hanya angka-besar, bukan label serifnya.
+    val labelGaya = MaterialTheme.typography.bodyLarge
+    val labelWarna = MaterialTheme.colorScheme.onSurfaceVariant
     val nilaiGaya = if (dominan) GayaNota.angkaBesar else MaterialTheme.typography.bodyLarge
     if (LocalDensity.current.fontScale >= SKALA_FONT_SUSUN_VERTIKAL) {
         // Skala besar: label di atas, angka di bawahnya, supaya label tidak terpecah menjadi baris yatim.

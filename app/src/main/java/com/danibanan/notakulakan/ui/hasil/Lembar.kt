@@ -152,6 +152,7 @@ fun LembarBaris(
             onClick = onHapus,
             modifier = Modifier.fillMaxWidth(),
             ikon = Icons.Outlined.Delete,
+            galat = true,
         )
     }
 }
