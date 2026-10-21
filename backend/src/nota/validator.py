@@ -121,7 +121,7 @@ def periksa_baris(i: int, item: ItemBaris) -> list[Isu]:
         isu.append(
             Isu(
                 Kode.BARIS_TIDAK_COCOK,
-                f"Baris {i + 1} ({item.nama}): {format_qty(item.qty)} x {rp(item.harga_satuan)}"
+                f"Baris {i + 1} ({item.nama}): {format_qty(item.qty)} × {rp(item.harga_satuan)}"
                 f" = {rp(diharapkan)}, tapi tertulis {rp(item.jumlah)}",
                 baris=i,
                 diharapkan=diharapkan,

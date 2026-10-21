@@ -52,7 +52,7 @@ Langkah:
      (Windows PowerShell: $env:NOTA_KLIEN="tiruan"; $env:APP_CHECK="off"; uvicorn nota.api:app --port 8080)
    Terminal 2: jalankan aplikasi debug di emulator (URL bawaan debug: http://10.0.2.2:8080/).
    Lakukan: Catat nota -> pilih foto apa saja dari galeri -> layar Periksa nota harus menampilkan
-   4 baris contoh, baris "Gula Pasir 1kg" merah (2 x Rp 60 = Rp 120, tertulis Rp 120.000) dan
+   4 baris contoh, baris "Gula Pasir 1kg" merah (2 × Rp 60 = Rp 120, tertulis Rp 120.000) dan
    baris "Air Mineral" bertanda harga dihitung -> perbaiki harga gula menjadi 60.000 -> status
    berubah hijau -> Simpan -> layar Tersimpan -> tab Stok menampilkan 4 produk -> simpan foto yang
    sama sekali lagi -> muncul dialog "Nota ini mungkin sudah dicatat".

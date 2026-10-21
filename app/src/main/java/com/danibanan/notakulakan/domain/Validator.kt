@@ -56,7 +56,7 @@ object Validator {
         if (diharapkan != jumlah) {
             isu += Isu(
                 KodeIsu.BARIS_TIDAK_COCOK,
-                "Baris ${i + 1} (${item.nama}): ${Qty.format(qty)} x ${Rupiah.format(harga)}" +
+                "Baris ${i + 1} (${item.nama}): ${Qty.format(qty)} × ${Rupiah.format(harga)}" +
                     " = ${Rupiah.format(diharapkan)}, tapi tertulis ${Rupiah.format(jumlah)}",
                 baris = i,
                 diharapkan = diharapkan,

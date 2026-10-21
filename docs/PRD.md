@@ -43,7 +43,7 @@ peringatan margin, konversi satuan (dus ke pcs), OCR di HP, scan barcode, batch 
 - Selesai kalau: semua jenis kegagalan di atas bisa dipicu dan ditampilkan dengan benar.
 
 ### F3. Periksa dan koreksi
-- Baris yang punya isu disorot, dengan pesan isu dari validator (contoh: "2 x Rp 60 = Rp 120, tapi tertulis Rp 120.000").
+- Baris yang punya isu disorot, dengan pesan isu dari validator (contoh: "2 × Rp 60 = Rp 120, tapi tertulis Rp 120.000").
 - Pengguna bisa mengedit nama, qty, satuan, harga satuan, dan jumlah, serta menambah dan menghapus baris.
 - Setelah edit, status baris dan total diperbarui seketika (validator dicerminkan di Kotlin).
 - Aturan simpan (`statusSimpan`): data tidak lengkap (kosong, qty tidak sah, angka tak terbaca,
