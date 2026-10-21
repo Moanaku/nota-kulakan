@@ -385,9 +385,13 @@ private fun IsiDetail(s: DetailUi.Ada, padding: PaddingValues, onHapus: () -> Un
                     nilai = t.nota.total?.let(Rupiah::format) ?: "-",
                     dominan = true,
                 )
+                // Supplier satu baris sendiri (boleh membungkus); tanggal dan jam di baris keterangan, tidak terpotong di tengah.
+                t.nota.supplier?.let {
+                    Text(it, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                }
                 Text(
-                    listOfNotNull(t.nota.supplier, formatTanggal(t.dibuatPada)).joinToString(" · "),
-                    style = MaterialTheme.typography.bodyLarge,
+                    formatTanggal(t.dibuatPada),
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 if (t.dikonfirmasiMeskiTidakCocok) {

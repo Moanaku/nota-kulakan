@@ -12,6 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -54,8 +55,14 @@ private const val QTY_HARGA_PANJANG = "12 karton isi 40 bungkus x Rp 123.456"
 private const val TOKO_PANJANG = "UD Sumber Rejeki Makmur Jaya Abadi Grosir Sembako"
 private const val JUMLAH_PANJANG = "Rp 12.345.678"
 
+/** Surface memberi warna isi bawaan dari tema; tanpanya teks katalog hitam di atas latar gelap saat mode malam. */
 @Composable
 fun KatalogKomponen() {
+    Surface(color = MaterialTheme.colorScheme.background, contentColor = MaterialTheme.colorScheme.onBackground) { IsiKatalog() }
+}
+
+@Composable
+private fun IsiKatalog() {
     var teks by remember { mutableStateOf("Gula pasir kristal putih kemasan 1 kg") }
     var rupiah by remember { mutableStateOf<Long?>(1234567) }
     var sheet by remember { mutableStateOf(false) }
@@ -126,7 +133,9 @@ fun KatalogKomponen() {
                 "Simpan nota ke stok",
                 onUtama = {},
                 utamaAktif = false,
-                catatan = { PesanPeriksa("Lengkapi baris yang ditandai merah dulu", JenisPesan.GALAT) },
+                catatan = {
+                    Text("Lengkapi baris bertanda merah dulu.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                },
             ) // kondisi: nonaktif, alasannya tertulis di dekat tombol
         }
 

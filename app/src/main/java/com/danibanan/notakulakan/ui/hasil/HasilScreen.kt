@@ -68,7 +68,6 @@ import com.danibanan.notakulakan.ui.komponen.PemisahBaris
 import com.danibanan.notakulakan.ui.komponen.PesanPeriksa
 import com.danibanan.notakulakan.ui.komponen.SKALA_FONT_SUSUN_VERTIKAL
 import com.danibanan.notakulakan.ui.komponen.SkeletonBarisBarang
-import com.danibanan.notakulakan.ui.komponen.SpandukOffline
 import com.danibanan.notakulakan.ui.komponen.StatusBaris
 import com.danibanan.notakulakan.ui.komponen.TombolSekunder
 import com.danibanan.notakulakan.ui.komponen.TombolTeks
@@ -146,7 +145,7 @@ private fun pesanGagal(jenis: JenisGagal, tersambung: Boolean): Int = when (jeni
 /**
  * Gagal: sebab spesifik per jenis di tengah, aksi utama di [BarAksiBawah] ("Coba lagi", atau "Foto ulang" bila foto
  * yang salah), "Isi manual" sebagai aksi sekunder. "Ganti foto nota" tetap ada sebagai tombol teks bila aksi
- * utamanya mengulang panggilan.
+ * utamanya mengulang panggilan. Tanpa spanduk offline: saat sebabnya jaringan, kalimat galatnya sudah menjelaskan.
  */
 @Composable
 internal fun LayarGagal(
@@ -170,7 +169,6 @@ internal fun LayarGagal(
         },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
-            SpandukOffline(tampil = s.jenis == JenisGagal.TANPA_JARINGAN && !tersambung)
             Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
                 Column(Modifier.verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
                     KondisiGalat(

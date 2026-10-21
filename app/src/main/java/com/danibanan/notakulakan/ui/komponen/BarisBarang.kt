@@ -49,7 +49,8 @@ fun BarisBarang(
             Column(it, verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
                 Text(nama, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                 Text(
-                    qtyHarga,
+                    // Spasi tak terputus: di skala besar harga tidak pecah menjadi "Rp" dan angkanya di baris lain.
+                    qtyHarga.replace("Rp ", "Rp "),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

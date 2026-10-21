@@ -119,8 +119,8 @@
     <string name="sebelumnya_terbaca">Tadinya terbaca %1$s</string>
     <string name="cocok_baris">%1$s × %2$s = %3$s. Cocok dengan jumlah tertulis.</string>
     <string name="hapus_baris">Hapus baris ini</string>
-    <string name="simpan_koreksi_baris">Simpan koreksi baris</string>
-    <string name="simpan_total_nota">Simpan total nota</string>
+    <string name="simpan_koreksi_baris">Simpan baris</string>
+    <string name="simpan_total_nota">Simpan total</string>
 
     <!-- Lembar total -->
     <string name="edit_total_judul">Total dan supplier</string>
