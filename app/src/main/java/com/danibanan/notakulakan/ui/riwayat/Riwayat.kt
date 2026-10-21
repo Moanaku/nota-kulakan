@@ -35,7 +35,6 @@ import com.danibanan.notakulakan.domain.RingkasNota
 import com.danibanan.notakulakan.domain.Rupiah
 import com.danibanan.notakulakan.domain.Validator
 import com.danibanan.notakulakan.domain.model.ItemBaris
-import com.danibanan.notakulakan.domain.model.Tingkat
 import com.danibanan.notakulakan.domain.repo.NotaRepository
 import com.danibanan.notakulakan.domain.repo.adalahDataContoh
 import com.danibanan.notakulakan.domain.repo.NotaTersimpan
@@ -53,7 +52,7 @@ import com.danibanan.notakulakan.ui.komponen.PemisahBaris
 import com.danibanan.notakulakan.ui.komponen.PesanPeriksa
 import com.danibanan.notakulakan.ui.komponen.SkeletonBarisBarang
 import com.danibanan.notakulakan.ui.komponen.SpandukOffline
-import com.danibanan.notakulakan.ui.komponen.StatusBaris
+import com.danibanan.notakulakan.ui.komponen.statusBaris
 import com.danibanan.notakulakan.ui.komponen.Tab
 import com.danibanan.notakulakan.ui.komponen.TombolTeks
 import com.danibanan.notakulakan.ui.komponen.formatTanggal
@@ -307,12 +306,6 @@ class DetailViewModel @Inject constructor(
     }
 }
 
-private fun statusBaris(i: Int, item: ItemBaris): StatusBaris = when {
-    Validator.periksaBaris(i, item).any { it.tingkat == Tingkat.GALAT } -> StatusBaris.SELISIH
-    item.qty == null || item.hargaSatuan == null || item.jumlah == null -> StatusBaris.BELUM_TERBACA
-    else -> StatusBaris.COCOK
-}
-
 /**
  * Empat kondisi: memuat (skeleton), galat (nota tidak bisa dibuka, "Coba lagi"), kosong (nota sudah tidak ada: layar
  * menutup sendiri) dan offline (tidak berlaku: nota dibaca dari HP). "Hapus nota" ada di bawah daftar sebagai tombol
@@ -429,7 +422,7 @@ private fun IsiDetail(s: DetailUi.Ada, padding: PaddingValues, onHapus: () -> Un
                 nama = namaProduk,
                 qtyHarga = if (namaProduk == item.nama) hitungan else "${item.nama} · $hitungan",
                 jumlah = item.jumlah?.let(Rupiah::format) ?: "?",
-                status = statusBaris(i, item),
+                status = statusBaris(item, Validator.periksaBaris(i, item)),
             )
             PemisahBaris()
         }

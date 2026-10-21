@@ -18,12 +18,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.danibanan.notakulakan.R
+import com.danibanan.notakulakan.domain.model.Isu
+import com.danibanan.notakulakan.domain.model.ItemBaris
+import com.danibanan.notakulakan.domain.model.Tingkat
 import com.danibanan.notakulakan.ui.theme.Radius
 import com.danibanan.notakulakan.ui.theme.Spasi
 import com.danibanan.notakulakan.ui.theme.Ukuran
 
 /** Status hasil pemeriksaan aturan hitungan. Selalu tampil sebagai ikon + teks + warna. */
 enum class StatusBaris { COCOK, SELISIH, BELUM_TERBACA }
+
+/**
+ * Status chip satu baris, dipakai Periksa dan Detail supaya sama. Baris dengan qty, harga, atau jumlah yang belum
+ * terbaca selalu "belum terbaca" (isu "belum terisi" dari validator tetap tampil sebagai pesan di Periksa);
+ * selain itu salah satu isu galat berarti selisih, kalau tidak cocok.
+ */
+fun statusBaris(item: ItemBaris, isu: List<Isu>): StatusBaris = when {
+    item.qty == null || item.hargaSatuan == null || item.jumlah == null -> StatusBaris.BELUM_TERBACA
+    isu.any { it.tingkat == Tingkat.GALAT } -> StatusBaris.SELISIH
+    else -> StatusBaris.COCOK
+}
 
 /**
  * Chip status. cocok = aksen-container; selisih = galat-container; belum terbaca = container-high + teks-sekunder

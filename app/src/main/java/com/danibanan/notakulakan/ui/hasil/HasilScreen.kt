@@ -71,7 +71,7 @@ import com.danibanan.notakulakan.ui.komponen.PemisahBaris
 import com.danibanan.notakulakan.ui.komponen.PesanPeriksa
 import com.danibanan.notakulakan.ui.komponen.SKALA_FONT_SUSUN_VERTIKAL
 import com.danibanan.notakulakan.ui.komponen.SkeletonBarisBarang
-import com.danibanan.notakulakan.ui.komponen.StatusBaris
+import com.danibanan.notakulakan.ui.komponen.statusBaris
 import com.danibanan.notakulakan.ui.komponen.TombolSekunder
 import com.danibanan.notakulakan.ui.komponen.TombolTeks
 import com.danibanan.notakulakan.ui.komponen.TombolUtama
@@ -184,12 +184,6 @@ internal fun LayarGagal(
             }
         }
     }
-}
-
-private fun statusBaris(item: ItemBaris, isu: List<Isu>): StatusBaris = when {
-    isu.any { it.tingkat == Tingkat.GALAT } -> StatusBaris.SELISIH
-    item.qty == null || item.hargaSatuan == null || item.jumlah == null -> StatusBaris.BELUM_TERBACA
-    else -> StatusBaris.COCOK
 }
 
 private fun qtyHarga(item: ItemBaris): String = buildString {
