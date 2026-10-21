@@ -12,7 +12,7 @@ Proyek ini adalah studi kasus produk dan rekayasa, bukan pesaing aplikasi kasir 
 
 <p>
   <img src="docs/img/contoh-pilihan.png" width="240" alt="Layar Catat nota dengan lembar Pilih nota contoh: tiga nota buatan sendiri, bukan nota nyata">
-  <img src="docs/img/contoh-selisih.png" width="240" alt="Layar Periksa nota untuk nota contoh: baris Gula Pasir ditandai selisih karena 2 x Rp 60 tidak sama dengan Rp 120.000">
+  <img src="docs/img/contoh-selisih.png" width="240" alt="Layar Periksa nota untuk nota contoh: baris Gula Pasir ditandai selisih karena 2 × Rp 60 tidak sama dengan Rp 120.000">
   <img src="docs/img/contoh-koreksi-gelap.png" width="240" alt="Layar Periksa nota tema gelap setelah koreksi: semua hitungan cocok dan tombol Simpan nota ke stok aktif">
 </p>
 
