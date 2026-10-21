@@ -2,7 +2,7 @@ package com.danibanan.notakulakan.ui
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import com.danibanan.notakulakan.ui.theme.Newsreader
+import com.danibanan.notakulakan.ui.theme.SourceSerif4
 import com.danibanan.notakulakan.ui.theme.SourceSans3
 import com.danibanan.notakulakan.ui.theme.TipografiNota
 import org.junit.Assert.assertEquals
@@ -24,10 +24,10 @@ class TipografiTemaTest {
     @Test
     fun limaBelasPeranMemakaiEnamUkuranDanDuaKeluarga() {
         assertEquals(15, semuaPeran.size)
-        val ukuran = setOf(12f, 14f, 16f, 20f, 24f, 32f)
+        val ukuran = setOf(12f, 14f, 16f, 20f, 24f, 28f)
         for ((nama, gaya) in semuaPeran) {
             assertTrue("$nama ukuran ${gaya.fontSize.value}", gaya.fontSize.value in ukuran)
-            assertTrue("$nama keluarga", gaya.fontFamily === SourceSans3 || gaya.fontFamily === Newsreader)
+            assertTrue("$nama keluarga", gaya.fontFamily === SourceSans3 || gaya.fontFamily === SourceSerif4)
             assertTrue("$nama bukan font sistem", gaya.fontFamily != FontFamily.Default)
         }
     }

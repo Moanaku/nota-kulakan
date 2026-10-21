@@ -212,5 +212,5 @@ Workshop @ NeurIPS 2019, NAVER Clova AI, lisensi CC BY 4.0
 ## Lisensi
 
 - Kode: MIT ([`LICENSE`](LICENSE)).
-- Font Newsreader dan Source Sans 3: SIL Open Font License ([`licenses/`](licenses/)).
+- Font Source Serif 4 dan Source Sans 3: SIL Open Font License ([`licenses/`](licenses/)).
 - Data CORD: CC BY 4.0.
