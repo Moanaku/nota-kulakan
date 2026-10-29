@@ -150,6 +150,36 @@
     <string name="objek_nota_tercatat">nota tercatat</string>
     <string name="riwayat_penjelasan">Nota kulakan yang sudah tersimpan di HP ini, dari yang terbaru.</string>
     <string name="riwayat_kosong_isi">Foto nota kulakan pertama. Nota yang sudah tersimpan tampil di sini.</string>
+    <string name="cari_nota">Cari nota</string>
+    <string name="cari_nota_bantuan">Supplier, barang, atau tanggal</string>
+    <string name="cari_hapus">Hapus pencarian</string>
+    <plurals name="cari_ditemukan">
+        <item quantity="other">%1$d nota ditemukan</item>
+    </plurals>
+    <plurals name="cari_barang_lainnya">
+        <item quantity="other">+%1$d lainnya</item>
+    </plurals>
+    <string name="cari_kosong_kata">Tidak ada nota yang cocok dengan “%1$s”.</string>
+    <string name="cari_kosong_kata_filter">Tidak ada nota yang cocok dengan “%1$s” dan filter ini.</string>
+    <string name="cari_kosong_filter">Tidak ada nota yang cocok dengan filter ini.</string>
+    <string name="cari_kosong_isi_kata">Periksa ejaan atau pakai kata yang lebih pendek. Salah ketik belum dikenali.</string>
+    <string name="cari_kosong_isi_filter">Ubah atau hapus filter untuk melihat nota lain.</string>
+    <string name="cari_hapus_pencarian_filter">Hapus pencarian dan filter</string>
+    <string name="filter_tombol">Filter</string>
+    <string name="filter_judul">Filter nota</string>
+    <string name="filter_supplier">Supplier</string>
+    <string name="filter_semua_supplier">Semua supplier</string>
+    <string name="filter_tanggal">Tanggal</string>
+    <string name="filter_selesai">Selesai</string>
+    <string name="filter_hapus_semua">Hapus semua filter</string>
+    <string name="filter_chip_supplier">Supplier: %1$s</string>
+    <string name="filter_hapus_cd">Hapus filter %1$s</string>
+    <string name="rentang_semua">Semua tanggal</string>
+    <string name="rentang_7_hari">7 hari terakhir</string>
+    <string name="rentang_30_hari">30 hari terakhir</string>
+    <string name="rentang_bulan_ini">Bulan ini</string>
+    <string name="rentang_bulan_lalu">Bulan lalu</string>
+    <string name="skeleton_memuat_nota">Memuat daftar nota</string>
     <string name="galat_riwayat">Daftar nota tidak bisa dibaca dari HP ini. Coba lagi.</string>
     <string name="galat_detail">Nota ini tidak bisa dibuka. Coba lagi.</string>
     <string name="galat_hapus">Nota belum terhapus. Coba lagi.</string>

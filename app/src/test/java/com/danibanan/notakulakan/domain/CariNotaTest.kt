@@ -1,5 +1,7 @@
 package com.danibanan.notakulakan.domain
 
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -112,5 +114,21 @@ class CariNotaTest {
     fun daftarSupplierUnikTerurutDanMelewatiKosong() {
         val d = listOf(nota(1, "b toko"), nota(2, "A Toko"), nota(3, "B Toko "), nota(4, null), nota(5, "  "))
         assertEquals(listOf("A Toko", "b toko"), daftarSupplier(d))
+    }
+
+    @Test
+    fun rentangTanggalDihitungDariHariIniDanKalender() {
+        val zona = ZoneId.of("Asia/Jakarta")
+        fun ms(t: String) = ZonedDateTime.parse("${t}+07:00[Asia/Jakarta]").toInstant().toEpochMilli()
+        val sekarang = ms("2026-10-15T13:30:00")
+        val f = FilterNota(supplier = "X")
+        assertEquals(FilterNota("X", null, null), f.denganRentang(RentangTanggal.SEMUA, sekarang, zona))
+        assertEquals(ms("2026-10-09T00:00:00"), f.denganRentang(RentangTanggal.TUJUH_HARI, sekarang, zona).dari)
+        assertEquals(ms("2026-09-16T00:00:00"), f.denganRentang(RentangTanggal.TIGA_PULUH_HARI, sekarang, zona).dari)
+        assertEquals(ms("2026-10-01T00:00:00"), f.denganRentang(RentangTanggal.BULAN_INI, sekarang, zona).dari)
+        val lalu = f.denganRentang(RentangTanggal.BULAN_LALU, sekarang, zona)
+        assertEquals(ms("2026-09-01T00:00:00"), lalu.dari)
+        assertEquals(ms("2026-10-01T00:00:00") - 1, lalu.sampai)
+        assertEquals("X", lalu.supplier)
     }
 }

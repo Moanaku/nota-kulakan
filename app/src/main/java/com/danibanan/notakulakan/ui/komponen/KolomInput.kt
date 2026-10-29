@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
@@ -69,7 +71,11 @@ private fun PesanGalat(pesan: String) {
     }
 }
 
-/** Kolom teks biasa (nama barang, nama toko, satuan). [maksBaris] > 1 untuk teks panjang seperti nama barang. */
+/**
+ * Kolom teks biasa (nama barang, nama toko, satuan, kata cari). [maksBaris] > 1 untuk teks panjang seperti nama
+ * barang. [ikonAwal] ikon dekoratif di depan (kolom cari); [aksiAkhir] slot di ujung (mis. tombol hapus 48 dp
+ * berlabel). Keduanya opsional.
+ */
 @Composable
 fun KolomTeks(
     nilai: String,
@@ -81,6 +87,9 @@ fun KolomTeks(
     bantuan: String? = null,
     maksBaris: Int = 1,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    ikonAwal: ImageVector? = null,
+    aksiAkhir: (@Composable () -> Unit)? = null,
 ) {
     OutlinedTextField(
         value = nilai,
@@ -88,6 +97,8 @@ fun KolomTeks(
         modifier = modifier.fillMaxWidth().defaultMinSize(minHeight = Ukuran.sentuhMin),
         enabled = enabled,
         label = { Text(label) },
+        leadingIcon = ikonAwal?.let { { Icon(it, contentDescription = null, modifier = Modifier.size(Ukuran.ikon)) } },
+        trailingIcon = aksiAkhir,
         textStyle = MaterialTheme.typography.bodyLarge,
         isError = galat != null,
         supportingText = (galat ?: bantuan)?.let { pesan ->
@@ -96,6 +107,7 @@ fun KolomTeks(
         singleLine = maksBaris == 1,
         maxLines = maksBaris,
         keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
         shape = RoundedCornerShape(Radius.kecil),
         colors = kolomWarna(),
     )

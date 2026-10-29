@@ -116,7 +116,8 @@ fun KartuRingkasanNota(
 
 /**
  * Satu nota dalam daftar riwayat (daftar = baris + divider, bukan kartu per nota): toko (isi-tebal), tanggal dan
- * jumlah barang (keterangan), total rata kanan. Beri [PemisahBaris] di antara baris.
+ * jumlah barang (keterangan), total rata kanan. Beri [PemisahBaris] di antara baris. [keterangan] (opsional, 14
+ * sekunder) di bawahnya: saat mencari, barang yang cocok.
  */
 @Composable
 fun BarisNota(
@@ -126,6 +127,7 @@ fun BarisNota(
     total: String,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
+    keterangan: String? = null,
 ) {
     val dasar = modifier
         .fillMaxWidth()
@@ -141,6 +143,9 @@ fun BarisNota(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            if (keterangan != null) {
+                Text(keterangan, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         }
     }
     val kanan: @Composable (Modifier) -> Unit = {

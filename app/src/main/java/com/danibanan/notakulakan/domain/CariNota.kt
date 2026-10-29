@@ -1,5 +1,9 @@
 package com.danibanan.notakulakan.domain
 
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+
 /**
  * Pencarian nota di Riwayat. Murni: tanpa Android, jaringan, atau I/O. Aturan inti: tidak ada kriteria yang wajib
  * diisi. Kriteria kosong diabaikan; hanya yang terisi digabung dengan DAN.
@@ -72,3 +76,25 @@ fun daftarSupplier(daftar: List<RingkasNota>): List<String> =
     daftar.mapNotNull { it.supplier?.trim()?.takeIf(String::isNotEmpty) }
         .distinctBy { it.lowercase() }
         .sortedBy { it.lowercase() }
+
+/** Pilihan rentang tanggal di filter. "Semua tanggal" = tanpa batas. */
+enum class RentangTanggal { SEMUA, TUJUH_HARI, TIGA_PULUH_HARI, BULAN_INI, BULAN_LALU }
+
+/**
+ * Mengisi [FilterNota.dari]/[FilterNota.sampai] dari [rentang] pada hari [sekarang] di [zona]. Hari ini dihitung
+ * sebagai hari pertama "7 hari terakhir"; bulan dihitung kalender, dari pukul 00.00.
+ */
+fun FilterNota.denganRentang(rentang: RentangTanggal, sekarang: Long, zona: ZoneId): FilterNota {
+    val hariIni = Instant.ofEpochMilli(sekarang).atZone(zona).toLocalDate()
+    fun awal(hari: LocalDate) = hari.atStartOfDay(zona).toInstant().toEpochMilli()
+    return when (rentang) {
+        RentangTanggal.SEMUA -> copy(dari = null, sampai = null)
+        RentangTanggal.TUJUH_HARI -> copy(dari = awal(hariIni.minusDays(6)), sampai = null)
+        RentangTanggal.TIGA_PULUH_HARI -> copy(dari = awal(hariIni.minusDays(29)), sampai = null)
+        RentangTanggal.BULAN_INI -> copy(dari = awal(hariIni.withDayOfMonth(1)), sampai = null)
+        RentangTanggal.BULAN_LALU -> {
+            val awalBulanIni = hariIni.withDayOfMonth(1)
+            copy(dari = awal(awalBulanIni.minusMonths(1)), sampai = awal(awalBulanIni) - 1)
+        }
+    }
+}

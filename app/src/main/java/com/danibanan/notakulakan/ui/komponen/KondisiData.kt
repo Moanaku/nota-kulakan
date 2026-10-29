@@ -44,7 +44,8 @@ enum class JenisKosong { BELUM_ADA_DATA, HASIL_FILTER_KOSONG }
 /**
  * Kondisi data kosong. [objek] adalah kata benda tanpa artikel ("nota", "barang"). [teksAksi] mis. "Foto nota"
  * untuk BELUM_ADA_DATA; untuk HASIL_FILTER_KOSONG bawaannya "Hapus filter". [isi] mengganti kalimat penjelas bawaan
- * dengan yang menyebut apa yang harus dilakukan di layar itu.
+ * dengan yang menyebut apa yang harus dilakukan di layar itu. [judul] mengganti judul bawaan, mis. untuk menyebut
+ * kata cari yang tidak ditemukan.
  */
 @Composable
 fun DataKosong(
@@ -54,11 +55,12 @@ fun DataKosong(
     teksAksi: String? = null,
     onAksi: (() -> Unit)? = null,
     isi: String? = null,
+    judul: String? = null,
 ) {
     val belumAda = jenis == JenisKosong.BELUM_ADA_DATA
     PesanTengah(
         ikon = if (belumAda) Icons.Outlined.Info else Icons.Outlined.Search,
-        judul = stringResource(if (belumAda) R.string.kosong_belum_ada_judul else R.string.kosong_filter_judul, objek),
+        judul = judul ?: stringResource(if (belumAda) R.string.kosong_belum_ada_judul else R.string.kosong_filter_judul, objek),
         isi = isi ?: stringResource(if (belumAda) R.string.kosong_belum_ada_isi else R.string.kosong_filter_isi, objek),
         modifier = modifier,
         teksAksi = teksAksi ?: if (belumAda) null else stringResource(R.string.kosong_hapus_filter),
@@ -150,6 +152,30 @@ fun SkeletonBarisBarang(modifier: Modifier = Modifier, jumlahBaris: Int = 3) {
                     Blok(Modifier.width(Spasi.xxxl + Spasi.xl).height(Spasi.xl))
                 }
                 Blok(Modifier.width(Spasi.xxxl + Spasi.xxl).height(Spasi.xl))
+            }
+            if (i < jumlahBaris - 1) PemisahBaris()
+        }
+    }
+}
+
+/**
+ * Skeleton berbentuk baris nota di Riwayat (toko, tanggal dan jumlah barang, total di kanan), statis. Dibaca
+ * pembaca layar sebagai satu keterangan "Memuat daftar nota".
+ */
+@Composable
+fun SkeletonBarisNota(modifier: Modifier = Modifier, jumlahBaris: Int = 4) {
+    val keterangan = stringResource(R.string.skeleton_memuat_nota)
+    Column(modifier.fillMaxWidth().semantics { contentDescription = keterangan }) {
+        repeat(jumlahBaris) { i ->
+            Row(
+                Modifier.fillMaxWidth().padding(vertical = Spasi.s),
+                horizontalArrangement = Arrangement.spacedBy(Spasi.l),
+            ) {
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spasi.xs)) {
+                    Blok(Modifier.fillMaxWidth(0.6f).height(Spasi.xl))
+                    Blok(Modifier.fillMaxWidth(0.45f).height(Spasi.l))
+                }
+                Blok(Modifier.width(Spasi.xxxl + Spasi.xl).height(Spasi.xl))
             }
             if (i < jumlahBaris - 1) PemisahBaris()
         }

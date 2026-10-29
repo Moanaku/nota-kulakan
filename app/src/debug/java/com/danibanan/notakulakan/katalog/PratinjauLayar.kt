@@ -1,6 +1,7 @@
 package com.danibanan.notakulakan.katalog
 
 import androidx.compose.runtime.Composable
+import com.danibanan.notakulakan.domain.RentangTanggal
 import com.danibanan.notakulakan.domain.RingkasNota
 import com.danibanan.notakulakan.domain.model.ItemBaris
 import com.danibanan.notakulakan.domain.model.Nota
@@ -28,21 +29,29 @@ import com.danibanan.notakulakan.ui.hasil.LayarMemproses
 /**
  * Layar sungguhan dengan data palsu untuk potret verifikasi. Nama dipakai di `adb shell am start ... --es layar <nama>`:
  * foto-server, foto-contoh, memproses, gagal-<jaringan|tak-terjangkau|waktu|sibuk|bukan-nota|foto|besar|ditolak|server>,
- * tersimpan, tersimpan-tanpa-perubahan, duplikat (data palsu, tidak menyimpan apa pun), riwayat-<memuat|galat|kosong|ada|ada-contoh|offline>, dialog-hapus-contoh,
+ * tersimpan, tersimpan-tanpa-perubahan, duplikat (data palsu, tidak menyimpan apa pun), riwayat-<memuat|galat|kosong|ada|ada-contoh|offline>, riwayat-cari-<kosong-kolom|hasil|kosong|filter|filter-kosong|lembar>, dialog-hapus-contoh,
  * detail-<memuat|galat|ada|ada-konfirmasi>, dialog-hapus-nota, stok-<memuat|galat|kosong|ada|ada-panjang|offline>.
  */
 
 private val WAKTU = 1_792_000_000_000L // Okt 2026
 private const val SUPPLIER_PANJANG = "UD Sumber Rezeki Makmur Sejahtera Abadi"
 
-private fun ringkas(id: Long, supplier: String?, total: Long?, baris: Int) =
-    RingkasNota(id = id, total = total, jumlahBaris = baris, dibuatPada = WAKTU - id * 86_400_000L, supplier = supplier)
+private fun ringkas(id: Long, supplier: String?, total: Long?, baris: Int, vararg barang: String) =
+    RingkasNota(
+        id = id,
+        total = total,
+        jumlahBaris = baris,
+        dibuatPada = WAKTU - (10 - id) * 86_400_000L, // id besar = lebih baru, sesuai urutan daftar
+        supplier = supplier,
+        namaBarang = barang.toList(),
+    )
 
+// Nota sintetis; nama barang dipakai untuk memotret pencarian ("susu" menemukan nota 3 dan 2 lewat barang).
 private val DAFTAR_RIWAYAT = listOf(
-    ringkas(4, SUPPLIER_PANJANG, 895_000, 4),
-    ringkas(3, "Grosir Contoh Makmur", 422_000, 3),
-    ringkas(2, "Toko Sinar Pagi", 1_250_500, 12),
-    ringkas(1, null, null, 1),
+    ringkas(4, SUPPLIER_PANJANG, 895_000, 4, "Minyak Goreng Pouch 2 L", "Gula Pasir 1 kg", "Kecap Manis", "Teh Celup"),
+    ringkas(3, "Grosir Contoh Makmur", 422_000, 3, "Gula Pasir 1 kg", "Kopi Sachet", "Susu Kental Manis"),
+    ringkas(2, "Toko Sinar Pagi", 1_250_500, 12, "Susu UHT 1 L", "Susu Bubuk 400 g", "Susu Kedelai", "Mi Instan"),
+    ringkas(1, null, null, 1, "Kecap Manis"),
 )
 
 private val NOTA_DETAIL = NotaTersimpan(
@@ -114,6 +123,21 @@ fun PratinjauLayar(nama: String) {
             ),
             {}, {}, {},
         )
+        nama.startsWith("riwayat-cari-") -> {
+            val v = nama.removePrefix("riwayat-cari-")
+            RiwayatLayar(
+                RiwayatUi.Ada(DAFTAR_RIWAYAT), galatHapusContoh = false, tersambung = true, {}, {}, {}, {}, {},
+                kataAwal = when (v) {
+                    "hasil" -> "susu"
+                    "kosong" -> "sabun"
+                    "filter-kosong" -> "sabun"
+                    else -> ""
+                },
+                supplierAwal = if (v == "filter" || v == "lembar") "Toko Sinar Pagi" else null,
+                rentangAwal = if (v == "filter" || v == "lembar" || v == "filter-kosong") RentangTanggal.BULAN_INI else RentangTanggal.SEMUA,
+                filterTerbukaAwal = v == "lembar",
+            )
+        }
         nama.startsWith("riwayat-") || nama == "dialog-hapus-contoh" -> {
             val v = nama.removePrefix("riwayat-")
             val ui = when (v) {
