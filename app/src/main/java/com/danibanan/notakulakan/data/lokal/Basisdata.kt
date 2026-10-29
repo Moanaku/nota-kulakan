@@ -101,6 +101,8 @@ data class StokRow(val produkId: Long, val nama: String, val satuan: String?, va
 
 data class HargaRow(val produkId: Long, val satuan: String?, val hargaSatuan: Long, val waktu: Long, val notaId: Long)
 
+data class NamaBarangRow(val notaId: Long, val nama: String?)
+
 data class RingkasRow(val id: Long, val total: Long, val jumlahBaris: Int, val dibuatPada: Long, val supplier: String?)
 
 @Dao
@@ -166,6 +168,16 @@ interface NotaDao {
         """,
     )
     fun riwayat(): Flow<List<RingkasRow>>
+
+    /** Nama barang tiap nota (nama di nota dan nama produk) untuk pencarian Riwayat; tidak mengubah data. */
+    @Query(
+        """
+        SELECT b.notaId AS notaId, b.namaDiNota AS nama FROM baris_nota b
+        UNION
+        SELECT b.notaId AS notaId, p.nama AS nama FROM baris_nota b JOIN produk p ON p.id = b.produkId
+        """,
+    )
+    fun namaBarangPerNota(): Flow<List<NamaBarangRow>>
 
     @Query(
         """

@@ -65,6 +65,8 @@ data class RingkasNota(
     val jumlahBaris: Int,
     val dibuatPada: Long,
     val supplier: String?,
+    /** Nama barang di semua baris nota (nama di nota dan nama produk), hanya untuk pencarian Riwayat. */
+    val namaBarang: List<String?> = emptyList(),
 )
 
 const val JENDELA_DUPLIKAT_HARI = 14

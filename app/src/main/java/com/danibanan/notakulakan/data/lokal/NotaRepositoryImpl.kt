@@ -61,7 +61,10 @@ class NotaRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun riwayat(): Flow<List<RingkasNota>> = dao.riwayat().map { daftar -> daftar.map { it.keDomain() } }
+    override fun riwayat(): Flow<List<RingkasNota>> = combine(dao.riwayat(), dao.namaBarangPerNota()) { daftar, nama ->
+        val perNota = nama.groupBy({ it.notaId }, { it.nama })
+        daftar.map { it.keDomain(perNota[it.id].orEmpty()) }
+    }
 
     override suspend fun detail(id: Long): NotaTersimpan? = withContext(io) {
         val nota = dao.nota(id) ?: return@withContext null
@@ -220,5 +223,6 @@ class NotaRepositoryImpl @Inject constructor(
 
     private fun HargaRow.keCatatan() = CatatanHarga(produkId, satuan, hargaSatuan, waktu, notaId)
 
-    private fun RingkasRow.keDomain() = RingkasNota(id, total, jumlahBaris, dibuatPada, supplier)
+    private fun RingkasRow.keDomain(namaBarang: List<String?> = emptyList()) =
+        RingkasNota(id, total, jumlahBaris, dibuatPada, supplier, namaBarang)
 }
