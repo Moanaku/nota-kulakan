@@ -4,7 +4,7 @@ Nota kulakan dari grosir hanya disimpan di rak; stok tidak dihitung dari nota da
 terlihat. Aplikasi ini membaca foto nota dengan AI, memeriksa hitungannya dengan aturan, lalu mencatat stok dan
 harga modal.
 
-- Demo video: belum tersedia.
+- Video demo (YouTube Short, direkam dari aplikasi dengan backend dan AI asli, bukan mode contoh): https://www.youtube.com/shorts/Vv81G_SgqMY
 - Unduh APK: [Releases](https://github.com/Moanaku/nota-kulakan/releases). APK mode contoh (tanpa server; foto nota
   butuh backend sendiri, lihat bagian backend).
 - Tangkapan layar: di bawah.
