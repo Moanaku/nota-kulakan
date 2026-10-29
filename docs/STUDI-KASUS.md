@@ -33,7 +33,12 @@ sebelum uji dan diterapkan apa adanya: 3.5-flash-lite unggul 1 nota (syarat 2), 
 Salah yang tercatat: diskon persen per baris tidak terbaca, total tulisan tangan terpakai sebagai total, PPN yang
 sudah termasuk terbaca sebagai pajak tambahan, dan satu hasil rusak total. Pada nota yang kuncinya konsisten,
 semua nota yang salah ditandai validator (pembagi kecil). `gemini-3.8-flash` tidak selesai dievaluasi (waktu habis
-dan kuota). ([`EVALUASI.md`](EVALUASI.md), [`hasil/uji-2026-10-20-putaran2.md`](hasil/uji-2026-10-20-putaran2.md))
+dan kuota). Set uji kedua (2026-10-29, 8 nota baru, konfigurasi sama, tidak dipakai menyetel): 7/8 nota sempurna (88%, Wilson
+95% 53-98%); gabungan 20 nota 12/20 (60%, Wilson 95% 39-78%). Kunci dari draf Claude yang diverifikasi Dani (risiko
+bias penjangkaran), nota dari pemilik yang sama, komposisi berbeda (6 dari 8 hanya 1-2 baris, tanpa diskon persen),
+jadi selisih dengan 42% bukan bukti perbaikan; satu nota salah (tiga kolom kuantitas) dan ditandai validator.
+([`EVALUASI.md`](EVALUASI.md), [`hasil/uji-2026-10-20-putaran2.md`](hasil/uji-2026-10-20-putaran2.md),
+[`hasil/uji2-2026-10-29.md`](hasil/uji2-2026-10-29.md))
 
 ## Hasil lapangan (15 nota)
 15 nota (10 cetak, 5 tulis tangan), 40 baris, 28-29 Okt 2026. Waktu input median 20 detik (rentang 16-100); baris

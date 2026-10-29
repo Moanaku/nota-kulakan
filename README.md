@@ -71,6 +71,13 @@ kunci (nama barang tidak dinilai).
 **Angka utama:** `gemini-3.1-flash-lite` pada foto 1024 px, prompt v2, set uji 12 nota cetak milik sendiri:
 **5/12 nota sempurna (42%, Wilson 95% 19-68%)**. Interval lebar karena n kecil.
 
+**Set uji kedua (2026-10-29, 8 nota baru, konfigurasi sama, satu putaran):** 7/8 nota sempurna (88%, Wilson 95%
+53-98%). **Gabungan 20 nota:** 12/20 (60%, Wilson 95% 39-78%). Delapan nota ini tidak dipakai menyetel; kuncinya
+dibuat dari draf Claude lalu diverifikasi Dani (ada risiko bias penjangkaran); nota dari pemilik yang sama; n kecil.
+Komposisinya berbeda dari set pertama (6 dari 8 nota hanya 1-2 baris, tanpa diskon persen per baris), jadi selisih
+dengan 42% tidak dibaca sebagai perbaikan. Satu nota salah (033, tiga kolom kuantitas) dan ditandai validator.
+Rincian: [`docs/hasil/uji2-2026-10-29.md`](docs/hasil/uji2-2026-10-29.md).
+
 Putaran 2 (2026-10-20, satu-satunya putaran resmi; prompt v2; foto ditutup kotak hitam). Biaya = perkiraan
 harga daftar (tier gratis, tanpa tagihan), harga dibaca 2026-10-20.
 
