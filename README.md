@@ -1,11 +1,12 @@
 # Nota Kulakan
 
-Nota kulakan dari grosir dicatat tangan di buku; stok tidak dihitung dari nota dan kenaikan harga modal tidak
+Nota kulakan dari grosir hanya disimpan di rak; stok tidak dihitung dari nota dan kenaikan harga modal tidak
 terlihat. Aplikasi ini membaca foto nota dengan AI, memeriksa hitungannya dengan aturan, lalu mencatat stok dan
 harga modal.
 
-- Demo video: [video demo: menyusul]
-- Unduh APK: [APK: menyusul di Releases]
+- Demo video: belum tersedia.
+- Unduh APK: [Releases](https://github.com/Moanaku/nota-kulakan/releases). APK mode contoh (tanpa server; foto nota
+  butuh backend sendiri, lihat bagian backend).
 - Tangkapan layar: di bawah.
 
 Proyek ini adalah studi kasus produk dan rekayasa, bukan pesaing aplikasi kasir atau pencatat stok yang sudah mapan.
@@ -21,8 +22,9 @@ Tangkapan layar dari mode contoh (data sintetis).
 
 ## Status
 
-- Lapisan 1 (foto nota, ekstraksi, periksa dan koreksi, simpan ke stok, riwayat dan stok) sudah ada di
-  aplikasi, dan evaluasi set uji sudah dijalankan (lihat Hasil evaluasi). Pengukuran waktu lapangan belum dilakukan.
+- Lapisan 1 (foto nota, ekstraksi, periksa dan koreksi, simpan ke stok, riwayat dan stok, cari nota: supplier,
+  barang, tanggal; semua opsional) sudah ada di aplikasi, evaluasi set uji sudah dijalankan (lihat Hasil evaluasi),
+  dan 15 nota diukur di lapangan (lihat Hasil lapangan). Waktu menemukan kembali nota belum diukur.
   Lapisan 2 dan seterusnya belum dikerjakan.
 - APK di Releases berjalan dalam **mode contoh**: nota sintetis berlabel "contoh" diproses tanpa server dan
   tanpa kunci. Tombol foto dan galeri nonaktif karena APK tidak terhubung ke backend publik
@@ -34,13 +36,12 @@ Tangkapan layar dari mode contoh (data sintetis).
 ## Masalah dan cara lama
 
 Toko sembako menerima nota kulakan (cetak dan tulisan tangan) dari grosir dan sales. Di toko yang menjadi studi
-kasus, nota dicatat tangan di buku dan kertasnya disimpan di laci. Stok dan harga modal tidak dihitung dari
-nota, sehingga kenaikan harga modal tidak terlihat.
+kasus, nota hanya disimpan di rak. Stok dan harga modal tidak dihitung dari nota, sehingga kenaikan harga modal
+tidak terlihat.
 
-**Hipotesis (belum diukur):** mencatat nota lewat aplikasi lebih cepat per nota daripada menulis di buku, dan
-hasilnya lebih jarang salah karena hitungan diperiksa otomatis. Cara uji: 10 nota (target; minimal 6), tiap nota
-dikerjakan dua kali oleh satu orang, cara lama dan aplikasi, urutan diselang-seling, waktu dengan stopwatch.
-Protokol lengkap dan keterbatasannya: [`docs/EVALUASI.md` bagian 13](docs/EVALUASI.md). Belum ada angka waktu.
+**Nilai utama aplikasi:** arsip digital nota (foto dan data terstruktur), pengecekan hitungan otomatis, harga modal
+per barang, dan cari nota. Pembanding waktu "dibanding menulis ulang di buku" tidak dipakai karena bukan kebiasaan
+toko; revisinya dicatat di [`docs/EVALUASI.md` bagian 13](docs/EVALUASI.md).
 
 ## Cara kerja
 
@@ -120,6 +121,21 @@ Konfigurasi sementara `gemini-3.1-flash-lite` @1024 px, dijalankan sekali, tidak
   Pada foto yang tidak lengkap atau berisi dua nota, model tidak memberi tanda ragu; penjaganya hanya validator
   dan konfirmasi pengguna.
 
+## Hasil lapangan (15 nota)
+
+Satu pengguna (Dani), nota dari toko yang dikenal Dani (bukan sampel acak), 28-29 Okt 2026. Rincian per nota dan
+metode: [`docs/hasil/lapangan-2026-10-29.md`](docs/hasil/lapangan-2026-10-29.md).
+
+- 15 nota (10 cetak, 5 tulis tangan), 40 baris.
+- Waktu input per nota: median 20 detik, rata-rata 34,3 detik, rentang 16-100 detik.
+- Baris dikoreksi: 5 dari 40 (12,5%). Nota tanpa koreksi: 13 dari 15 (87%; Wilson 95% 62%-96%).
+- Salah lolos: 0 (hanya berarti tidak ada yang lolos di 15 nota ini).
+
+Keterbatasan: n kecil; beberapa catatan menyebut server lambat, jadi waktu tidak bisa dibandingkan antar jenis
+nota; dua nota berdiskon (N07, N08) yang dikoreksi hanyalah petunjuk, bukan kesimpulan.
+
+**Waktu menemukan kembali: belum diukur;** protokol di [`docs/LAPANGAN.md`](docs/LAPANGAN.md).
+
 ## Biaya, latensi, data
 
 Dari tabel putaran 2, konfigurasi terpilih (3.1-flash-lite @1024): sekitar $0,00113 per nota (perkiraan harga
@@ -148,8 +164,8 @@ token), jadi angka biaya model itu hanya berlaku sampai 2026-12-31.
   menutupi, dan nama barang yang salah baca tidak tertangkap. Nama barang tidak dinilai dalam evaluasi.
 - Diskon persen per baris dan PPN yang sudah termasuk harga belum ditangani dengan benar (lihat pola salah di atas).
   Qty dua kolom (besar + kecil) belum ditangani.
-- Tulisan tangan hanya ada di set internet (n=2); nota tulisan tangan dari toko sendiri belum dievaluasi.
-  Hipotesis bahwa tulisan tangan terbaca belum diuji.
+- Tulisan tangan hanya ada di set internet (n=2) dan di lapangan (5 nota dari toko sendiri, semuanya tanpa koreksi);
+  n terlalu kecil untuk kesimpulan tentang tulisan tangan.
 - Satu toko dan satu pengguna. Set uji berasal dari satu toko, dan set dev dan uji berbagi template pemasok,
   jadi angka uji tidak sepenuhnya independen dari dev.
 - Foto evaluasi tidak diambil lewat aplikasi; kompresinya ditiru dengan parameter yang sama.
@@ -185,7 +201,7 @@ NOTA_KLIEN=tiruan APP_CHECK=off uvicorn nota.api:app --port 8080
 cd backend && python -m nota_eval --help
 ```
 
-Hasil tes terakhir (2026-10-20): backend `pytest` 104 lulus; Android `testDebugUnitTest` 63 tes, 0 gagal,
+Hasil tes terakhir (2026-10-29): backend `pytest` 105 lulus; Android `testDebugUnitTest` 84 tes, 0 gagal,
 0 dilewati (dihitung dari laporan JUnit di `app/build/test-results`). Untuk AI asli, jalankan backend tanpa
 `NOTA_KLIEN=tiruan` dengan kunci Gemini sendiri; langkah operasional ada di [`docs/RUNBOOK.md`](docs/RUNBOOK.md)
 dan rilis APK di [`docs/RILIS-APK.md`](docs/RILIS-APK.md).
