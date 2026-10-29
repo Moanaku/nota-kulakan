@@ -28,27 +28,24 @@ Periksa dari terminal lain: `curl.exe http://127.0.0.1:8080/healthz`.
 - [ ] Nomor telepon, alamat pribadi, nomor rekening, dan NPWP ditutup (kertas atau jari) sebelum difoto.
 - [ ] Toko dicatat dengan kode (T1, T2, ...), bukan nama.
 - [ ] Foto lewat kamera aplikasi atau galeri; foto asli tidak dibagikan ke aplikasi lain.
-- [ ] Urutan berpasangan: nota ganjil cara lama dulu, genap aplikasi dulu.
 
 ## 4. Mengisi lembar
-Satu baris per nota di `lembar-lapangan.csv` (Excel atau editor teks, simpan sebagai CSV):
+Satu baris per nota di lembar CSV (Excel atau editor teks, simpan sebagai CSV). Kolom sama dengan
+[`hasil/lapangan-2026-10-29.csv`](hasil/lapangan-2026-10-29.csv):
 
 | Kolom | Isi |
 |---|---|
-| `id` | nomor urut nota (1, 2, ...) |
-| `kode_toko` | T1, T2, ... |
-| `jenis` | cetak / tulis / campuran |
+| `kode_nota` | kode nota (N01, N02, ...), bukan nama toko |
+| `jenis` | cetak / tulis tangan |
 | `jumlah_baris` | jumlah baris barang di nota |
-| `urutan` | `manual-dulu` atau `app-dulu` |
-| `detik_manual` | stopwatch: nota di tangan sampai semua baris dan total tertulis di buku tulis |
-| `detik_aplikasi` | stopwatch: ketuk "Catat nota" sampai "Simpan nota ke stok" selesai |
-| `salah_manual` | jumlah angka salah pada tulisan cara lama (banding dengan nota fisik) |
-| `baris_dikoreksi_di_app` | baris yang diperbaiki sebelum disimpan |
-| `salah_lolos_di_app` | angka salah pada data yang tersimpan |
-| `validator_menandai` | ya / tidak |
-| `catatan` | hal janggal (galat, waktu tunggu lama, foto buram) |
+| `detik_input` | stopwatch: ketuk "Catat nota" sampai "Simpan nota ke stok" selesai (termasuk foto, menunggu AI, memeriksa, mengoreksi) |
+| `baris_dikoreksi` | baris yang diperbaiki sebelum disimpan |
+| `validator_menandai` | JUMLAH baris yang ditandai validator (bukan ya/tidak) |
+| `salah_lolos` | angka salah pada data yang tersimpan |
+| `catatan` | hal janggal (galat, server lambat, foto buram) |
 
-Isi segera setelah tiap nota, bukan di akhir hari.
+Isi segera setelah tiap nota, bukan di akhir hari. Pembanding "menulis ulang di buku" tidak dipakai lagi
+(`EVALUASI.md` bagian 13, catatan revisi), jadi tidak ada kolom waktu cara lama.
 
 ## 5. Selesai: menghentikan dan membersihkan
 1. Ctrl+C di jendela backend.
@@ -57,3 +54,17 @@ Isi segera setelah tiap nota, bukan di akhir hari.
 4. `adb shell ls /sdcard/DCIM/Camera` untuk memastikan tidak ada yang tersisa; hapus yang perlu dengan
    `adb shell rm /sdcard/DCIM/Camera/<nama>`.
 5. Nonaktifkan debugging USB bila tidak dipakai lagi.
+
+## 6. Waktu menemukan kembali (belum diukur)
+
+Belum ada angka. Pengukuran ini menguji fitur cari nota di Riwayat, dan baru dilakukan setelah protokol ini ditulis:
+
+1. Nota fisik di tumpukan dan nota di aplikasi harus memuat nota yang **SAMA** (nota yang sama difoto dan dicatat).
+2. 10 pertanyaan ditulis **SEBELUM** mengukur, mis. "kapan terakhir beli susu dari toko X dan berapa harganya".
+   Daftar pertanyaan tidak diubah sesudah pengukuran dimulai.
+3. Urutan bergantian per pertanyaan: pertanyaan ganjil aplikasi dulu, genap tumpukan dulu (atau sebaliknya,
+   tetapi dicatat dan konsisten). Tiap pertanyaan dikerjakan dengan kedua cara.
+4. Stopwatch Dani sendiri: dari pertanyaan dibacakan sampai jawaban benar ditemukan (dibandingkan dengan nota fisik).
+5. Dilaporkan: jumlah pertanyaan, median dan rata-rata detik tiap cara, pertanyaan yang tidak ketemu, dan
+   keterbatasannya (satu pengguna, nota yang itu-itu saja, belajar dari urutan). Tanpa klaim hemat waktu
+   di luar angka yang terukur.

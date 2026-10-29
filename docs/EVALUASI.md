@@ -361,6 +361,8 @@ Keterbatasan untuk README: model ini diuji sebagian dan hanya pada satu ukuran f
 
 ## 13. Protokol gelombang lapangan: waktu per nota dan nota pemasok lain (ditetapkan 2026-10-20, sebelum data dikumpulkan)
 
+> **Catatan revisi (2026-10-29).** Direvisi: pembanding "menulis ulang di buku" bukan kebiasaan toko (nota hanya disimpan di rak). Pengukuran lapangan 15 nota dilakukan 28-29 Okt 2026 untuk biaya input dan kualitas baca (hasil di [`docs/hasil/lapangan-2026-10-29.md`](hasil/lapangan-2026-10-29.md)); catatan revisi ini ditulis SETELAH data dikumpulkan. Pengukuran waktu menemukan kembali nota (dengan fitur cari) belum dilakukan.
+
 Tujuan: mengukur (1) waktu per nota, cara lama lawan aplikasi, dan (2) seberapa baik aplikasi membaca nota
 pemasok yang tidak ada di set utama. Dilaporkan terpisah dari angka uji (bagian 10); tidak dipakai menyetel
 prompt, model, atau ukuran foto. Kunci di sini bukan kunci evaluasi resmi, hanya hasil pemeriksaan manual.
@@ -373,7 +375,7 @@ dihapus dari HP setelah selesai dan tidak masuk repo. Toko dicatat dengan kode (
 **Satuan.** Nota (n sebanyak yang terkumpul; target 10, minimal 6, dilaporkan apa adanya berapa pun hasilnya; gelombang pertama hanya di toko Dani sendiri).
 Tiap nota dikerjakan dua kali (berpasangan): cara lama dan aplikasi, urutan diselang-seling (nota ganjil
 cara lama dulu, genap aplikasi dulu). Nota disimpan di tempat yang sama dan dipegang kedua kali.
-Cara lama: menulis tangan di buku tulis, seperti orang tua Dani mencatat sekarang (mereka tidak menyimpan di HP).
+**[Tidak dipakai; lihat catatan revisi di atas.]** Cara lama: menulis tangan di buku tulis, seperti orang tua Dani mencatat sekarang (mereka tidak menyimpan di HP).
 Tulis sebanyak yang biasa mereka tulis; bila mereka tidak menulis harga atau jumlah per baris, ikuti itu dan
 catat di kolom `catatan` apa saja yang ditulis (bagian yang tidak ditulis membuat cara lama tampak lebih cepat,
 jadi perbandingan ini konservatif terhadap aplikasi).
