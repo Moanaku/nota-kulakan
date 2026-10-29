@@ -394,3 +394,22 @@ jumlah toko, serta proporsi nota "benar tanpa koreksi" (Wilson 95%). Keterbatasa
 efek belajar karena nota yang sama dikerjakan dua kali (diredam dengan urutan diselang-seling), jumlah nota
 kecil, nota dikumpulkan dari toko yang dikenal Dani (bukan sampel acak), dan cara lama (menulis di buku) yang hanya menyalin, tanpa memeriksa hitungan, memperbarui stok, atau menghitung harga modal.
 Tidak ada klaim tentang pengguna lain, pendapatan, atau dampak bisnis.
+
+## 14. Set uji kedua (n=8) dan gabungan (n=20) (2026-10-29)
+
+Angka di bagian 10-13 tidak diubah. Delapan nota tambahan (028-033, 035, 036; manifest `manifest-uji2.jsonl`)
+diambil setelah konfigurasi final ditetapkan dan tidak dipakai menyetel apa pun. Nota 034 adalah salinan
+transaksi 013, jadi dikeluarkan sesuai bagian 4 dan diganti 036. Kunci dibuat dari draf yang ditulis Claude
+dari foto (bukan model yang diuji), lalu diverifikasi Dani terhadap foto; risiko bias penjangkaran ada, hasil
+ini tidak bebas bias. Satu putaran, konfigurasi sama dengan bagian 10 (`gemini-3.1-flash-lite`, 1024 px, prompt
+v2, foto tertutup). Metrik tidak diubah. Rincian: [`hasil/uji2-2026-10-29.md`](hasil/uji2-2026-10-29.md).
+
+| Set | Nota sempurna | Wilson 95% |
+|---|---|---|
+| Uji lama (n=12) | 5/12 = 42% | 19-68% |
+| Uji kedua (n=8) | 7/8 = 88% | 53-98% |
+| Gabungan (n=20) | 12/20 = 60% | 39-78% |
+
+Satu-satunya nota salah di set kedua: 033 (tiga kolom kuantitas; qty salah di 6 dari 7 baris; ditandai
+validator). Komposisi set kedua berbeda (6 dari 8 nota hanya 1-2 baris, tanpa diskon persen per baris), jadi
+selisih dengan 42% tidak dibaca sebagai perbaikan. Nota dari pemilik yang sama; n kecil.
