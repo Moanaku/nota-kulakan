@@ -9,8 +9,8 @@ Langkah untuk Dani di PowerShell. Alasan: `docs/KEPUTUSAN.md` 17 (distribusi lew
 ## 1. Buat keystore (sekali saja, di luar repo)
 
 ```powershell
-New-Item -ItemType Directory -Force "E:\Project Mobile\keystore"
-keytool -genkeypair -v -keystore "E:\Project Mobile\keystore\nota-rilis.jks" -keyalg RSA -keysize 2048 -validity 10000 -alias rilis
+New-Item -ItemType Directory -Force "<folder keystore di luar repo>"
+keytool -genkeypair -v -keystore "<folder keystore di luar repo>\nota-rilis.jks" -keyalg RSA -keysize 2048 -validity 10000 -alias rilis
 ```
 
 `keytool` akan menanyakan sandi dan identitas (nama, dll.). Pilih sandi yang panjang. Kalau ditanya sandi
@@ -39,7 +39,7 @@ keyPassword=<sandi kunci>
 ```
 
 `storeFile` dibaca relatif terhadap akar repo, jadi `../keystore/nota-rilis.jks` menunjuk ke
-`E:\Project Mobile\keystore\nota-rilis.jks`. Pastikan `git status` tidak menampilkan `keystore.properties`.
+`nota-rilis.jks` di `<folder keystore di luar repo>`. Pastikan `git status` tidak menampilkan `keystore.properties`.
 
 ## 4. Naikkan versi dan bangun
 
