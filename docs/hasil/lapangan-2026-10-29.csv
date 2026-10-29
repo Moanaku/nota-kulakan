@@ -1,0 +1,16 @@
+kode_nota,jenis,jumlah_baris,detik_input,baris_dikoreksi,validator_menandai,salah_lolos,catatan
+N01,cetak,2,30,0,0,0,
+N02,tulis tangan,2,17,0,0,0,server paling cepat; pernah lebih cepat saat server sepi
+N03,cetak,4,50,0,0,0,lama karena server
+N04,cetak,4,18,0,0,0,
+N05,cetak,1,20,0,0,0,
+N06,cetak,2,17,0,0,0,
+N07,cetak,7,55,2,2,0,diskon di 2 baris
+N08,cetak,8,100,3,3,0,"6 diskon dari 8 barang, semua terbaca presisi; 3 baris terakhir salah baca isi per box vs jumlah box (1 box isi 24 terbaca 24 box); 5 baris lain benar"
+N09,cetak,2,45,0,0,0,server lambat
+N10,cetak,1,35,0,0,0,server sedikit lambat
+N11,cetak,2,55,0,0,0,server sedikit lambat
+N12,tulis tangan,1,20,0,0,0,
+N13,tulis tangan,2,17,0,0,0,
+N14,tulis tangan,1,16,0,0,0,
+N15,tulis tangan,1,20,0,0,0,
